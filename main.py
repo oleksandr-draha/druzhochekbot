@@ -30,7 +30,8 @@ while True:
                         "text": answer}
             requests.post(URL_SEND_MESSAGE.format(key=API_KEY),
                           params=response)
-    if not initialized and income_message_count:
-        start_offset = messages_raw['result'][income_message_count - 1]['update_id'] + 1
+    if not initialized:
+        start_offset = messages_raw['result'][income_message_count - 1]['update_id'] + 1 \
+            if income_message_count else 0
         initialized = True
     time.sleep(1)
