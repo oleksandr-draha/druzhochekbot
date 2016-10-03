@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
-from telegram_worker import TelegramWorker
+from time import sleep
 
-
+from telegram.worker import TelegramWorker
 
 bot = TelegramWorker()
 
-while True:
+initialized = bot.setup_bot()
+while not initialized:
+    initialized = bot.setup_bot()
+
+while not bot.stopped and initialized is not None:
     bot.process_messages()
+    sleep(1)

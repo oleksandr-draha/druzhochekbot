@@ -1,35 +1,39 @@
 # -*- coding: utf-8 -*-
 import requests
 
-
-QUEST_URL = "http://m.online.quest.ua/{path}"
+QUEST_URL = "http://m.{host}/{path}"
 LOGIN_URL = "login/signin/?return=%2f"
 GAME_URL = "gameengines/encounter/play/{game_id}/"
 
 
 class GameDriver:
-    session = None
     level_id = None
     level_number = None
     login = None
     password = None
     game_id = None
+    host = None
+    login_success = False
 
     def __init__(self):
-        if self.session is None:
-            self.session = requests.session()
+        self.session = requests.session()
         self.login_user()
-        current_game_page = self.get_game_page()
-        self.set_level_params(current_game_page)
+        if not self.logged_out():
+            current_game_page = self.get_game_page()
+            self.set_level_params(current_game_page)
 
     def login_user(self):
         body = {"Login": self.login,
                 "Password": self.password,
                 "SelectedNetworkId": 2}
-        r = self.session.post(QUEST_URL.format(path=LOGIN_URL), params=body)
+        self.session.post(QUEST_URL.format(
+            host=self.host,
+            path=LOGIN_URL),
+            params=body)
 
     def get_game_page(self):
-        return self.session.get(QUEST_URL.format(path=GAME_URL.format(game_id=self.game_id))).text
+        return self.session.get(QUEST_URL.format(host=self.host,
+                                                 path=GAME_URL.format(game_id=self.game_id))).text
 
     def get_level_params(self, text=None):
         if text is None:
@@ -39,10 +43,10 @@ class GameDriver:
         level_params_end_locator = '"'
         level_id_start = \
             text[
-                text.find(level_id_locator) + len(level_id_locator):]
+            text.find(level_id_locator) + len(level_id_locator):]
         level_number_start = \
             text[
-                text.find(level_number_locator) + len(level_number_locator):]
+            text.find(level_number_locator) + len(level_number_locator):]
         level_id = level_id_start[:level_id_start.index(level_params_end_locator)]
         level_number = level_number_start[:level_number_start.index(level_params_end_locator)]
         return {"LevelId": int(level_id),
@@ -62,7 +66,8 @@ class GameDriver:
                 "LevelId": self.level_id,
                 "LevelNumber": self.level_number,
                 "LevelAction.Answer": code}
-        r = self.session.post(QUEST_URL.format(path=GAME_URL.format(game_id=self.game_id)), params=body)
+        r = self.session.post(QUEST_URL.format(host=self.host,
+                                               path=GAME_URL.format(game_id=self.game_id)), params=body)
         if r.text.find(incorrect_code_locator) == -1 and \
                         r.text.find(correct_code_locator) != -1:
             return True
@@ -104,7 +109,8 @@ class GameDriver:
         if task_header_start == -1:
             return
         task_header_start += len(task_header_locator)
-        task_text_start = task_header_start + text[task_header_start:].find(task_start_locator) + len(task_start_locator)
+        task_text_start = task_header_start + text[task_header_start:].find(task_start_locator) + len(
+            task_start_locator)
         task_text_end = task_text_start + text[task_text_start:].find(task_end_locator)
         return text[task_text_start: task_text_end]
 
@@ -112,7 +118,4 @@ class GameDriver:
         if text is None:
             text = self.get_game_page()
         logged_locator = '<label for="Answer">'
-        if text.find(logged_locator) != -1:
-            return False
-        else:
-            return True
+        return text.find(logged_locator) == -1

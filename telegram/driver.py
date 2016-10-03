@@ -1,4 +1,5 @@
 import json
+from random import choice
 
 import requests
 
@@ -23,9 +24,14 @@ class TelegramDriver():
             if income_message_count else 0
         return messages
 
-    def send_message(self, chat_id, text):
+    def send_message(self, chat_id, text, parse_mode="Markdown"):
+        if isinstance(text, list):
+            text_message = choice(text)
+        else:
+            text_message = text
         response = {"chat_id": chat_id,
-                    "text": text}
+                    "text": text_message,
+                    "parse_mode": parse_mode}
         self.session.post(URL_SEND_MESSAGE.format(key=API_KEY),
                       params=response)
 
