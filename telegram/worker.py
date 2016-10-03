@@ -10,8 +10,9 @@ from telegram.dictionary import PAUSE_MESSAGES, GREETINGS_MESSAGES, LETS_GO_MESS
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, TOO_MUCH_ATTEMPTS_MESSAGES, ACCESS_VIOLATION_MESSAGES
 from telegram.driver import TelegramDriver
 
-MAX_ATTEMPTS = 5
 
+# TODO: To class attributes?
+MAX_ATTEMPTS = 5
 DRAGA_ID = 170302127
 APPROVE_GROUP = '/approve'
 CODE_COMMAND = '/c'
@@ -89,7 +90,7 @@ class TelegramWorker:
             DRAGA_ID,
             choice(LETS_GO_MESSAGES))
         self.game_worker = GameWorker()
-        if self.game_worker.game_driver.logged_out():
+        if not self.game_worker.game_driver.is_logged():
             self.telegram_driver.send_message(
                 DRAGA_ID,
                 CONNECTION_PROBLEM_MESSAGES)
@@ -156,6 +157,7 @@ class TelegramWorker:
             from_id = message['message']['from']['id']
             chat_id = message['message']['chat']['id']
 
+            # TODO: To parsers and return command, arguments, function
             # region APPROVE GROUP COMMAND
             if message_text.startswith(APPROVE_GROUP):
                 if from_id == DRAGA_ID:

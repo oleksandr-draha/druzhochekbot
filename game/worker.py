@@ -3,6 +3,7 @@ from time import sleep
 
 from game.driver import GameDriver
 
+# TODO: To config or class attributes?
 MAX_ATTEMPTS = 5
 
 REPLACE_DICTIONARY = {'<br/>': "\r\n"}
@@ -34,16 +35,17 @@ class GameWorker:
         updates = []
         game_page = self.game_driver.get_game_page()
         attempt = 0
-        while self.game_driver.logged_out(game_page) and attempt < MAX_ATTEMPTS:
+        while not self.game_driver.is_logged(game_page) and attempt < MAX_ATTEMPTS:
             game_page = self.game_driver.login_user()
             attempt += 1
             sleep(1)
         if attempt >= MAX_ATTEMPTS:
             return
         task_text = self.game_driver.get_task(game_page)
+        if task_text is None:
+            return
         current_level = self.game_driver.get_level_params(game_page)
         hints = self.game_driver.get_all_hints(game_page)
-        # TODO: rewrite to show bunch of hints!
         if self.last_level_shown != current_level["LevelNumber"] or self.last_level_shown is None:
             self.last_level_shown = current_level["LevelNumber"]
             self.last_hint_shown = None
@@ -52,6 +54,7 @@ class GameWorker:
                            u'<b>---------------------------</b>\r\n'
                            u'\r\n'
                            u' {task}'.format(task=task_text))
+        # TODO: rewrite to show bunch of hints!
         if self.last_hint_shown != max(hints.keys()) or self.last_hint_shown is None:
             self.last_hint_shown = max(hints.keys())
             updates.append(u'<b>Новая подсказка:</b> \r\n'

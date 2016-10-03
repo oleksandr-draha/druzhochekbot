@@ -3,6 +3,7 @@ from random import choice
 
 import requests
 
+# TODO: To class attributes?
 URL_UPDATES = "https://api.telegram.org/bot{key}/getUpdates?offset={offset}"
 URL_SEND_MESSAGE = "https://api.telegram.org/bot{key}/sendMessage"
 API_KEY = file("default.yaml").read()

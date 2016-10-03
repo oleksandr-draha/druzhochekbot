@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 
+# TODO: to class attributes?
 QUEST_URL = "http://m.{host}/{path}"
 LOGIN_URL = "login/signin/?return=%2f"
 GAME_URL = "gameengines/encounter/play/{game_id}/"
@@ -13,14 +14,12 @@ class GameDriver:
     password = None
     game_id = None
     host = None
-    login_success = False
 
     def __init__(self):
         self.session = requests.session()
         self.login_user()
-        if not self.logged_out():
-            current_game_page = self.get_game_page()
-            self.set_level_params(current_game_page)
+        if self.is_logged():
+            self.set_level_params()
 
     def login_user(self):
         body = {"Login": self.login,
@@ -31,10 +30,23 @@ class GameDriver:
             path=LOGIN_URL),
             params=body)
 
-    def get_game_page(self):
-        return self.session.get(QUEST_URL.format(host=self.host,
-                                                 path=GAME_URL.format(game_id=self.game_id))).text
+    def is_logged(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        logged_locator = '<label for="Answer">'
+        return text.find(logged_locator) != -1
 
+    def get_game_page(self):
+        return self.session.get(
+            QUEST_URL.format(host=self.host,
+                             path=GAME_URL.format(game_id=self.game_id))).text
+
+    def post_game_page(self, body):
+        return self.session.post(
+            QUEST_URL.format(host=self.host,
+                             path=GAME_URL.format(game_id=self.game_id)), params=body)
+
+    # TODO: to parsers
     def get_level_params(self, text=None):
         if text is None:
             text = self.get_game_page()
@@ -66,14 +78,14 @@ class GameDriver:
                 "LevelId": self.level_id,
                 "LevelNumber": self.level_number,
                 "LevelAction.Answer": code}
-        r = self.session.post(QUEST_URL.format(host=self.host,
-                                               path=GAME_URL.format(game_id=self.game_id)), params=body)
+        r = self.post_game_page(body=body)
         if r.text.find(incorrect_code_locator) == -1 and \
                         r.text.find(correct_code_locator) != -1:
             return True
         else:
             return False
 
+    # TODO: To parsers
     def get_all_hints(self, text=None):
         if text is None:
             text = self.get_game_page()
@@ -99,6 +111,7 @@ class GameDriver:
             hint_start = text[hint_text_end:].find(hint_number_start_locator)
         return hints
 
+    # TODO: To parsers
     def get_task(self, text=None):
         if text is None:
             text = self.get_game_page()
@@ -109,13 +122,9 @@ class GameDriver:
         if task_header_start == -1:
             return
         task_header_start += len(task_header_locator)
-        task_text_start = task_header_start + text[task_header_start:].find(task_start_locator) + len(
-            task_start_locator)
-        task_text_end = task_text_start + text[task_text_start:].find(task_end_locator)
+        task_text_start = task_header_start + \
+                          text[task_header_start:].find(task_start_locator) + \
+                          len(task_start_locator)
+        task_text_end = task_text_start + \
+                        text[task_text_start:].find(task_end_locator)
         return text[task_text_start: task_text_end]
-
-    def logged_out(self, text=None):
-        if text is None:
-            text = self.get_game_page()
-        logged_locator = '<label for="Answer">'
-        return text.find(logged_locator) == -1
