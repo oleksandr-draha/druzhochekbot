@@ -7,7 +7,7 @@ from game.worker import GameWorker
 from telegram.dictionary import PAUSE_MESSAGES, GREETINGS_MESSAGES, LETS_GO_MESSAGES, START_PAUSE_MESSAGES, \
     RESUME_MESSAGES, END_PAUSE_MESSAGES, BYE_MESSAGES, NO_CODE_FOUND_MESSAGES, GIVE_ME_LOGIN, GIVE_ME_PASSWORD, \
     GIVE_ME_HOST, GIVE_ME_GAME, AFFIRMATIVE_MESSAGES, NOT_IN_CHAT_MESSAGES, CONNECTION_PROBLEM_MESSAGES, \
-    CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES
+    CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, TOO_MUCH_ATTEMPTS_MESSAGES, ACCESS_VIOLATION_MESSAGES
 from telegram.driver import TelegramDriver
 
 MAX_ATTEMPTS = 5
@@ -23,6 +23,8 @@ IGNORE_COMMANDS = [PAUSE_COMMAND, CODE_COMMAND]
 
 
 class TelegramWorker:
+    initialize_attempts = 0
+
     def __init__(self):
         self.telegram_driver = TelegramDriver()
         self.telegram_driver.get_updates()
@@ -38,6 +40,20 @@ class TelegramWorker:
 
     def setup_bot(self):
         messages = self.check_new_messages()
+        if self.initialize_attempts == 0:
+            self.telegram_driver.send_message(
+                DRAGA_ID,
+                "<b>-----------------------------------------</b>\r\n\r\n",
+                parse_mode="HTML")
+        if self.initialize_attempts >= MAX_ATTEMPTS:
+            self.stopped = True
+            self.telegram_driver.send_message(
+                DRAGA_ID,
+                TOO_MUCH_ATTEMPTS_MESSAGES)
+            self.telegram_driver.send_message(
+                DRAGA_ID,
+                BYE_MESSAGES)
+            return True
 
         for message in messages:
             message_text = message['message']['text']
@@ -77,6 +93,7 @@ class TelegramWorker:
             self.telegram_driver.send_message(
                 DRAGA_ID,
                 CONNECTION_PROBLEM_MESSAGES)
+            self.initialize_attempts += 1
             return False
         else:
             self.telegram_driver.send_message(
@@ -85,7 +102,9 @@ class TelegramWorker:
             self.telegram_driver.send_message(
                 DRAGA_ID,
                 PLEASE_APPROVE_MESSAGES)
+            self.initialize_attempts = 0
             return True
+
 
     @staticmethod
     def check_answer_from_chat_id(chat_id, messages):
@@ -138,60 +157,80 @@ class TelegramWorker:
             chat_id = message['message']['chat']['id']
 
             # region APPROVE GROUP COMMAND
-            if message_text.startswith(APPROVE_GROUP) and from_id == DRAGA_ID:
-                if chat_id < 0:
-                    self.telegram_driver.answer_message(
-                        message,
-                        AFFIRMATIVE_MESSAGES)
-                    self.game_chat = chat_id
-                    self.paused = False
-                    self.telegram_driver.send_message(
-                        self.game_chat,
-                        LETS_GO_MESSAGES)
+            if message_text.startswith(APPROVE_GROUP):
+                if from_id == DRAGA_ID:
+                    if chat_id < 0:
+                        self.telegram_driver.answer_message(
+                            message,
+                            AFFIRMATIVE_MESSAGES)
+                        self.game_chat = chat_id
+                        self.paused = False
+                        self.telegram_driver.send_message(
+                            self.game_chat,
+                            LETS_GO_MESSAGES)
+                    else:
+                        self.telegram_driver.answer_message(
+                            message,
+                            NOT_IN_CHAT_MESSAGES)
                 else:
                     self.telegram_driver.answer_message(
                         message,
-                        NOT_IN_CHAT_MESSAGES)
+                        ACCESS_VIOLATION_MESSAGES)
             # endregion
 
             # region STOP COMMAND
-            if message_text.startswith(STOP_COMMAND) and from_id == DRAGA_ID:
-                self.telegram_driver.answer_message(
-                    message,
-                    BYE_MESSAGES)
-                self.stopped = True
+            if message_text.startswith(STOP_COMMAND):
+                if from_id == DRAGA_ID:
+                    self.telegram_driver.answer_message(
+                        message,
+                        BYE_MESSAGES)
+                    self.stopped = True
+                else:
+                    self.telegram_driver.answer_message(
+                        message,
+                        ACCESS_VIOLATION_MESSAGES)
             # endregion
 
             # region PAUSE COMMAND
-            if message_text.startswith(PAUSE_COMMAND) and from_id == DRAGA_ID:
-                if not self.paused:
-                    self.pause_messages = 0
+            if message_text.startswith(PAUSE_COMMAND):
+                if from_id == DRAGA_ID:
+                    if not self.paused:
+                        self.pause_messages = 0
+                        self.telegram_driver.answer_message(
+                            message,
+                            START_PAUSE_MESSAGES)
+                        self.paused = True
+                    else:
+                        self.pause_messages += 1
+                        pause_message = PAUSE_MESSAGES[self.pause_messages - 1] \
+                            if len(PAUSE_MESSAGES) > self.pause_messages \
+                            else PAUSE_MESSAGES[-1]
+                        self.telegram_driver.answer_message(message, pause_message)
+                else:
                     self.telegram_driver.answer_message(
                         message,
-                        START_PAUSE_MESSAGES)
-                    self.paused = True
-                else:
-                    self.pause_messages += 1
-                    pause_message = PAUSE_MESSAGES[self.pause_messages - 1] \
-                        if len(PAUSE_MESSAGES) > self.pause_messages \
-                        else PAUSE_MESSAGES[-1]
-                    self.telegram_driver.answer_message(message, pause_message)
+                        ACCESS_VIOLATION_MESSAGES)
             # endregion
 
             # region RESUME COMMAND
-            if message_text.startswith(RESUME_COMMAND) and from_id == DRAGA_ID:
-                if self.paused:
-                    self.resume_messages = 0
+            if message_text.startswith(RESUME_COMMAND):
+                if from_id == DRAGA_ID:
+                    if self.paused:
+                        self.resume_messages = 0
+                        self.telegram_driver.answer_message(
+                            message,
+                            END_PAUSE_MESSAGES)
+                        self.paused = False
+                    else:
+                        self.resume_messages += 1
+                        resume_message = RESUME_MESSAGES[self.resume_messages - 1] \
+                            if len(RESUME_MESSAGES) > self.resume_messages \
+                            else RESUME_MESSAGES[-1]
+                        self.telegram_driver.answer_message(message, resume_message)
+                else:
                     self.telegram_driver.answer_message(
                         message,
-                        END_PAUSE_MESSAGES)
-                    self.paused = False
-                else:
-                    self.resume_messages += 1
-                    resume_message = RESUME_MESSAGES[self.resume_messages - 1] \
-                        if len(RESUME_MESSAGES) > self.resume_messages \
-                        else RESUME_MESSAGES[-1]
-                    self.telegram_driver.answer_message(message, resume_message)
+                        ACCESS_VIOLATION_MESSAGES)
             # endregion
 
             # region CODE COMMAND
@@ -207,6 +246,7 @@ class TelegramWorker:
                     self.telegram_driver.answer_message(message, pause_message)
                     # endregion
 
+    def process_game_tasks(self):
         if not self.paused:
             updates = self.game_worker.check_updates()
             if len(updates) and self.game_chat is not None:

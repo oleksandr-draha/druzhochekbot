@@ -48,11 +48,20 @@ class GameWorker:
             self.last_level_shown = current_level["LevelNumber"]
             self.last_hint_shown = None
             self.last_task_text = task_text
-            updates.append(u"Новый уровень! \r\n {task}".format(task=task_text))
+            updates.append(u'<b>Новый уровень!</b>\r\n'
+                           u'<b>---------------------------</b>\r\n'
+                           u'\r\n'
+                           u' {task}'.format(task=task_text))
         if self.last_hint_shown != max(hints.keys()) or self.last_hint_shown is None:
             self.last_hint_shown = max(hints.keys())
-            updates.append(u"Новая подсказка: \r\n {hint}".format(hint=hints[max(hints.keys())]))
+            updates.append(u'<b>Новая подсказка:</b> \r\n'
+                           u'<b>---------------------------</b>\r\n'
+                           u'\r\n'
+                           u'\r\n {hint}'.format(hint=hints[max(hints.keys())]))
         if self.last_task_text != task_text:
             self.last_task_text = task_text
-            updates.append(u"Задание было изменено! \r\n {task}".format(task=task_text))
+            updates.append(u'<b>Задание было изменено!</b> \r\n'
+                           u'<b>---------------------------</b>\r\n'
+                           u'\r\n'
+                           u'\r\n {task}'.format(task=task_text))
         return self.replace_forbidden_words(updates)

@@ -11,4 +11,5 @@ while not initialized:
 
 while not bot.stopped and initialized is not None:
     bot.process_messages()
+    bot.process_game_tasks()
     sleep(1)
