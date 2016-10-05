@@ -4,6 +4,8 @@ from time import sleep
 from game.driver import GameDriver
 
 # TODO: To config or class attributes?
+from telegram.dictionary import NEW_TASK_MESSAGE, NEW_HINT_MESSAGE, TASK_EDITED_MESSAGE
+
 MAX_ATTEMPTS = 5
 
 REPLACE_DICTIONARY = {'<br/>': "\r\n"}
@@ -13,9 +15,11 @@ class GameWorker:
     last_level_shown = None
     last_hint_shown = None
     last_task_text = None
+    connected = False
 
     def __init__(self):
         self.game_driver = GameDriver()
+        self.connected = self.game_driver.connected
 
     @staticmethod
     def replace_forbidden_words(updates):
@@ -50,21 +54,16 @@ class GameWorker:
             self.last_level_shown = current_level["LevelNumber"]
             self.last_hint_shown = None
             self.last_task_text = task_text
-            updates.append(u'<b>Новый уровень!</b>\r\n'
-                           u'<b>---------------------------</b>\r\n'
-                           u'\r\n'
-                           u' {task}'.format(task=task_text))
+            updates.append(NEW_TASK_MESSAGE.format(
+                level_number=current_level["LevelNumber"],
+                task=task_text))
         # TODO: rewrite to show bunch of hints!
         if self.last_hint_shown != max(hints.keys()) or self.last_hint_shown is None:
             self.last_hint_shown = max(hints.keys())
-            updates.append(u'<b>Новая подсказка:</b> \r\n'
-                           u'<b>---------------------------</b>\r\n'
-                           u'\r\n'
-                           u'\r\n {hint}'.format(hint=hints[max(hints.keys())]))
+            updates.append(NEW_HINT_MESSAGE.format(
+                hint_number=max(hints.keys()),
+                hint=hints[max(hints.keys())]))
         if self.last_task_text != task_text:
             self.last_task_text = task_text
-            updates.append(u'<b>Задание было изменено!</b> \r\n'
-                           u'<b>---------------------------</b>\r\n'
-                           u'\r\n'
-                           u'\r\n {task}'.format(task=task_text))
+            updates.append(TASK_EDITED_MESSAGE.format(task=task_text))
         return self.replace_forbidden_words(updates)

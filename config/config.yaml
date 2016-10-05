@@ -1,0 +1,10 @@
+bot:
+  token: 289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w
+  updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}
+  send-message-path: https://api.telegram.org/bot{key}/sendMessage
+  answer-unknown: True
+game:
+  login: druzhochek
+  password:
+  host: online.quest.ua
+  id: 35727

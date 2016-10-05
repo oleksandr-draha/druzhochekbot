@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-import requests
+from requests import ConnectionError, session
 
-# TODO: to class attributes?
 QUEST_URL = "http://m.{host}/{path}"
 LOGIN_URL = "login/signin/?return=%2f"
 GAME_URL = "gameengines/encounter/play/{game_id}/"
@@ -14,21 +13,29 @@ class GameDriver:
     password = None
     game_id = None
     host = None
+    connected = False
 
     def __init__(self):
-        self.session = requests.session()
-        self.login_user()
-        if self.is_logged():
-            self.set_level_params()
+        self.session = session()
+        try:
+            self.login_user()
+            if self.is_logged():
+                self.connected = True
+                self.set_level_params()
+        except ConnectionError:
+            self.connected = False
 
     def login_user(self):
-        body = {"Login": self.login,
-                "Password": self.password,
-                "SelectedNetworkId": 2}
-        self.session.post(QUEST_URL.format(
-            host=self.host,
-            path=LOGIN_URL),
-            params=body)
+        try:
+            body = {"Login": self.login,
+                    "Password": self.password,
+                    "SelectedNetworkId": 2}
+            return self.session.post(QUEST_URL.format(
+                host=self.host,
+                path=LOGIN_URL),
+                params=body).text
+        except ConnectionError:
+            return ''
 
     def is_logged(self, text=None):
         if text is None:
@@ -37,14 +44,20 @@ class GameDriver:
         return text.find(logged_locator) != -1
 
     def get_game_page(self):
-        return self.session.get(
-            QUEST_URL.format(host=self.host,
-                             path=GAME_URL.format(game_id=self.game_id))).text
+        try:
+            return self.session.get(
+                QUEST_URL.format(host=self.host,
+                                 path=GAME_URL.format(game_id=self.game_id))).text
+        except ConnectionError:
+            return ""
 
     def post_game_page(self, body):
-        return self.session.post(
-            QUEST_URL.format(host=self.host,
-                             path=GAME_URL.format(game_id=self.game_id)), params=body)
+        try:
+            return self.session.post(
+                QUEST_URL.format(host=self.host,
+                                 path=GAME_URL.format(game_id=self.game_id)), params=body)
+        except ConnectionError:
+            return ""
 
     # TODO: to parsers
     def get_level_params(self, text=None):
@@ -54,11 +67,11 @@ class GameDriver:
         level_number_locator = '<input type="hidden" name="LevelNumber" value="'
         level_params_end_locator = '"'
         level_id_start = \
-            text[
-            text.find(level_id_locator) + len(level_id_locator):]
+            text[text.find(level_id_locator) +
+                 len(level_id_locator):]
         level_number_start = \
-            text[
-            text.find(level_number_locator) + len(level_number_locator):]
+            text[text.find(level_number_locator) +
+                 len(level_number_locator):]
         level_id = level_id_start[:level_id_start.index(level_params_end_locator)]
         level_number = level_number_start[:level_number_start.index(level_params_end_locator)]
         return {"LevelId": int(level_id),
@@ -79,8 +92,8 @@ class GameDriver:
                 "LevelNumber": self.level_number,
                 "LevelAction.Answer": code}
         r = self.post_game_page(body=body)
-        if r.text.find(incorrect_code_locator) == -1 and \
-                        r.text.find(correct_code_locator) != -1:
+        if r.text.find(incorrect_code_locator) == -1 \
+                and r.text.find(correct_code_locator) != -1:
             return True
         else:
             return False
@@ -102,9 +115,10 @@ class GameDriver:
             hint_end = hint_start + text[hint_start:].find(hint_number_end_locator)
             hint_number = text[hint_start: hint_end]
             if hint_number.isdigit():
-                hint_text_start = hint_end + \
-                                  text[hint_end:].find(hint_text_start_locator) + \
-                                  len(hint_text_start_locator)
+                hint_text_start = \
+                    hint_end + \
+                    text[hint_end:].find(hint_text_start_locator) + \
+                    len(hint_text_start_locator)
                 hint_text_end = hint_text_start + text[hint_text_start:].find(hint_text_end_locator)
                 hint_text = text[hint_text_start: hint_text_end]
                 hints.setdefault(int(hint_number), hint_text)
@@ -122,9 +136,11 @@ class GameDriver:
         if task_header_start == -1:
             return
         task_header_start += len(task_header_locator)
-        task_text_start = task_header_start + \
-                          text[task_header_start:].find(task_start_locator) + \
-                          len(task_start_locator)
-        task_text_end = task_text_start + \
-                        text[task_text_start:].find(task_end_locator)
+        task_text_start = \
+            task_header_start + \
+            text[task_header_start:].find(task_start_locator) + \
+            len(task_start_locator)
+        task_text_end = \
+            task_text_start + \
+            text[task_text_start:].find(task_end_locator)
         return text[task_text_start: task_text_end]
