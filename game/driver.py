@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+import re
+
 from requests import ConnectionError, session
 
 QUEST_URL = "http://m.{host}/{path}"
 LOGIN_URL = "login/signin/?return=%2f"
 GAME_URL = "gameengines/encounter/play/{game_id}/"
+IMAGES_URL = "http://d1.endata.cx/data/games/{game_id}{image_name}"
 
 
 class GameDriver:
@@ -121,8 +124,10 @@ class GameDriver:
                     len(hint_text_start_locator)
                 hint_text_end = hint_text_start + text[hint_text_start:].find(hint_text_end_locator)
                 hint_text = text[hint_text_start: hint_text_end]
+                hint_text = self.replace_image_texts(hint_text)
                 hints.setdefault(int(hint_number), hint_text)
             hint_start = text[hint_text_end:].find(hint_number_start_locator)
+        # Постоянно шлёт hints NONE!!! -1
         return hints
 
     # TODO: To parsers
@@ -143,4 +148,30 @@ class GameDriver:
         task_text_end = \
             task_text_start + \
             text[task_text_start:].find(task_end_locator)
-        return text[task_text_start: task_text_end]
+        task_text = self.replace_image_texts(text[task_text_start: task_text_end])
+        return task_text
+
+    def replace_image_texts(self, task_text):
+        img_pattern = r'<img src\="\.(.*)">'
+        replace_pattern = '<img src=".{found}">'
+        for image in re.findall(img_pattern, task_text):
+            task_text = task_text.replace(
+                replace_pattern.format(found=image),
+                self.get_image_url(image))
+        img_pattern = r'<img src\="(.*)">'
+        replace_pattern = '<img src="{found}">'
+        for image in re.findall(img_pattern, task_text):
+            task_text = task_text.replace(
+                replace_pattern.format(found=image),
+                image)
+        img_pattern = r'<img src\=(.*)>'
+        replace_pattern = '<img src={found}>'
+        for image in re.findall(img_pattern, task_text):
+            task_text = task_text.replace(
+                replace_pattern.format(found=image),
+                image)
+        return task_text
+
+    def get_image_url(self, img_text):
+        return IMAGES_URL.format(game_id=self.game_id,
+                                 image_name=img_text)
