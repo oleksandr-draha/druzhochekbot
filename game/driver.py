@@ -100,8 +100,14 @@ class GameDriver:
         else:
             return False
 
-    # TODO: To parsers
     def get_all_hints(self, text=None):
+
+        # TODO: To parsers
+        # TODO: Add hints with penalties!
+        # <h3 class="inline">Штрафная подсказка
+        # <div class="spacer"></div>
+        # <h3 class="inline">Штрафная подсказка 1</h3>
+        # <p>абриколь</p>
         if text is None:
             text = self.get_game_page()
         hints = {}
