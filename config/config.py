@@ -35,11 +35,13 @@ class DruzhochekConfig:
 
     @property
     def game_login(self):
-        return self.config.get("game", {}).get("login")
+        login = self.config.get("game", {}).get("login")
+        return base64.decodestring(login) if login is not None else None
 
     @property
     def game_password(self):
-        return self.config.get("game", {}).get("password")
+        password = self.config.get("game", {}).get("password")
+        return  base64.decodestring(password) if password is not None else None
 
     @property
     def game_host(self):
@@ -124,5 +126,17 @@ class DruzhochekConfig:
     @property
     def answer_check_interval(self):
         return self.config.get("timeouts", {}).get("answer_check_interval")
+
+    @property
+    def show_codes_left(self):
+        return [int(i) for i in self.config.get("game", {}).get("show_codes_left").split()]
+
+    @property
+    def show_ap_for_time(self):
+        return self.config.get("game", {}).get("show_time_left_minutes").split()
+
+    @property
+    def show_first_ap_time(self):
+        return self.config.get("game", {}).get("show_first_ap_time")
 
 config = DruzhochekConfig()

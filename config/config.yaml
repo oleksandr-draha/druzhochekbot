@@ -18,10 +18,13 @@ bot:
     info: /info
     help: /help
 game:
-  login: druzhochek
-  password: Yo89kaT7
+  login: ZHJ1emhvY2hlaw==
+  password: WW84OWthVDc=
   host: dn.quest.ua
   id: 23723
+  show_time_left_minutes: 1 5 10
+  show_first_ap_time: True
+  show_codes_left: 1 2 3 10
 timeouts:
   max_attempts: 5
   message_check_interval: 1

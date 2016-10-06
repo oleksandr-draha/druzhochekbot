@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+
 from requests import ConnectionError, session
 import html2text
 
@@ -139,10 +141,11 @@ class GameDriver:
         if text is None:
             text = self.get_game_page()
         task_header_locator = u'<h3>Задание</h3>'
+        another_task_header_locator = u'<h2>Уровень <span>'
         task_start_locator = u'<p>'
         task_end_locator = u'</p>'
         task_header_start = text.find(task_header_locator)
-        if task_header_start == -1:
+        if task_header_start == -1 and text.find(another_task_header_locator)==-1:
             return
         task_header_start += len(task_header_locator)
         task_text_start = \
@@ -155,3 +158,25 @@ class GameDriver:
         # task_text = self.replace_image_texts(text[task_text_start: task_text_end])
         task_text = html2text.html2text(text[task_text_start: task_text_end])
         return task_text
+
+    def get_ap_text(self, text):
+        if text is None:
+            text = self.get_game_page()
+        ap_locator = '<h3 class="timer">'
+        ap_end_locator = '</h3>'
+        ap_start = text.find(ap_locator)
+        if ap_start != -1:
+            ap_start += len(ap_locator)
+            ap_end = ap_start + text[ap_start:].find(ap_end_locator)
+            return html2text.html2text(text[ap_start: ap_end])
+
+    def get_codes_left_text(self, text):
+        if text is None:
+            text = self.get_game_page()
+        codes_left_locator = u'осталось закрыть'
+        codes_left_end_locator = u')</span>'
+        codes_left_start = text.find(codes_left_locator)
+        if codes_left_start != -1:
+            codes_left_start += len(codes_left_locator)
+            codes_left_end = codes_left_start + text[codes_left_start:].find(codes_left_end_locator)
+            return int(html2text.html2text(text[codes_left_start: codes_left_end]))

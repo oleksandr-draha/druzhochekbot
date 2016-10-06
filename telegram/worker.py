@@ -436,6 +436,8 @@ class TelegramWorker:
         self.game_worker.last_level_shown = None
         self.game_worker.last_hint_shown = None
         self.game_worker.hints_shown = []
+        self.game_worker.ap_time_shown = []
+        self.game_worker.codes_left_shown = []
         self.telegram_driver.answer_message(message,
                                             RESET_MESSAGE)
 

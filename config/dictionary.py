@@ -81,11 +81,11 @@ PAUSED_STATUS_MESSAGES = {False: u"Активный",
 GAME_CONNECTION_MESSAGES = {True: u"Активно",
                             False: u"Ошибка"}
 
-NEW_TASK_MESSAGE = [u'<b>Новый уровень!</b>\r\n'
-                    u'<b>---------------------------</b>\r\n',
-                    u'<b>Задание {level_number}</b>\r\n'
-                    u'<b>---------------------------</b>\r\n',
-                    u'\r\n{task}']
+NEW_TASK_MESSAGE = u'<b>Новый уровень!</b>\r\n'\
+                    u'<b>---------------------------</b>\r\n'\
+                    u'<b>Задание {level_number}</b>\r\n'\
+                    u'<b>---------------------------</b>\r\n'\
+                    u'\r\n{task}'
 NEW_HINT_MESSAGE = u'<b>Новая подсказка!</b> \r\n' \
                    u'<b>---------------------------</b>\r\n' \
                    u'<b>Подсказка {hint_number}</b>\r\n' \
@@ -96,6 +96,8 @@ TASK_EDITED_MESSAGE = u'<b>Задание было изменено!</b> \r\n' \
                       u'<b>---------------------------</b>\r\n' \
                       u'\r\n' \
                       u'\r\n {task}'
+
+CODES_LEFT_TEXT = u'<b>Осталось {codes} кодов!</b>'
 
 HELP_MESSAGE = u"""
 {code}: Вбить код целиком. Пример: {code} один длинный код
