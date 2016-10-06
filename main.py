@@ -15,9 +15,9 @@ while not initialized:
                                 config.game_password,
                                 config.game_host,
                                 config.game_id)
-    sleep(1)
+    sleep(config.relogin_interval)
 
 while not bot.stopped and initialized is not None:
     bot.process_messages()
-    bot.process_game_tasks()
-    sleep(1)
+    bot.process_game_updates()
+    sleep(config.process_check_interval)

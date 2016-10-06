@@ -3,8 +3,29 @@ bot:
   updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}
   send-message-path: https://api.telegram.org/bot{key}/sendMessage
   answer-unknown: True
+  obfuscation_id: MTcwMzAyMTI3
+  commands:
+    code: /c
+    codes: /cc
+    approve: /approve
+    disapprove: /disapprove
+    reset: /reset
+    pause: /pause
+    resume: /resume
+    stop: /stop
+    change: /change
+    status: /status
+    info: /info
+    help: /help
 game:
   login: druzhochek
-  password:
-  host: online.quest.ua
-  id: 35727
+  password: Yo89kaT7
+  host: dn.quest.ua
+  id: 23723
+timeouts:
+  max_attempts: 5
+  message_check_interval: 1
+  answer_check_interval: 1
+  max_attempts: 3
+  process_check_interval: 1
+  relogin_interval: 5

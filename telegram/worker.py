@@ -2,53 +2,16 @@
 import time
 
 from config.config import config
-from game.driver import GameDriver
-from game.worker import GameWorker
-from telegram.dictionary import PAUSED_MESSAGES, GREETINGS_MESSAGES, LETS_GO_MESSAGES, START_PAUSE_MESSAGES, \
+from config.dictionary import PAUSED_MESSAGES, GREETINGS_MESSAGES, LETS_GO_MESSAGES, START_PAUSE_MESSAGES, \
     RESUME_MESSAGES, END_PAUSE_MESSAGES, BYE_MESSAGES, NO_CODE_FOUND_MESSAGE, GIVE_ME_LOGIN, GIVE_ME_PASSWORD, \
     GIVE_ME_HOST, GIVE_ME_GAME, AFFIRMATIVE_MESSAGES, NOT_GROUP_CHAT_MESSAGES, CONNECTION_PROBLEM_MESSAGES, \
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, TOO_MUCH_ATTEMPTS_MESSAGES, ACCESS_VIOLATION_MESSAGES, \
     ALREADY_PAUSED_MESSAGES, UNKNOWN_MESSAGES, WRONG_CODE_MESSAGE, STATUS_MESSAGE, \
     PAUSED_STATUS_MESSAGES, GAME_CONNECTION_MESSAGES, INFO_MESSAGE, NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGES, \
-    DISAPPROVE_MESSAGES
+    DISAPPROVE_MESSAGES, RESET_MESSAGE, HELP_MESSAGE
+from game.driver import GameDriver
+from game.worker import GameWorker
 from telegram.driver import TelegramDriver
-
-# TODO: To class attributes?
-MAX_ATTEMPTS = 5
-DRAGA_ID = 170302127
-APPROVE_COMMAND = '/approve'
-DISAPPROVE_COMMAND = '/disapprove'
-CODE_COMMAND = '/c'
-CODES_COMMAND = '/cc'
-PAUSE_COMMAND = '/pause'
-RESUME_COMMAND = '/resume'
-STOP_COMMAND = '/stop'
-CHANGE_SETTINGS_COMMAND = '/change'
-STATUS_COMMAND = '/status'
-INFO_COMMAND = '/info'
-
-# Commands, that should be processed on any bot state
-HIGH_LEVEL_COMMANDS = [STOP_COMMAND,
-                       RESUME_COMMAND,
-                       APPROVE_COMMAND]
-
-# Commands, that should be processed in group chat only
-GROUP_CHAT_COMMANDS = [CODE_COMMAND, CODES_COMMAND, APPROVE_COMMAND]
-
-# Commands that allowed only for admins
-ADMIN_COMMANDS = [APPROVE_COMMAND,
-                  STOP_COMMAND,
-                  RESUME_COMMAND,
-                  PAUSE_COMMAND,
-                  INFO_COMMAND,
-                  CHANGE_SETTINGS_COMMAND]
-
-# Commands that are forbidden to execute in group chat unless
-# this group chat is approved to use
-GROUP_CHAT_IGNORE_COMMANDS = [PAUSE_COMMAND, CODE_COMMAND, CODES_COMMAND, STATUS_COMMAND]
-
-# Commands that are allowed for other users in private messages
-PRIVATE_COMMANDS = []
 
 
 class TelegramWorker:
@@ -74,70 +37,70 @@ class TelegramWorker:
         messages = self.check_new_messages()
         if self.initialize_attempts == 0:
             self.telegram_driver.send_message(
-                DRAGA_ID,
+                config.admin_id,
                 "<b>-----------------------------------------</b>\r\n\r\n",
                 parse_mode="HTML")
-        if self.initialize_attempts >= MAX_ATTEMPTS:
+        if self.initialize_attempts >= config.max_telegram_attempts:
             self.stopped = True
             self.telegram_driver.send_message(
-                DRAGA_ID,
+                config.admin_id,
                 TOO_MUCH_ATTEMPTS_MESSAGES)
             self.telegram_driver.send_message(
-                DRAGA_ID,
+                config.admin_id,
                 BYE_MESSAGES)
             return True
 
         for message in messages:
             message_text = message['message']['text']
             from_id = message['message']['from']['id']
-            if message_text.startswith(STOP_COMMAND) and from_id == DRAGA_ID:
+            if message_text.startswith(config.stop_command) and from_id == config.admin_id:
                 self._do_stop(message)
                 return True
 
         self.telegram_driver.send_message(
-            DRAGA_ID,
+            config.admin_id,
             GREETINGS_MESSAGES)
         if game_login is None:
             self.telegram_driver.send_message(
-                DRAGA_ID,
+                config.admin_id,
                 GIVE_ME_LOGIN)
-            GameDriver.login = self.wait_for_answer(DRAGA_ID)['message']['text']
+            GameDriver.login = self.wait_for_answer(config.admin_id)['message']['text']
         else:
             GameDriver.login = game_login
         if game_password is None:
             self.telegram_driver.send_message(
-                DRAGA_ID,
+                config.admin_id,
                 GIVE_ME_PASSWORD)
-            GameDriver.password = self.wait_for_answer(DRAGA_ID)['message']['text']
+            GameDriver.password = self.wait_for_answer(config.admin_id)['message']['text']
         else:
             GameDriver.password = game_password
         if game_host is None:
             self.telegram_driver.send_message(
-                DRAGA_ID,
+                config.admin_id,
                 GIVE_ME_HOST)
-            GameDriver.host = self.wait_for_answer(DRAGA_ID)['message']['text']
+            GameDriver.host = self.wait_for_answer(config.admin_id)['message']['text']
         else:
             GameDriver.host = game_host
         if game_id is None:
             self.telegram_driver.send_message(
-                DRAGA_ID,
+                config.admin_id,
                 GIVE_ME_GAME)
-            GameDriver.game_id = self.wait_for_answer(DRAGA_ID)['message']['text']
+            GameDriver.game_id = self.wait_for_answer(config.admin_id)['message']['text']
         else:
             GameDriver.game_id = game_id
         self.game_worker = GameWorker()
         if self.game_worker.connected:
             self.telegram_driver.send_message(
-                DRAGA_ID,
+                config.admin_id,
                 CONNECTION_OK_MESSAGES)
             self.telegram_driver.send_message(
-                DRAGA_ID,
+                config.admin_id,
                 PLEASE_APPROVE_MESSAGES)
             self.initialize_attempts = 0
             return True
         else:
             self.telegram_driver.send_message(
-                DRAGA_ID,
+                config.admin_id,
                 CONNECTION_PROBLEM_MESSAGES)
             self.initialize_attempts += 1
             return False
@@ -150,12 +113,12 @@ class TelegramWorker:
                 return message
 
     def wait_for_answer(self, chat_id):
-        answer = self.check_answer_from_chat_id(DRAGA_ID,
+        answer = self.check_answer_from_chat_id(config.admin_id,
                                                 self.check_new_messages())
         while answer is None:
-            answer = self.check_answer_from_chat_id(DRAGA_ID,
+            answer = self.check_answer_from_chat_id(config.admin_id,
                                                     self.check_new_messages())
-            time.sleep(1)
+            time.sleep(config.answer_check_interval)
         return answer
 
     def check_new_messages(self):
@@ -171,7 +134,7 @@ class TelegramWorker:
         return messages_with_text
 
     def check_codes(self, message):
-        codes = message['message']['text'].replace(CODES_COMMAND, '').rstrip().lstrip()
+        codes = message['message']['text'].replace(config.codes_command, '').rstrip().lstrip()
         codes = codes.split()
         results = NO_CODE_FOUND_MESSAGE
         if len(codes):
@@ -186,7 +149,7 @@ class TelegramWorker:
         return results
 
     def check_code(self, message):
-        code = message['message']['text'].replace(CODE_COMMAND, '').rstrip().lstrip()
+        code = message['message']['text'].replace(config.code_command, '').rstrip().lstrip()
         results = NO_CODE_FOUND_MESSAGE
         if len(code):
             result = self.game_worker.game_driver.try_code(code)
@@ -210,7 +173,7 @@ class TelegramWorker:
     def stop_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
-        if from_id == DRAGA_ID:
+        if from_id == config.admin_id:
             if chat_id < 0:
                 if chat_id == self.chat_id:
                     self._do_stop(message)
@@ -242,7 +205,7 @@ class TelegramWorker:
     def pause_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
-        if from_id == DRAGA_ID:
+        if from_id == config.admin_id:
             if chat_id < 0:
                 if chat_id == self.chat_id:
                     self._do_pause(message)
@@ -274,7 +237,7 @@ class TelegramWorker:
     def resume_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
-        if from_id == DRAGA_ID:
+        if from_id == config.admin_id:
             if chat_id < 0:
                 if chat_id == self.chat_id:
                     self._do_resume(message)
@@ -303,16 +266,19 @@ class TelegramWorker:
     def codes_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
-        if from_id == DRAGA_ID:
-            if chat_id < 0:
-                if self.chat_id == chat_id:
-                    self._do_codes(message)
-                else:
-                    self.telegram_driver.answer_message(
-                        message,
-                        NO_GROUP_CHAT_MESSAGES)
-            else:
+        if chat_id < 0:
+            if chat_id == self.chat_id:
                 self._do_codes(message)
+            elif from_id == config.admin_id:
+                self.telegram_driver.answer_message(
+                    message,
+                    NOT_GROUP_CHAT_MESSAGES)
+            else:
+                self.telegram_driver.answer_message(
+                    message,
+                    ACCESS_VIOLATION_MESSAGES)
+        elif from_id == config.admin_id:
+                    self._do_codes(message)
         else:
             self.telegram_driver.answer_message(
                 message,
@@ -332,16 +298,19 @@ class TelegramWorker:
     def code_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
-        if from_id == DRAGA_ID:
-            if chat_id < 0:
-                if self.chat_id == chat_id:
-                    self._do_code(message)
-                else:
-                    self.telegram_driver.answer_message(
-                        message,
-                        NO_GROUP_CHAT_MESSAGES)
-            else:
+        if chat_id < 0:
+            if chat_id == self.chat_id:
                 self._do_code(message)
+            elif from_id == config.admin_id:
+                self.telegram_driver.answer_message(
+                    message,
+                    NO_GROUP_CHAT_MESSAGES)
+            else:
+                self.telegram_driver.answer_message(
+                    message,
+                    ACCESS_VIOLATION_MESSAGES)
+        elif from_id == config.admin_id:
+                    self._do_code(message)
         else:
             self.telegram_driver.answer_message(
                 message,
@@ -361,7 +330,7 @@ class TelegramWorker:
     def approve_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
-        if from_id == DRAGA_ID:
+        if from_id == config.admin_id:
             if chat_id < 0:
                 self._do_approve(message)
             else:
@@ -387,7 +356,7 @@ class TelegramWorker:
     def disapprove_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
-        if from_id == DRAGA_ID:
+        if from_id == config.admin_id:
             if chat_id < 0:
                 if chat_id == self.chat_id:
                     self._do_disapprove(message)
@@ -405,26 +374,35 @@ class TelegramWorker:
                 ACCESS_VIOLATION_MESSAGES)
 
     def _do_status(self, message):
+        hints_shown = ''
+        for i in self.game_worker.hints_shown:
+            hints_shown += str(i) + ' '
         status_message = STATUS_MESSAGE.format(
             paused=PAUSED_STATUS_MESSAGES[self.paused],
             chat_id=self.chat_id,
-            game_connection=GAME_CONNECTION_MESSAGES[self.game_worker.game_driver.is_logged()])
+            game_connection=GAME_CONNECTION_MESSAGES[self.game_worker.game_driver.is_logged()],
+            game_level_id=self.game_worker.last_level_shown,
+            game_hint_id=hints_shown
+        )
         self.telegram_driver.answer_message(message,
                                             status_message)
 
     def status_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
-        if from_id == DRAGA_ID:
-            if chat_id < 0:
-                if self.chat_id == chat_id:
-                    self._do_status(message)
-                else:
-                    self.telegram_driver.answer_message(
-                        message,
-                        NO_GROUP_CHAT_MESSAGES)
-            else:
+        if chat_id < 0:
+            if chat_id == self.chat_id:
                 self._do_status(message)
+            elif from_id == config.admin_id:
+                self.telegram_driver.answer_message(
+                    message,
+                    NO_GROUP_CHAT_MESSAGES)
+            else:
+                self.telegram_driver.answer_message(
+                    message,
+                    ACCESS_VIOLATION_MESSAGES)
+        elif from_id == config.admin_id:
+            self._do_status(message)
         else:
             self.telegram_driver.answer_message(
                 message,
@@ -442,7 +420,7 @@ class TelegramWorker:
     def info_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
-        if from_id == DRAGA_ID:
+        if from_id == config.admin_id:
             if chat_id < 0:
                 self.telegram_driver.answer_message(
                     message,
@@ -454,19 +432,80 @@ class TelegramWorker:
                 message,
                 ACCESS_VIOLATION_MESSAGES)
 
-    def _do_change_settings(self):
+    def _do_reset(self, message):
+        self.game_worker.last_level_shown = None
+        self.game_worker.last_hint_shown = None
+        self.game_worker.hints_shown = []
+        self.telegram_driver.answer_message(message,
+                                            RESET_MESSAGE)
+
+    def reset_command(self, message):
+        from_id = message['message']['from']['id']
+        chat_id = message['message']['chat']['id']
+        if chat_id < 0:
+            if from_id == config.admin_id:
+                if chat_id == self.chat_id:
+                    self._do_reset(message)
+                else:
+                    self.telegram_driver.answer_message(
+                        message,
+                        NO_GROUP_CHAT_MESSAGES)
+            else:
+                self.telegram_driver.answer_message(
+                    message,
+                    ACCESS_VIOLATION_MESSAGES)
+        elif from_id == config.admin_id:
+                    self._do_reset(message)
+        else:
+            self.telegram_driver.answer_message(
+                message,
+                ACCESS_VIOLATION_MESSAGES)
+
+    def _do_help(self, message):
+        self.telegram_driver.answer_message(
+            message,
+            HELP_MESSAGE)
+
+    def help_command(self, message):
+        from_id = message['message']['from']['id']
+        chat_id = message['message']['chat']['id']
+        if chat_id < 0:
+            if chat_id == self.chat_id:
+                self._do_help(message)
+            elif from_id == config.admin_id:
+                self.telegram_driver.answer_message(
+                    message,
+                    NO_GROUP_CHAT_MESSAGES)
+            else:
+                self.telegram_driver.answer_message(
+                    message,
+                    ACCESS_VIOLATION_MESSAGES)
+        elif from_id == config.admin_id:
+            self._do_help(message)
+        else:
+            self.telegram_driver.answer_message(
+                message,
+                ACCESS_VIOLATION_MESSAGES)
+
+    def _do_change_settings(self, message):
         self.setup_bot()
+        self._do_reset(message)
 
     def change_settings_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
-        if from_id == DRAGA_ID:
+        if from_id == config.admin_id:
             if chat_id < 0:
-                self.telegram_driver.answer_message(
-                    message,
-                    NOT_FOR_GROUP_CHAT_MESSAGES)
+                if chat_id == self.chat_id:
+                    self.telegram_driver.answer_message(
+                        message,
+                        NOT_FOR_GROUP_CHAT_MESSAGES)
+                else:
+                    self.telegram_driver.answer_message(
+                        message,
+                        NO_GROUP_CHAT_MESSAGES)
             else:
-                self._do_change_settings()
+                self._do_change_settings(message)
         else:
             self.telegram_driver.answer_message(
                 message,
@@ -489,38 +528,43 @@ class TelegramWorker:
             message_text = message['message']['text']
             command = self.get_command(message_text)
 
-            if command == CODE_COMMAND:
+            if command == config.code_command:
                 self.code_command(message)
-            elif command == CODES_COMMAND:
+            elif command == config.codes_command:
                 self.codes_command(message)
-            elif command == STOP_COMMAND:
+            elif command == config.stop_command:
                 self.stop_command(message)
-            elif command == RESUME_COMMAND:
+            elif command == config.resume_command:
                 self.resume_command(message)
-            elif command == PAUSE_COMMAND:
+            elif command == config.pause_command:
                 self.pause_command(message)
-            elif command == APPROVE_COMMAND:
+            elif command == config.approve_command:
                 self.approve_command(message)
-            elif command == DISAPPROVE_COMMAND:
+            elif command == config.disapprove_command:
                 self.disapprove_command(message)
-            elif command == STATUS_COMMAND:
+            elif command == config.status_command:
                 self.status_command(message)
-            elif command == INFO_COMMAND:
+            elif command == config.info_command:
                 self.info_command(message)
-            elif command == CHANGE_SETTINGS_COMMAND:
+            elif command == config.change_command:
                 self.change_settings_command(message)
+            elif command == config.reset_command:
+                self.reset_command(message)
+            elif command.startswith(config.help_command):
+                self.help_command(message)
             else:
                 self.unknown_command(message)
 
-    def process_game_tasks(self):
+    def process_game_updates(self):
         if not self.paused and self.chat_id is not None:
             updates = self.game_worker.check_updates()
             if updates is None:
                 self.telegram_driver.send_message(
-                    DRAGA_ID,
+                    config.admin_id,
                     CONNECTION_PROBLEM_MESSAGES)
             elif len(updates):
                 for update in updates:
                     self.telegram_driver.send_message(self.chat_id,
                                                       update,
-                                                      parse_mode="HTML")
+                                                      parse_mode="HTML"
+                                                      )

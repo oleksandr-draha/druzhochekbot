@@ -1,3 +1,4 @@
+import base64
 from os import path
 
 import yaml
@@ -48,5 +49,80 @@ class DruzhochekConfig:
     def game_id(self):
         return self.config.get("game", {}).get("id")
 
+    @property
+    def code_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("code")
+
+    @property
+    def codes_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("codes")
+
+    @property
+    def approve_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("approve")
+
+    @property
+    def disapprove_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("disapprove")
+
+    @property
+    def reset_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("reset")
+
+    @property
+    def pause_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("pause")
+
+    @property
+    def resume_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("resume")
+
+    @property
+    def stop_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("stop")
+
+    @property
+    def change_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("change")
+
+    @property
+    def status_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("status")
+
+    @property
+    def info_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("info")
+
+    @property
+    def help_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("help")
+
+    @property
+    def admin_id(self):
+        return int(base64.decodestring(self.config.get("bot", {}).get("obfuscation_id")))
+
+    @property
+    def max_telegram_attempts(self):
+        return self.config.get("timeouts", {}).get("max_attempts")
+
+    @property
+    def max_game_attempts(self):
+        return self.config.get("timeouts", {}).get("max_attempts")
+
+    @property
+    def process_check_interval(self):
+        return self.config.get("timeouts", {}).get("process_check_interval")
+
+    @property
+    def relogin_interval(self):
+        return self.config.get("timeouts", {}).get("relogin_interval")
+
+    @property
+    def message_check_interval(self):
+        return self.config.get("timeouts", {}).get("message_check_interval")
+
+    @property
+    def answer_check_interval(self):
+        return self.config.get("timeouts", {}).get("answer_check_interval")
 
 config = DruzhochekConfig()

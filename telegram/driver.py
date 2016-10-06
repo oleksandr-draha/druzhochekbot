@@ -41,7 +41,8 @@ class TelegramDriver:
         except ConnectionError:
             return
 
-    def answer_message(self, message, text):
+    def answer_message(self, message, text, parse_mode="Markdown"):
         self.send_message(message['message']['chat']['id'],
                           text,
-                          reply_to=message['message']['message_id'])
+                          reply_to=message['message']['message_id'],
+                          parse_mode=parse_mode)
