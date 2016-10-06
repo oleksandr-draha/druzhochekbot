@@ -5,8 +5,8 @@ bot:
   answer-unknown: True
   obfuscation_id: MTcwMzAyMTI3
   commands:
-    code: /c
-    codes: /cc
+    code: /c /с
+    codes: /cc /сс /сc /cс
     approve: /approve
     disapprove: /disapprove
     reset: /reset

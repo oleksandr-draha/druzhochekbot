@@ -528,9 +528,9 @@ class TelegramWorker:
             message_text = message['message']['text']
             command = self.get_command(message_text)
 
-            if command == config.code_command:
+            if command in config.code_command:
                 self.code_command(message)
-            elif command == config.codes_command:
+            elif command in config.codes_command:
                 self.codes_command(message)
             elif command == config.stop_command:
                 self.stop_command(message)

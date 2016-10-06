@@ -51,11 +51,11 @@ class DruzhochekConfig:
 
     @property
     def code_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("code")
+        return self.config.get("bot", {}).get("commands", {}).get("code").split()
 
     @property
     def codes_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("codes")
+        return self.config.get("bot", {}).get("commands", {}).get("codes").split()
 
     @property
     def approve_command(self):
