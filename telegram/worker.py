@@ -133,8 +133,8 @@ class TelegramWorker:
                 messages_with_text.append(message)
         return messages_with_text
 
-    def check_codes(self, message):
-        codes = message['message']['text'].replace(config.codes_command, '').rstrip().lstrip()
+    def check_codes(self, message, command):
+        codes = message['message']['text'].replace(command, '').rstrip().lstrip()
         codes = codes.split()
         results = NO_CODE_FOUND_MESSAGE
         if len(codes):
@@ -148,8 +148,8 @@ class TelegramWorker:
                                                              wrong=WRONG_CODE_MESSAGE)
         return results
 
-    def check_code(self, message):
-        code = message['message']['text'].replace(config.code_command, '').rstrip().lstrip()
+    def check_code(self, message, command):
+        code = message['message']['text'].replace(command, '').rstrip().lstrip()
         results = NO_CODE_FOUND_MESSAGE
         if len(code):
             result = self.game_worker.game_driver.try_code(code)
@@ -252,9 +252,9 @@ class TelegramWorker:
                 message,
                 ACCESS_VIOLATION_MESSAGES)
 
-    def _do_codes(self, message):
+    def _do_codes(self, message, command):
         if not self.paused:
-            result = self.check_codes(message)
+            result = self.check_codes(message, command)
             self.telegram_driver.answer_message(message, result)
         else:
             self.pause_messages += 1
@@ -263,12 +263,12 @@ class TelegramWorker:
                 else PAUSED_MESSAGES[-1]
             self.telegram_driver.answer_message(message, pause_message)
 
-    def codes_command(self, message):
+    def codes_command(self, message, command):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
         if chat_id < 0:
             if chat_id == self.chat_id:
-                self._do_codes(message)
+                self._do_codes(message, command)
             elif from_id == config.admin_id:
                 self.telegram_driver.answer_message(
                     message,
@@ -278,15 +278,15 @@ class TelegramWorker:
                     message,
                     ACCESS_VIOLATION_MESSAGES)
         elif from_id == config.admin_id:
-                    self._do_codes(message)
+                    self._do_codes(message, command)
         else:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
 
-    def _do_code(self, message):
+    def _do_code(self, message, command):
         if not self.paused:
-            result = self.check_code(message)
+            result = self.check_code(message, command)
             self.telegram_driver.answer_message(message, result)
         else:
             self.pause_messages += 1
@@ -295,12 +295,12 @@ class TelegramWorker:
                 else PAUSED_MESSAGES[-1]
             self.telegram_driver.answer_message(message, pause_message)
 
-    def code_command(self, message):
+    def code_command(self, message, command):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
         if chat_id < 0:
             if chat_id == self.chat_id:
-                self._do_code(message)
+                self._do_code(message, command)
             elif from_id == config.admin_id:
                 self.telegram_driver.answer_message(
                     message,
@@ -310,7 +310,7 @@ class TelegramWorker:
                     message,
                     ACCESS_VIOLATION_MESSAGES)
         elif from_id == config.admin_id:
-                    self._do_code(message)
+                    self._do_code(message, command)
         else:
             self.telegram_driver.answer_message(
                 message,
@@ -529,9 +529,9 @@ class TelegramWorker:
             command = self.get_command(message_text)
 
             if command in config.code_command:
-                self.code_command(message)
+                self.code_command(message, command)
             elif command in config.codes_command:
-                self.codes_command(message)
+                self.codes_command(message, command)
             elif command == config.stop_command:
                 self.stop_command(message)
             elif command == config.resume_command:
