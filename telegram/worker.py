@@ -487,11 +487,11 @@ class TelegramWorker:
                 message,
                 ACCESS_VIOLATION_MESSAGES)
 
-    def _do_change_settings(self, message):
+    def _do_edit_settings(self, message):
         self.setup_bot()
         self._do_reset(message)
 
-    def change_settings_command(self, message):
+    def edit_settings_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
         if from_id == config.admin_id:
@@ -505,7 +505,7 @@ class TelegramWorker:
                         message,
                         NO_GROUP_CHAT_MESSAGES)
             else:
-                self._do_change_settings(message)
+                self._do_edit_settings(message)
         else:
             self.telegram_driver.answer_message(
                 message,
@@ -546,8 +546,8 @@ class TelegramWorker:
                 self.status_command(message)
             elif command == config.info_command:
                 self.info_command(message)
-            elif command == config.change_command:
-                self.change_settings_command(message)
+            elif command == config.edit_command:
+                self.edit_settings_command(message)
             elif command == config.reset_command:
                 self.reset_command(message)
             elif command.startswith(config.help_command):

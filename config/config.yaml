@@ -13,7 +13,7 @@ bot:
     pause: /pause
     resume: /resume
     stop: /stop
-    change: /change
+    edit: /edit
     status: /status
     info: /info
     help: /help

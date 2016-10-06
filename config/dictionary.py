@@ -102,7 +102,7 @@ HELP_MESSAGE = u"""
 {codes}: Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
 {approve}: Добавить чат в список доверенных
 {disapprove}: Удалить чат из списка доверенных
-{change}: Изменить текущие настройки бота
+{edit}: Изменить текущие настройки бота
 {reset}: Сбросить состояние бота в изначальное
 {pause}: Прекратить отслеживание заданий и вбитие кодов
 {resume}: Возобновить отслеживание заданий и вбитие кодов
@@ -114,7 +114,7 @@ HELP_MESSAGE = u"""
     codes=config.codes_command,
     approve=config.approve_command,
     disapprove=config.disapprove_command,
-    change=config.change_command,
+    edit=config.edit_command,
     reset=config.reset_command,
     pause=config.pause_command,
     stop=config.stop_command,

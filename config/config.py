@@ -82,8 +82,8 @@ class DruzhochekConfig:
         return self.config.get("bot", {}).get("commands", {}).get("stop")
 
     @property
-    def change_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("change")
+    def edit_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("edit")
 
     @property
     def status_command(self):
