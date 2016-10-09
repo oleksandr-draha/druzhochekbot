@@ -1,34 +1,17 @@
 bot:
+  answer-unknown: true
+  commands: {approve: /approve, code: "/c /\u0441", codes: "/cc /\u0441\u0441 /\u0441\
+      c /c\u0441", disapprove: /disapprove, edit: /edit, help: /help, info: /info,
+    pause: /pause, reset: /reset, resume: /resume, save: /save, status: /status, stop: /stop}
+  obfuscation_id: MTcwMzAyMTI3
+  send-message-path: https://api.telegram.org/bot{key}/sendMessage
   token: 289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w
   updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}
-  send-message-path: https://api.telegram.org/bot{key}/sendMessage
-  answer-unknown: True
-  obfuscation_id: MTcwMzAyMTI3
-  commands:
-    code: /c /с
-    codes: /cc /сс /сc /cс
-    approve: /approve
-    disapprove: /disapprove
-    reset: /reset
-    pause: /pause
-    resume: /resume
-    stop: /stop
-    edit: /edit
-    status: /status
-    info: /info
-    help: /help
-game:
-  login: ZHJ1emhvY2hlaw==
-  password: WW84OWthVDc=
-  host: dn.quest.ua
-  id: 23723
-  show_time_left_minutes: 1 5 10
-  show_first_ap_time: True
-  show_codes_left: 1 2 3 10
-timeouts:
-  max_attempts: 5
-  message_check_interval: 1
-  answer_check_interval: 1
-  max_attempts: 3
-  process_check_interval: 1
-  relogin_interval: 5
+game: {host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723', login: 'ZHJ1emhvY2hlaw==
+
+    ', password: 'WW84OWthVDc=
+
+    ', show_codes_left: 1 2 3 10, show_first_ap_time: true, show_time_left_minutes: 1
+    5 10}
+timeouts: {answer_check_interval: 1, max_attempts: 3, message_check_interval: 1, process_check_interval: 1,
+  relogin_interval: 5}

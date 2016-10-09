@@ -4,7 +4,7 @@ from os import path
 import yaml
 
 
-class DruzhochekConfig:
+class DruzhochekConfig(object):
     config = None
 
     def _load_config(self):
@@ -13,6 +13,13 @@ class DruzhochekConfig:
         with open(config_path, 'r') as default_config:
             _config = yaml.load(default_config)
         return _config
+
+    def save_config(self):
+        default_config_name = 'config.yaml'
+        config_path = path.join(path.dirname(__file__), default_config_name)
+        with open(config_path, 'w') as default_config:
+            yaml.dump(self.config, default_config)
+        return True
 
     def __init__(self):
         self.config = self._load_config()
@@ -38,18 +45,34 @@ class DruzhochekConfig:
         login = self.config.get("game", {}).get("login")
         return base64.decodestring(login) if login is not None else None
 
+    @game_login.setter
+    def game_login(self, value):
+        self.config["game"]["login"] = base64.encodestring(value)
+
     @property
     def game_password(self):
         password = self.config.get("game", {}).get("password")
-        return  base64.decodestring(password) if password is not None else None
+        return base64.decodestring(password) if password is not None else None
+
+    @game_password.setter
+    def game_password(self, value):
+        self.config["game"]["password"] = base64.encodestring(value)
 
     @property
     def game_host(self):
         return self.config.get("game", {}).get("host")
 
+    @game_host.setter
+    def game_host(self, value):
+        self.config["game"]["host"] = value
+
     @property
     def game_id(self):
         return self.config.get("game", {}).get("id")
+
+    @game_id.setter
+    def game_id(self, value):
+        self.config["game"]["id"] = value
 
     @property
     def code_command(self):
@@ -88,6 +111,10 @@ class DruzhochekConfig:
         return self.config.get("bot", {}).get("commands", {}).get("edit")
 
     @property
+    def save_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("save")
+
+    @property
     def status_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("status")
 
@@ -100,8 +127,9 @@ class DruzhochekConfig:
         return self.config.get("bot", {}).get("commands", {}).get("help")
 
     @property
-    def admin_id(self):
-        return int(base64.decodestring(self.config.get("bot", {}).get("obfuscation_id")))
+    def admin_ids(self):
+        encoded = self.config.get("bot", {}).get("obfuscation_id").split()
+        return [int(base64.decodestring(password)) for password in encoded]
 
     @property
     def max_telegram_attempts(self):

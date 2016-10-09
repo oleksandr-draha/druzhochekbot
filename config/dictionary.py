@@ -48,7 +48,11 @@ GIVE_ME_LOGIN = [u"Давай мне свой *логин* для игры."]
 GIVE_ME_PASSWORD = [u"Давай мне свой *пароль*."]
 GIVE_ME_HOST = [u"На каком *домене* игра?"]
 GIVE_ME_GAME = [u"Какой *номер игры*?"]
+SETTINGS_WERE_CHANGED_MESSAGES = [u"---*Настройки бота были изменены!*---"]
+SETTINGS_WERE_SAVED_MESSAGES = [u"Настройки были сохранены"]
+SETTINGS_WERE_NOT_SAVED_MESSAGES = [u"Проблема при записи настроек. Проверьте права доступа."]
 CONNECTION_PROBLEM_MESSAGES = [u"---*Проблемы с авторизацией на сайте!*---"]
+CHECK_SETTINGS_MESSAGES = [u"---*Проверьте настройки!*---"]
 CONNECTION_OK_MESSAGES = [u"---*Авторизация на сайте успешна!*---"]
 PLEASE_APPROVE_MESSAGES = [
     u"---*Для дальнейшей работы выполни команду* /approve *в игровом чате*---"]
@@ -73,7 +77,7 @@ INFO_MESSAGE = u"Логин: {login}\r\n" \
                u"Пароль: {password}\r\n" \
                u"Хост: {host}\r\n" \
                u"Игра: {game_id}\r\n"
-RESET_MESSAGE = u"Состояние бота было сброшено на начальное."
+BOT_WAS_RESET_MESSAGE = u"Состояние бота было сброшено на начальное."
 
 PAUSED_STATUS_MESSAGES = {False: u"Активный",
                           True: u"На паузе"}
@@ -105,6 +109,7 @@ HELP_MESSAGE = u"""
 {approve}: Добавить чат в список доверенных
 {disapprove}: Удалить чат из списка доверенных
 {edit}: Изменить текущие настройки бота
+{save}: Перезаписать настройки бота по-умолчанию
 {reset}: Сбросить состояние бота в изначальное
 {pause}: Прекратить отслеживание заданий и вбитие кодов
 {resume}: Возобновить отслеживание заданий и вбитие кодов
@@ -117,6 +122,7 @@ HELP_MESSAGE = u"""
     approve=config.approve_command,
     disapprove=config.disapprove_command,
     edit=config.edit_command,
+    save=config.save_command,
     reset=config.reset_command,
     pause=config.pause_command,
     stop=config.stop_command,
