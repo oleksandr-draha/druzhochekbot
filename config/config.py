@@ -17,9 +17,12 @@ class DruzhochekConfig(object):
     def save_config(self):
         default_config_name = 'config.yaml'
         config_path = path.join(path.dirname(__file__), default_config_name)
-        with open(config_path, 'w') as default_config:
-            yaml.dump(self.config, default_config)
-        return True
+        try:
+            with open(config_path, 'w') as default_config:
+                yaml.dump(self.config, default_config)
+            return True
+        except IOError:
+            return False
 
     def __init__(self):
         self.config = self._load_config()
