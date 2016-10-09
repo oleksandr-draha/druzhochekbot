@@ -7,7 +7,7 @@ bot:
   send-message-path: https://api.telegram.org/bot{key}/sendMessage
   token: 289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w
   updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}
-game: {host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723', login: 'ZHJ1emhvY2hlaw==
+game: {host: !!python/unicode 'online.quest.ua', id: !!python/unicode '32131', login: 'ZHJ1emhvY2hlaw==
 
     ', password: 'WW84OWthVDc=
 

@@ -23,9 +23,10 @@ class GameDriver:
         self.session = session()
         try:
             self.login_user()
-            if self.is_logged():
-                self.connected = True
-                self.set_level_params()
+            game_page = self.get_game_page()
+            if self.is_logged(game_page) and not self.is_finished(game_page):
+                self.set_level_params(game_page)
+            self.connected = True
         except ConnectionError:
             self.connected = False
 
@@ -45,7 +46,14 @@ class GameDriver:
         if text is None:
             text = self.get_game_page()
         logged_locator = '<label for="Answer">'
-        return text.find(logged_locator) != -1
+        finish_locator = u'<font size="+2"><span id="animate">Поздравляем!!!</span></font>'
+        return text.find(logged_locator) != -1 or text.find(finish_locator) != -1
+
+    def is_finished(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        finish_locator = u'<font size="+2"><span id="animate">Поздравляем!!!</span></font>'
+        return text.find(finish_locator) != -1
 
     def get_game_page(self):
         try:
@@ -159,7 +167,7 @@ class GameDriver:
         task_text = html2text.html2text(text[task_text_start: task_text_end])
         return task_text
 
-    def get_ap_text(self, text):
+    def get_ap_text(self, text=None):
         if text is None:
             text = self.get_game_page()
         ap_locator = '<h3 class="timer">'
@@ -170,7 +178,7 @@ class GameDriver:
             ap_end = ap_start + text[ap_start:].find(ap_end_locator)
             return html2text.html2text(text[ap_start: ap_end])
 
-    def get_codes_left_text(self, text):
+    def get_codes_left_text(self, text=None):
         if text is None:
             text = self.get_game_page()
         codes_left_locator = u'осталось закрыть'
@@ -180,3 +188,14 @@ class GameDriver:
             codes_left_start += len(codes_left_locator)
             codes_left_end = codes_left_start + text[codes_left_start:].find(codes_left_end_locator)
             return int(html2text.html2text(text[codes_left_start: codes_left_end]))
+
+    def get_finish_message(self, text):
+        if text is None:
+            text = self.get_game_page()
+        finish_start_locator = u'<div class="t_center">'
+        finish_end_locator = u'</div>'
+        finish_start = text.find(finish_start_locator)
+        if finish_start != -1:
+            finish_start += len(finish_start_locator)
+            finish_end = finish_start + text[finish_start:].find(finish_end_locator)
+            return html2text.html2text(text[finish_start: finish_end])

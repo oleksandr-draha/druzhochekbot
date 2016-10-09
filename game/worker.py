@@ -16,6 +16,7 @@ class GameWorker:
     codes_left_shown = []
     hints_shown = []
     connected = False
+    finished_shown = False
 
     def __init__(self):
         self.game_driver = GameDriver()
@@ -45,6 +46,12 @@ class GameWorker:
             sleep(config.relogin_interval)
         if attempt >= config.max_game_attempts:
             return
+        if self.game_driver.is_finished(game_page):
+            # If game is finished - updates should not be checked
+            if not self.finished_shown:
+                self.finished_shown = True
+                updates.append(self.game_driver.get_finish_message(game_page))
+            return updates
         task_text = self.game_driver.get_task(game_page)
         if task_text is None:
             return
