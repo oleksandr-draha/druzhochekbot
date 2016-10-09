@@ -117,8 +117,8 @@ HELP_MESSAGE = u"""
 {status}: Показать текущий статус бота
 {info}: Вывести детальную информацию о настройках бота
 """.format(
-    code=config.code_command,
-    codes=config.codes_command,
+    code=config.code_command[0],
+    codes=config.codes_command[0],
     approve=config.approve_command,
     disapprove=config.disapprove_command,
     edit=config.edit_command,
