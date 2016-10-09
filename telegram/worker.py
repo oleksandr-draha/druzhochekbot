@@ -576,6 +576,13 @@ class TelegramWorker:
                 self.reset_command(message)
             elif command.startswith(config.help_command):
                 self.help_command(message)
+            # TODO: add adding admins
+            # NTI1MjkyNzc=
+            # Step 1 - add admin
+            # Step 2 - select password
+            # Step 3 - wait for some account to send this password and
+            # add it to admins list
+            # Removing admin - ???
             else:
                 self.unknown_command(message)
 
