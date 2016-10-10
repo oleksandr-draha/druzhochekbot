@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import re
-
 from requests import ConnectionError, session
 import html2text
 
@@ -153,7 +151,7 @@ class GameDriver:
         task_start_locator = u'<p>'
         task_end_locator = u'</p>'
         task_header_start = text.find(task_header_locator)
-        if task_header_start == -1 and text.find(another_task_header_locator)==-1:
+        if task_header_start == -1 and text.find(another_task_header_locator) == -1:
             return
         task_header_start += len(task_header_locator)
         task_text_start = \
@@ -199,3 +197,20 @@ class GameDriver:
             finish_start += len(finish_start_locator)
             finish_end = finish_start + text[finish_start:].find(finish_end_locator)
             return html2text.html2text(text[finish_start: finish_end])
+
+    def answer_limit(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        answer_text_start_locator = u'<form method="post">'
+        answer_text_end_locator = u'</form>'
+        limit_start_locator = u'Не более'
+        limit_end_locator = u'</label>'
+        answer_text_start = text.find(answer_text_start_locator)
+        if answer_text_start != -1:
+            answer_text_start += len(answer_text_start_locator)
+            answer_text_end = answer_text_start + text[answer_text_start:].find(answer_text_end_locator)
+            answer_text = text[answer_text_start: answer_text_end]
+            limit_start = answer_text.find(limit_start_locator)
+            if limit_start != -1:
+                limit_end = limit_start + answer_text[limit_start:].find(limit_end_locator)
+                return html2text.html2text(answer_text[limit_start:limit_end])

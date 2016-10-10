@@ -17,6 +17,7 @@ class GameWorker:
     hints_shown = []
     connected = False
     finished_shown = False
+    codes_limit_shown = False
 
     def __init__(self):
         self.game_driver = GameDriver()
@@ -35,6 +36,15 @@ class GameWorker:
                 update = update.replace(word, replace)
             replaced_updates.append(update)
         return replaced_updates
+
+    def reset(self):
+        self.last_level_shown = None
+        self.last_task_text = None
+        self.ap_time_shown = []
+        self.codes_left_shown = []
+        self.hints_shown = []
+        self.finished_shown = False
+        self.codes_limit_shown = False
 
     def check_updates(self):
         updates = []
@@ -99,4 +109,8 @@ class GameWorker:
         if self.last_task_text != task_text:
             self.last_task_text = task_text
             updates.append(TASK_EDITED_MESSAGE.format(task=task_text))
+        # Codes try limited!!
+        if self.game_driver.answer_limit(game_page) is not None and not self.codes_limit_shown:
+            updates.append(self.game_driver.answer_limit(game_page))
+            self.codes_limit_shown = True
         return self.replace_forbidden_words(updates)

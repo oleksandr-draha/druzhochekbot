@@ -383,14 +383,8 @@ class TelegramWorker:
                 ACCESS_VIOLATION_MESSAGES)
 
     def _do_reset(self, message):
-        self.game_worker.last_level_shown = None
-        self.game_worker.last_hint_shown = None
-        self.game_worker.finished_shown = False
-        self.game_worker.hints_shown = []
-        self.game_worker.ap_time_shown = []
-        self.game_worker.codes_left_shown = []
-        self.telegram_driver.answer_message(message,
-                                            BOT_WAS_RESET_MESSAGE)
+        self.game_worker.reset()
+        self.telegram_driver.answer_message(message, BOT_WAS_RESET_MESSAGE)
 
     def reset_command(self, message):
         from_id = message['message']['from']['id']
@@ -522,7 +516,7 @@ class TelegramWorker:
                 CONNECTION_OK_MESSAGES)
             self.telegram_driver.admin_message(
                 PLEASE_APPROVE_MESSAGES)
-            self._do_reset(message)
+            self._do_reset()
             self.paused = False
             return True
         else:
