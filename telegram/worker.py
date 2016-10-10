@@ -415,8 +415,8 @@ class TelegramWorker:
                 ACCESS_VIOLATION_MESSAGES)
 
     def _do_task(self):
-        self.game_worker.game_driver.last_level_shown = None
-        self.game_worker.game_driver.finished_shown = False
+        self.game_worker.last_level_shown = None
+        self.game_worker.finished_shown = False
 
     def task_command(self, message):
         from_id = message['message']['from']['id']
@@ -440,7 +440,7 @@ class TelegramWorker:
                 ACCESS_VIOLATION_MESSAGES)
 
     def _do_hints(self):
-        self.game_worker.game_driver.hints_shown = []
+        self.game_worker.hints_shown = []
 
     def hints_command(self, message):
         from_id = message['message']['from']['id']
