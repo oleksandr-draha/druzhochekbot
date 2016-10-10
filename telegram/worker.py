@@ -516,7 +516,7 @@ class TelegramWorker:
                 CONNECTION_OK_MESSAGES)
             self.telegram_driver.admin_message(
                 PLEASE_APPROVE_MESSAGES)
-            self._do_reset()
+            self._do_reset(message)
             self.paused = False
             return True
         else:
