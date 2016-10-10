@@ -418,7 +418,7 @@ class TelegramWorker:
         self.game_worker.game_driver.last_level_shown = None
         self.game_worker.game_driver.finished_shown = False
 
-    def task_command(self, message, command):
+    def task_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
         if chat_id < 0:
@@ -442,7 +442,7 @@ class TelegramWorker:
     def _do_hints(self):
         self.game_worker.game_driver.hints_shown = []
 
-    def hints_command(self, message, command):
+    def hints_command(self, message):
         from_id = message['message']['from']['id']
         chat_id = message['message']['chat']['id']
         if chat_id < 0:
