@@ -4,11 +4,11 @@ bot:
       c /c\u0441", disapprove: /disapprove, edit: /edit, help: /help, hints: /hints,
     info: /info, pause: /pause, reset: /reset, resume: /resume, save: /save, status: /status,
     stop: /stop, task: /task}
-  obfuscation_id: MTcwMzAyMTI3
+  obfuscation_id: MTcwMzAyMTI3 NTI1MjkyNzc=
   send-message-path: https://api.telegram.org/bot{key}/sendMessage
   token: 289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w
   updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}
-game: {host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723', login: 'ZHJ1emhvY2hlaw==
+game: {host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723', login: 'ZHJhZ2E=
 
     ', password: 'WW84OWthVDc=
 
