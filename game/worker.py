@@ -96,8 +96,12 @@ class GameWorker:
         if codes_left_text is not None:
             for codes_left in config.show_codes_left:
                 if codes_left == codes_left_text and codes_left not in self.codes_left_shown:
-                    updates.append(CODES_LEFT_TEXT.format(codes=codes_left))
-                    self.codes_left_shown.append(codes_left)
+                    if CODES_LEFT_TEXT.get(codes_left) is not None:
+                            updates.append(CODES_LEFT_TEXT.get(codes_left).format(codes=codes_left))
+                            self.codes_left_shown.append(codes_left)
+                    else:
+                        updates.append(CODES_LEFT_TEXT['all'].format(codes=codes_left))
+                        self.codes_left_shown.append(codes_left)
         # Process hints
         for hint_id in sorted(hints.keys()):
             if hint_id not in self.hints_shown and hint_id:

@@ -101,7 +101,11 @@ TASK_EDITED_MESSAGE = u'<b>Задание было изменено!</b> \r\n' \
                       u'\r\n' \
                       u'\r\n {task}'
 
-CODES_LEFT_TEXT = u'<b>Осталось {codes} кодов!</b>'
+CODES_LEFT_TEXT = {1: u'<b>Остался {codes} код!</b>',
+                   2: u'Осталось {codes} кода!',
+                   3: u'Осталось {codes} кода!',
+                   4: u'Осталось {codes} кода!',
+                   'all': u'Осталось {codes} кодов!'}
 
 HELP_MESSAGE = u"""
 {code}: Вбить код целиком. Пример: {code} один длинный код
