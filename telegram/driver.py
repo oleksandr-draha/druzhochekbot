@@ -29,7 +29,7 @@ class TelegramDriver:
             text_message = choice(text)
         else:
             text_message = text
-        response = {"chat_id":chat_id,
+        response = {"chat_id": chat_id,
                     "text": text_message,
                     "parse_mode": parse_mode}
         if reply_to is not None:

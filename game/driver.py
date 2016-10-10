@@ -105,6 +105,8 @@ class GameDriver:
         if r.text.find(incorrect_code_locator) == -1 \
                 and r.text.find(correct_code_locator) != -1:
             return True
+        elif self.is_finished(r.text):
+            return True
         else:
             return False
 
@@ -162,8 +164,54 @@ class GameDriver:
             task_text_start + \
             text[task_text_start:].find(task_end_locator)
         # task_text = self.replace_image_texts(text[task_text_start: task_text_end])
-        task_text = html2text.html2text(text[task_text_start: task_text_end])
-        return task_text
+        task_text = text[task_text_start: task_text_end]
+        task_text = self.replace_audio_links(task_text)
+        task_text = self.replace_iframe_links(task_text)
+        return html2text.html2text(task_text)
+
+    def replace_audio_links(self, text):
+        """
+
+        :param text:
+        :type text: str
+        :return:
+        """
+        audio_start_locator = u'<audio'
+        audio_end_locator = u'/audio>'
+        while text.find(audio_start_locator) != -1:
+            audio_start = text.find(audio_start_locator)
+            audio_end = audio_start + text[audio_start:].find(audio_end_locator) + len(audio_end_locator)
+            audio_text = text[audio_start: audio_end]
+            link = self.get_source(audio_text)
+            text = text.replace(audio_text, link)
+        return text
+
+    def replace_iframe_links(self, text):
+        """
+
+        :param text:
+        :type text: str
+        :return:
+        """
+        iframe_start_locator = u'<iframe'
+        iframe_end_locator = u'</iframe>'
+        while text.find(iframe_start_locator) != -1:
+            iframe_start = text.find(iframe_start_locator)
+            iframe_end = iframe_start + text[iframe_start:].find(iframe_end_locator) + len(iframe_end_locator)
+            iframe_text = text[iframe_start: iframe_end]
+            link = self.get_source(iframe_text)
+            text = text.replace(iframe_text, link)
+        return text
+
+    @staticmethod
+    def get_source(text):
+        source_start_locator = u'src="'
+        source_end_locator = u'"'
+        source_start = text.find(source_start_locator)
+        if source_start != -1:
+            source_start += len(source_start_locator)
+            source_end = source_start + text[source_start:].find(source_end_locator)
+            return text[source_start: source_end]
 
     def get_ap_text(self, text=None):
         if text is None:

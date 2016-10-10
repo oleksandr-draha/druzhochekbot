@@ -99,7 +99,7 @@ NEW_HINT_MESSAGE = u'<b>Новая подсказка!</b> \r\n' \
 TASK_EDITED_MESSAGE = u'<b>Задание было изменено!</b> \r\n' \
                       u'<b>---------------------------</b>\r\n' \
                       u'\r\n' \
-                      u'\r\n {task}'
+                      u'\r\n{task}'
 
 CODES_LEFT_TEXT = {1: u'<b>Остался {codes} код!</b>',
                    2: u'Осталось {codes} кода!',
