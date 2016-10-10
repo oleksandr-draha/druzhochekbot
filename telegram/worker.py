@@ -2,10 +2,10 @@
 import time
 
 from config.config import config
-from config.dictionary import PAUSED_MESSAGES, GREETINGS_MESSAGES, LETS_GO_MESSAGES, START_PAUSE_MESSAGES, \
+from config.dictionary import PAUSED_MESSAGES, LETS_GO_MESSAGES, START_PAUSE_MESSAGES, \
     RESUME_MESSAGES, END_PAUSE_MESSAGES, BYE_MESSAGES, NO_CODE_FOUND_MESSAGE, GIVE_ME_LOGIN, GIVE_ME_PASSWORD, \
     GIVE_ME_HOST, GIVE_ME_GAME, AFFIRMATIVE_MESSAGES, NOT_GROUP_CHAT_MESSAGES, CONNECTION_PROBLEM_MESSAGES, \
-    CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, TOO_MUCH_ATTEMPTS_MESSAGES, ACCESS_VIOLATION_MESSAGES, \
+    CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, ACCESS_VIOLATION_MESSAGES, \
     ALREADY_PAUSED_MESSAGES, UNKNOWN_MESSAGES, WRONG_CODE_MESSAGE, STATUS_MESSAGE, \
     PAUSED_STATUS_MESSAGES, GAME_CONNECTION_MESSAGES, INFO_MESSAGE, NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGES, \
     DISAPPROVE_MESSAGES, BOT_WAS_RESET_MESSAGE, HELP_MESSAGE, CHECK_SETTINGS_MESSAGES, SETTINGS_WERE_CHANGED_MESSAGES, \
@@ -385,6 +385,7 @@ class TelegramWorker:
     def _do_reset(self, message):
         self.game_worker.last_level_shown = None
         self.game_worker.last_hint_shown = None
+        self.game_worker.finished_shown = False
         self.game_worker.hints_shown = []
         self.game_worker.ap_time_shown = []
         self.game_worker.codes_left_shown = []
@@ -408,6 +409,55 @@ class TelegramWorker:
                     ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
             self._do_reset(message)
+        else:
+            self.telegram_driver.answer_message(
+                message,
+                ACCESS_VIOLATION_MESSAGES)
+
+    def _do_task(self):
+        self.game_worker.game_driver.last_level_shown = None
+        self.game_worker.game_driver.finished_shown = False
+
+    def task_command(self, message, command):
+        from_id = message['message']['from']['id']
+        chat_id = message['message']['chat']['id']
+        if chat_id < 0:
+            if chat_id == self.group_chat_id:
+                self._do_task()
+            elif self._is_admin(from_id):
+                self.telegram_driver.answer_message(
+                    message,
+                    NO_GROUP_CHAT_MESSAGES)
+            else:
+                self.telegram_driver.answer_message(
+                    message,
+                    ACCESS_VIOLATION_MESSAGES)
+        elif self._is_admin(from_id):
+            self._do_task()
+        else:
+            self.telegram_driver.answer_message(
+                message,
+                ACCESS_VIOLATION_MESSAGES)
+
+    def _do_hints(self):
+        self.game_worker.game_driver.hints_shown = []
+
+    def hints_command(self, message, command):
+        from_id = message['message']['from']['id']
+        chat_id = message['message']['chat']['id']
+        if chat_id < 0:
+            if chat_id == self.group_chat_id:
+                self._do_hints()
+            elif self._is_admin(from_id):
+                self.telegram_driver.answer_message(
+                    message,
+                    NO_GROUP_CHAT_MESSAGES)
+            else:
+                self.telegram_driver.answer_message(
+                    message,
+                    ACCESS_VIOLATION_MESSAGES)
+        elif self._is_admin(from_id):
+            self._do_hints()
         else:
             self.telegram_driver.answer_message(
                 message,
@@ -574,6 +624,10 @@ class TelegramWorker:
                 self.save_settings_command(message)
             elif command == config.reset_command:
                 self.reset_command(message)
+            elif command == config.task_command:
+                self.task_command(message)
+            elif command == config.hints_command:
+                self.hints_command(message)
             elif command.startswith(config.help_command):
                 self.help_command(message)
             # TODO: add adding admins

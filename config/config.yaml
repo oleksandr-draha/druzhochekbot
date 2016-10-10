@@ -2,7 +2,7 @@ bot:
   answer-unknown: true
   commands: {approve: /approve, code: "/c /\u0441", codes: "/cc /\u0441\u0441 /\u0441\
       c /c\u0441", disapprove: /disapprove, edit: /edit, help: /help, info: /info,
-    pause: /pause, reset: /reset, resume: /resume, save: /save, status: /status, stop: /stop}
+    pause: /pause, reset: /reset, resume: /resume, save: /save, status: /status, stop: /stop, task: /task, hints: /hints}
   obfuscation_id: MTcwMzAyMTI3
   send-message-path: https://api.telegram.org/bot{key}/sendMessage
   token: 289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w

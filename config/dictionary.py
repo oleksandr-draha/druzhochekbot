@@ -70,8 +70,8 @@ NOT_FOR_GROUP_CHAT_MESSAGES = [
 
 STATUS_MESSAGE = u"Статус дружочка: {paused}\r\n" \
                  u"Активная группа: {chat_id}\r\n" \
-                 u"Соединение к игровому серверу: {game_connection}\r\n"\
-                 u"Текущий номер задания: {game_level_id}\r\n"\
+                 u"Соединение к игровому серверу: {game_connection}\r\n" \
+                 u"Текущий номер задания: {game_level_id}\r\n" \
                  u"Показанные подсказки: {game_hint_id}\r\n"
 INFO_MESSAGE = u"Логин: {login}\r\n" \
                u"Пароль: {password}\r\n" \
@@ -85,11 +85,11 @@ PAUSED_STATUS_MESSAGES = {False: u"Активный",
 GAME_CONNECTION_MESSAGES = {True: u"Активно",
                             False: u"Ошибка"}
 
-NEW_TASK_MESSAGE = u'<b>Новый уровень!</b>\r\n'\
-                    u'<b>---------------------------</b>\r\n'\
-                    u'<b>Задание {level_number}</b>\r\n'\
-                    u'<b>---------------------------</b>\r\n'\
-                    u'\r\n{task}'
+NEW_TASK_MESSAGE = u'<b>Новый уровень!</b>\r\n' \
+                   u'<b>---------------------------</b>\r\n' \
+                   u'<b>Задание {level_number}</b>\r\n' \
+                   u'<b>---------------------------</b>\r\n' \
+                   u'\r\n{task}'
 NEW_HINT_MESSAGE = u'<b>Новая подсказка!</b> \r\n' \
                    u'<b>---------------------------</b>\r\n' \
                    u'<b>Подсказка {hint_number}</b>\r\n' \
@@ -106,6 +106,8 @@ CODES_LEFT_TEXT = u'<b>Осталось {codes} кодов!</b>'
 HELP_MESSAGE = u"""
 {code}: Вбить код целиком. Пример: {code} один длинный код
 {codes}: Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
+{task}: Повторно вывести текущее задание
+{hints}: Повторно вывести список всех подсказок
 {approve}: Добавить чат в список доверенных
 {disapprove}: Удалить чат из списка доверенных
 {edit}: Изменить текущие настройки бота
@@ -119,6 +121,8 @@ HELP_MESSAGE = u"""
 """.format(
     code=config.code_command[0],
     codes=config.codes_command[0],
+    task=config.task_command,
+    hints=config.hints_command,
     approve=config.approve_command,
     disapprove=config.disapprove_command,
     edit=config.edit_command,
