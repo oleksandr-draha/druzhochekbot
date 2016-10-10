@@ -13,6 +13,6 @@ game: {host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723', login
     ', password: 'WW84OWthVDc=
 
     ', show_codes_left: 1 2 3 10, show_first_ap_time: true, show_time_left_minutes: 1
-    5 10}
+    4 9}
 timeouts: {answer_check_interval: 1, max_attempts: 3, message_check_interval: 1, process_check_interval: 1,
   relogin_interval: 5}
