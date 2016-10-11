@@ -75,6 +75,9 @@ NOT_FOR_GROUP_CHAT_MESSAGES = [
     u"Ну не при всех же. Давай в личку."
 ]
 
+GAME_FINISHED_MESSAGE = u"\r\nИгра окончена."
+CODES_BLOCKED_MESSAGE = u"\r\nВвод кодов заблокирован."
+
 STATUS_MESSAGE = u"Статус дружочка: {paused}\r\n" \
                  u"Активная группа: {chat_id}\r\n" \
                  u"Соединение к игровому серверу: {game_connection}\r\n" \

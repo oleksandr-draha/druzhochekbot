@@ -9,7 +9,8 @@ from config.dictionary import PAUSED_MESSAGES, LETS_GO_MESSAGES, START_PAUSE_MES
     ALREADY_PAUSED_MESSAGES, UNKNOWN_MESSAGES, STATUS_MESSAGE, \
     PAUSED_STATUS_MESSAGES, GAME_CONNECTION_MESSAGES, INFO_MESSAGE, NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGES, \
     DISAPPROVE_MESSAGES, BOT_WAS_RESET_MESSAGE, ADMIN_HELP_MESSAGE, CHECK_SETTINGS_MESSAGES, SETTINGS_WERE_CHANGED_MESSAGES, \
-    SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, RIGHT_APPEND, WRONG_APPEND, REGULAR_HELP_MESSAGE
+    SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, REGULAR_HELP_MESSAGE, \
+    GAME_FINISHED_MESSAGE, CODES_BLOCKED_MESSAGE
 from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.driver import TelegramDriver
@@ -91,28 +92,16 @@ class TelegramWorker:
             results = ''
             for code in codes:
                 result = self.game_worker.game_driver.try_code(code)
-                if result:
-                    results += u'\r\n{smile}: {code}'.format(
-                        smile=RIGHT_APPEND,
-                        code=code)
-                else:
-                    results += u'\r\n{smile}: {code}'.format(
-                        smile=WRONG_APPEND,
-                        code=code)
+                results += result
+                if result in [CODES_BLOCKED_MESSAGE, GAME_FINISHED_MESSAGE]:
+                    return results
         return results
 
     def check_code(self, message, command):
         code = message['message']['text'].replace(command, '').rstrip().lstrip()
         results = NO_CODE_FOUND_MESSAGE
         if len(code):
-            result = self.game_worker.game_driver.try_code(code)
-            if result:
-                results = u'\r\n{smile}: {code}'.format(smile=RIGHT_APPEND,
-                                                        code=code)
-            else:
-                results = u'\r\n{smile}: {code}'.format(
-                    code=code,
-                    smile=WRONG_APPEND)
+            results = self.game_worker.game_driver.try_code(code)
         return results
 
     @staticmethod

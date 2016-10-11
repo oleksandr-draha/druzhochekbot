@@ -2,6 +2,8 @@
 from requests import ConnectionError, session
 import html2text
 
+from config.dictionary import RIGHT_APPEND, GAME_FINISHED_MESSAGE, CODES_BLOCKED_MESSAGE, WRONG_APPEND
+
 QUEST_URL = "http://m.{host}/{path}"
 LOGIN_URL = "login/signin/?return=%2f"
 GAME_URL = "gameengines/encounter/play/{game_id}/"
@@ -43,9 +45,12 @@ class GameDriver:
     def is_logged(self, text=None):
         if text is None:
             text = self.get_game_page()
-        logged_locator = '<label for="Answer">'
+        logged_locator = u'<label for="Answer">'
         finish_locator = u'<font size="+2"><span id="animate">Поздравляем!!!</span></font>'
-        return text.find(logged_locator) != -1 or text.find(finish_locator) != -1
+        blocked_locator = u'<div class="blocked"><div>вы сможете ввести код через'
+        return text.find(logged_locator) != -1 or \
+            text.find(finish_locator) != -1 or \
+            text.find(blocked_locator) != -1
 
     def is_finished(self, text=None):
         if text is None:
@@ -98,18 +103,27 @@ class GameDriver:
     def try_code(self, code=""):
         incorrect_code_locator = u'<span class="color_incorrect" id="incorrect">'
         correct_code_locator = u'<span class="color_correct">'
+        blocked_code_locator = u'<div class="blocked"><div>'
         body = {"rnd": "0,663014513283509",
                 "LevelId": self.level_id,
                 "LevelNumber": self.level_number,
                 "LevelAction.Answer": code}
         r = self.post_game_page(body=body)
-        if r.text.find(incorrect_code_locator) == -1 \
-                and r.text.find(correct_code_locator) != -1:
-            return True
+        result = ''
+        if r.text.find(incorrect_code_locator) == -1 and \
+            r.text.find(correct_code_locator) != -1 and \
+                r.text.find(blocked_code_locator) == -1:
+            result = u'\r\n{smile}: {code}'.format(smile=RIGHT_APPEND,
+                                                   code=code)
+        elif r.text.find(incorrect_code_locator) != -1:
+            result = u'\r\n{smile}: {code}'.format(
+                code=code,
+                smile=WRONG_APPEND)
+        elif r.text.find(blocked_code_locator) != -1:
+            result = CODES_BLOCKED_MESSAGE
         elif self.is_finished(r.text):
-            return True
-        else:
-            return False
+            result = GAME_FINISHED_MESSAGE
+        return result
 
     def get_all_hints(self, text=None):
 
