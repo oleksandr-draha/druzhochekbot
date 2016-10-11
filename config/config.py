@@ -44,6 +44,10 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("answer-unknown")
 
     @property
+    def answer_forbidden(self):
+        return self.config.get("bot", {}).get("answer-forbidden")
+
+    @property
     def game_login(self):
         login = self.config.get("game", {}).get("login")
         return base64.decodestring(login) if login is not None else None
@@ -171,11 +175,19 @@ class DruzhochekConfig(object):
         return [int(i) for i in self.config.get("game", {}).get("show_codes_left").split()]
 
     @property
-    def show_ap_for_time(self):
+    def show_time_to_hint(self):
+        return self.config.get("game", {}).get("show_time_to_hint")
+
+    @property
+    def show_time_left_minutes(self):
         return self.config.get("game", {}).get("show_time_left_minutes").split()
 
     @property
     def show_first_ap_time(self):
         return self.config.get("game", {}).get("show_first_ap_time")
+
+    @property
+    def show_first_hint_time(self):
+        return self.config.get("game", {}).get("show_first_hint_time")
 
 config = DruzhochekConfig()

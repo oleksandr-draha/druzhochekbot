@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 from config import config
 
+TASK_APPEND = unichr(55356) + unichr(57152)
+HINTS_APPEND = unichr(55356) + unichr(57119)
+RIGHT_APPEND = unichr(55357) + unichr(56474)
+WRONG_APPEND = unichr(55357) + unichr(56468)
+LIMIT_APPEND = unichr(55357) + unichr(56489)
+ORG_MESSAGE_APPEND = unichr(55357) + unichr(56803)
+
 PAUSED_MESSAGES = [u'Я на паузе.',
                    u'Серьёзно, я пока не буду коды вбивать.',
                    u'Ты слышишь? Коды не вбиваю, задания не присылаю',
@@ -84,13 +91,13 @@ PAUSED_STATUS_MESSAGES = {False: u"Активный",
 
 GAME_CONNECTION_MESSAGES = {True: u"Активно",
                             False: u"Ошибка"}
-
-NEW_TASK_MESSAGE = u'<b>Новый уровень!</b>\r\n' \
-                   u'<b>---------------------------</b>\r\n' \
-                   u'<b>Задание {level_number}</b>\r\n' \
-                   u'<b>---------------------------</b>\r\n' \
-                   u'\r\n{task}'
-NEW_HINT_MESSAGE = u'<b>Новая подсказка!</b> \r\n' \
+TASK_MESSAGE = u'<b>---------------------------</b>\r\n' \
+               u'<b>Задание {level_number}</b>\r\n' \
+               u'<b>---------------------------</b>\r\n' \
+               u'\r\n{task}'
+NEW_TASK_MESSAGE = u'{smile}<b>Новый уровень!</b>\r\n' \
+                   u'{task}'.format(smile=TASK_APPEND, task=TASK_MESSAGE)
+NEW_HINT_MESSAGE = u'{smile}<b>Новая подсказка!</b> \r\n' \
                    u'<b>---------------------------</b>\r\n' \
                    u'<b>Подсказка {hint_number}</b>\r\n' \
                    u'<b>---------------------------</b>\r\n' \
@@ -107,21 +114,22 @@ CODES_LEFT_TEXT = {1: u'<b>Остался {codes} код!</b>',
                    4: u'Осталось {codes} кода!',
                    'all': u'Осталось {codes} кодов!'}
 
-HELP_MESSAGE = u"""
-{code}: Вбить код целиком. Пример: {code} один длинный код
-{codes}: Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
-{task}: Повторно вывести текущее задание
-{hints}: Повторно вывести список всех подсказок
-{approve}: Добавить чат в список доверенных
-{disapprove}: Удалить чат из списка доверенных
-{edit}: Изменить текущие настройки бота
-{save}: Перезаписать настройки бота по-умолчанию
-{reset}: Сбросить состояние бота в изначальное
-{pause}: Прекратить отслеживание заданий и вбитие кодов
-{resume}: Возобновить отслеживание заданий и вбитие кодов
-{stop}: Закончить работу с ботом
-{status}: Показать текущий статус бота
-{info}: Вывести детальную информацию о настройках бота
+ADMIN_HELP_MESSAGE = u"""
+{code} : Вбить код целиком. Пример: {code} один длинный код
+{codes} : Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
+{task} : Повторно вывести текущее задание
+{hints} : Повторно вывести список всех подсказок
+{approve} : Добавить чат в список доверенных
+{disapprove} : Удалить чат из списка доверенных
+{edit} : Изменить текущие настройки бота
+{save} : Перезаписать настройки бота по-умолчанию
+{reset} : Сбросить состояние бота в изначальное
+{pause} : Прекратить отслеживание заданий и вбитие кодов
+{resume} : Возобновить отслеживание заданий и вбитие кодов
+{stop} : Закончить работу с ботом
+{status} : Показать текущий статус бота
+{info} : Вывести детальную информацию о настройках бота
+{help} : Вывести помощь
 """.format(
     code=config.code_command[0],
     codes=config.codes_command[0],
@@ -137,4 +145,19 @@ HELP_MESSAGE = u"""
     resume=config.resume_command,
     status=config.status_command,
     info=config.info_command,
+    help=config.help_command)
+
+REGULAR_HELP_MESSAGE = u"""
+{code} : Вбить код целиком. Пример: {code} один длинный код
+{codes} : Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
+{task} : Повторно вывести текущее задание
+{hints} : Повторно вывести список всех подсказок
+{status} : Показать текущий статус бота
+{help} : Вывести помощь
+""".format(
+    code=config.code_command[0],
+    codes=config.codes_command[0],
+    task=config.task_command,
+    hints=config.hints_command,
+    status=config.status_command,
     help=config.help_command)

@@ -93,6 +93,7 @@ class GameDriver:
         level_params = self.get_level_params(text)
         self.level_id = level_params["LevelId"]
         self.level_number = level_params["LevelNumber"]
+        return level_params
 
     def try_code(self, code=""):
         incorrect_code_locator = u'<span class="color_incorrect" id="incorrect">'
@@ -213,16 +214,28 @@ class GameDriver:
             source_end = source_start + text[source_start:].find(source_end_locator)
             return text[source_start: source_end]
 
-    def get_ap_text(self, text=None):
+    def get_time_to_ap(self, text=None):
         if text is None:
             text = self.get_game_page()
-        ap_locator = '<h3 class="timer">'
-        ap_end_locator = '</h3>'
+        ap_locator = u'<h3 class="timer">'
+        ap_end_locator = 'u</h3>'
         ap_start = text.find(ap_locator)
         if ap_start != -1:
             ap_start += len(ap_locator)
             ap_end = ap_start + text[ap_start:].find(ap_end_locator)
             return html2text.html2text(text[ap_start: ap_end])
+
+    def get_time_to_hints(self, text=None):
+        ap_locator = u'<span class="color_dis"><b>Подсказка'
+        ap_end_locator = u'</span>'
+        time_to_hints = []
+        ap_start = text.find(ap_locator)
+        while ap_start != -1:
+            ap_end = ap_start + text[ap_start:].find(ap_end_locator)
+            time_to_hints.append(html2text.html2text(text[ap_start: ap_end]))
+            text = text.replace(text[ap_start: ap_end], '')
+            ap_start = text.find(ap_locator)
+        return time_to_hints
 
     def get_codes_left_text(self, text=None):
         if text is None:
@@ -262,3 +275,14 @@ class GameDriver:
             if limit_start != -1:
                 limit_end = limit_start + answer_text[limit_start:].find(limit_end_locator)
                 return html2text.html2text(answer_text[limit_start:limit_end])
+
+    def get_org_message(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        org_message_locator = u'<p class="globalmess">'
+        org_message_end_locator = u'</p>'
+        org_message_start = text.find(org_message_locator)
+        if org_message_start != -1:
+            org_message_start += len(org_message_locator)
+            org_message_end = org_message_start + text[org_message_start:].find(org_message_end_locator)
+            return html2text.html2text(text[org_message_start: org_message_end])

@@ -6,10 +6,10 @@ from config.dictionary import PAUSED_MESSAGES, LETS_GO_MESSAGES, START_PAUSE_MES
     RESUME_MESSAGES, END_PAUSE_MESSAGES, BYE_MESSAGES, NO_CODE_FOUND_MESSAGE, GIVE_ME_LOGIN, GIVE_ME_PASSWORD, \
     GIVE_ME_HOST, GIVE_ME_GAME, AFFIRMATIVE_MESSAGES, NOT_GROUP_CHAT_MESSAGES, CONNECTION_PROBLEM_MESSAGES, \
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, ACCESS_VIOLATION_MESSAGES, \
-    ALREADY_PAUSED_MESSAGES, UNKNOWN_MESSAGES, WRONG_CODE_MESSAGE, STATUS_MESSAGE, \
+    ALREADY_PAUSED_MESSAGES, UNKNOWN_MESSAGES, STATUS_MESSAGE, \
     PAUSED_STATUS_MESSAGES, GAME_CONNECTION_MESSAGES, INFO_MESSAGE, NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGES, \
-    DISAPPROVE_MESSAGES, BOT_WAS_RESET_MESSAGE, HELP_MESSAGE, CHECK_SETTINGS_MESSAGES, SETTINGS_WERE_CHANGED_MESSAGES, \
-    SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES
+    DISAPPROVE_MESSAGES, BOT_WAS_RESET_MESSAGE, ADMIN_HELP_MESSAGE, CHECK_SETTINGS_MESSAGES, SETTINGS_WERE_CHANGED_MESSAGES, \
+    SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, RIGHT_APPEND, WRONG_APPEND, REGULAR_HELP_MESSAGE
 from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.driver import TelegramDriver
@@ -92,10 +92,13 @@ class TelegramWorker:
             for code in codes:
                 result = self.game_worker.game_driver.try_code(code)
                 if result:
-                    results += u'\r\n{code}: +'.format(code=code)
+                    results += u'\r\n{smile}: {code}'.format(
+                        smile=RIGHT_APPEND,
+                        code=code)
                 else:
-                    results += u'\r\n{code}: {wrong}'.format(code=code,
-                                                             wrong=WRONG_CODE_MESSAGE)
+                    results += u'\r\n{smile}: {code}'.format(
+                        smile=WRONG_APPEND,
+                        code=code)
         return results
 
     def check_code(self, message, command):
@@ -104,15 +107,17 @@ class TelegramWorker:
         if len(code):
             result = self.game_worker.game_driver.try_code(code)
             if result:
-                results = u'\r\n{code}: +'.format(code=code)
+                results = u'\r\n{smile}: {code}'.format(smile=RIGHT_APPEND,
+                                                        code=code)
             else:
-                results = u'\r\n{code}: {wrong}'.format(code=code,
-                                                        wrong=WRONG_CODE_MESSAGE)
+                results = u'\r\n{smile}: {code}'.format(
+                    code=code,
+                    smile=WRONG_APPEND)
         return results
 
     @staticmethod
     def get_command(message):
-        return message.split()[0]
+        return message.split()[0].split('@')[0]
 
     def _do_stop(self, message):
         self.telegram_driver.answer_message(
@@ -133,7 +138,7 @@ class TelegramWorker:
                         NOT_FOR_GROUP_CHAT_MESSAGES)
             else:
                 self._do_stop(message)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -165,7 +170,7 @@ class TelegramWorker:
                         NOT_FOR_GROUP_CHAT_MESSAGES)
             else:
                 self._do_pause(message)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -197,7 +202,7 @@ class TelegramWorker:
                         NOT_FOR_GROUP_CHAT_MESSAGES)
             else:
                 self._do_resume(message)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -223,13 +228,13 @@ class TelegramWorker:
                 self.telegram_driver.answer_message(
                     message,
                     NOT_GROUP_CHAT_MESSAGES)
-            else:
+            elif config.answer_forbidden:
                 self.telegram_driver.answer_message(
                     message,
                     ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
             self._do_codes(message, command)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -255,13 +260,13 @@ class TelegramWorker:
                 self.telegram_driver.answer_message(
                     message,
                     NO_GROUP_CHAT_MESSAGES)
-            else:
+            elif config.answer_forbidden:
                 self.telegram_driver.answer_message(
                     message,
                     ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
             self._do_code(message, command)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -270,12 +275,9 @@ class TelegramWorker:
         chat_id = message['message']['chat']['id']
         self.telegram_driver.answer_message(
             message,
-            AFFIRMATIVE_MESSAGES)
+            LETS_GO_MESSAGES)
         self.group_chat_id = chat_id
         self.paused = False
-        self.telegram_driver.send_message(
-            self.group_chat_id,
-            LETS_GO_MESSAGES)
 
     def approve_command(self, message):
         from_id = message['message']['from']['id']
@@ -287,7 +289,7 @@ class TelegramWorker:
                 self.telegram_driver.answer_message(
                     message,
                     NOT_GROUP_CHAT_MESSAGES)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -318,7 +320,7 @@ class TelegramWorker:
                 self.telegram_driver.answer_message(
                     message,
                     NOT_GROUP_CHAT_MESSAGES)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -347,13 +349,13 @@ class TelegramWorker:
                 self.telegram_driver.answer_message(
                     message,
                     NO_GROUP_CHAT_MESSAGES)
-            else:
+            elif config.answer_forbidden:
                 self.telegram_driver.answer_message(
                     message,
                     ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
             self._do_status(message)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -377,13 +379,13 @@ class TelegramWorker:
                     NOT_FOR_GROUP_CHAT_MESSAGES)
             else:
                 self._do_info(message)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
 
     def _do_reset(self, message):
-        self.game_worker.reset()
+        self.game_worker.reset_level()
         self.telegram_driver.answer_message(message, BOT_WAS_RESET_MESSAGE)
 
     def reset_command(self, message):
@@ -397,20 +399,19 @@ class TelegramWorker:
                     self.telegram_driver.answer_message(
                         message,
                         NO_GROUP_CHAT_MESSAGES)
-            else:
+            elif config.answer_forbidden:
                 self.telegram_driver.answer_message(
                     message,
                     ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
             self._do_reset(message)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
 
     def _do_task(self):
-        self.game_worker.last_level_shown = None
-        self.game_worker.finished_shown = False
+        self.game_worker._request_task_text = True
 
     def task_command(self, message):
         from_id = message['message']['from']['id']
@@ -422,13 +423,13 @@ class TelegramWorker:
                 self.telegram_driver.answer_message(
                     message,
                     NO_GROUP_CHAT_MESSAGES)
-            else:
+            elif config.answer_forbidden:
                 self.telegram_driver.answer_message(
                     message,
                     ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
             self._do_task()
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -446,21 +447,27 @@ class TelegramWorker:
                 self.telegram_driver.answer_message(
                     message,
                     NO_GROUP_CHAT_MESSAGES)
-            else:
+            elif config.answer_forbidden:
                 self.telegram_driver.answer_message(
                     message,
                     ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
             self._do_hints()
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
 
     def _do_help(self, message):
-        self.telegram_driver.answer_message(
-            message,
-            HELP_MESSAGE)
+        from_id = message['message']['from']['id']
+        if self._is_admin(from_id):
+            self.telegram_driver.answer_message(
+                message,
+                ADMIN_HELP_MESSAGE)
+        else:
+            self.telegram_driver.answer_message(
+                message,
+                REGULAR_HELP_MESSAGE)
 
     def help_command(self, message):
         from_id = message['message']['from']['id']
@@ -472,13 +479,13 @@ class TelegramWorker:
                 self.telegram_driver.answer_message(
                     message,
                     NO_GROUP_CHAT_MESSAGES)
-            else:
+            elif config.answer_forbidden:
                 self.telegram_driver.answer_message(
                     message,
                     ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
             self._do_help(message)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -541,7 +548,7 @@ class TelegramWorker:
                         NO_GROUP_CHAT_MESSAGES)
             else:
                 self._do_edit_settings(message)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
@@ -572,7 +579,7 @@ class TelegramWorker:
                         NO_GROUP_CHAT_MESSAGES)
             else:
                 self._do_save_settings(message)
-        else:
+        elif config.answer_forbidden:
             self.telegram_driver.answer_message(
                 message,
                 ACCESS_VIOLATION_MESSAGES)
