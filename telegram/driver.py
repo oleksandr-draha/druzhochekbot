@@ -42,9 +42,9 @@ class TelegramDriver:
             return
 
     def answer_message(self, message, text, parse_mode="Markdown"):
-        self.send_message(message['message']['chat']['id'],
+        self.send_message(message["chat_id"],
                           text,
-                          reply_to=message['message']['message_id'],
+                          reply_to=message["id"],
                           parse_mode=parse_mode)
 
     def admin_message(self, text):

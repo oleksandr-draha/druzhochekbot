@@ -1,6 +1,6 @@
 bot:
-  answer-unknown: false
   answer-forbidden: false
+  answer-unknown: false
   commands: {approve: /approve, code: "/c /\u0441", codes: "/cc /\u0441\u0441 /\u0441\
       c /c\u0441", disapprove: /disapprove, edit: /edit, help: /help, hints: /hints,
     info: /info, pause: /pause, reset: /reset, resume: /resume, save: /save, status: /status,
@@ -9,12 +9,11 @@ bot:
   send-message-path: https://api.telegram.org/bot{key}/sendMessage
   token: 289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w
   updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}
-game: {host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723', login: 'ZHJhZ2F0ZW1w
+game: {host: !!python/unicode 'quest.ua', id: !!python/unicode '56777', login: 'ZHJ1emhvY2hlaw==
 
     ', password: 'WW84OWthVDc=
 
-    ', show_codes_left: 1 2 3 10, show_first_ap_time: true, show_first_hint_time: true, show_time_to_hint: false,
-     show_time_left_minutes: 1
-    4 9}
+    ', show_codes_left: 1 2 3 10, show_first_ap_time: true, show_first_hint_time: true,
+  show_time_left_minutes: 1 4 9, show_time_to_hint: false}
 timeouts: {answer_check_interval: 1, max_attempts: 3, message_check_interval: 1, process_check_interval: 1,
   relogin_interval: 5}
