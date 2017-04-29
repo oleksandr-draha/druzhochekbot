@@ -19,6 +19,7 @@ class GameWorker:
     hints_shown = []
     connected = False
     finished_shown = False
+    not_started_shown = False
     codes_limit_shown = False
     _request_task_text = False
     last_org_message_shown = None
@@ -50,11 +51,18 @@ class GameWorker:
         self.codes_left_shown = []
         self.hints_shown = []
         self.finished_shown = False
+        self.not_started_shown = False
         self.codes_limit_shown = False
 
     def check_updates(self):
         updates = []
         game_page = self.game_driver.get_game_page()
+
+        if self.game_driver.not_started(game_page):
+            if not self.not_started_shown:
+                self.not_started_shown = True
+                updates.append(self.game_driver.get_not_started_message(game_page))
+            return self.replace_forbidden_words(updates)
 
         # TODO: Separate function:
         attempt = 0
@@ -149,8 +157,8 @@ class GameWorker:
                 for codes_left in config.show_codes_left:
                     if codes_left == codes_left_text and codes_left not in self.codes_left_shown:
                         if CODES_LEFT_TEXT.get(codes_left) is not None:
-                                updates.append(CODES_LEFT_TEXT.get(codes_left).format(codes=codes_left))
-                                self.codes_left_shown.append(codes_left)
+                            updates.append(CODES_LEFT_TEXT.get(codes_left).format(codes=codes_left))
+                            self.codes_left_shown.append(codes_left)
                         else:
                             updates.append(CODES_LEFT_TEXT['all'].format(codes=codes_left))
                             self.codes_left_shown.append(codes_left)

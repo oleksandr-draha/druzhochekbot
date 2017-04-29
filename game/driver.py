@@ -49,8 +49,21 @@ class GameDriver:
         finish_locator = u'<font size="+2"><span id="animate">Поздравляем!!!</span></font>'
         blocked_locator = u'<div class="blocked"><div>вы сможете ввести код через'
         return text.find(logged_locator) != -1 or \
-            text.find(finish_locator) != -1 or \
-            text.find(blocked_locator) != -1
+               text.find(finish_locator) != -1 or \
+               text.find(blocked_locator) != -1
+
+    def not_started(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        div_start_locator = u'<div class="infomessage" style="display:block">'
+        div_end_locator = u'</div>'
+        message_locator = u'Игра начнется в'
+        if text.find(div_start_locator) != -1:
+            div_start = text.find(div_start_locator)
+            div_end = text[div_start:].find(div_end_locator)
+            return text[div_start:div_start + div_end].find(message_locator) != -1
+        else:
+            return False
 
     def is_finished(self, text=None):
         if text is None:
@@ -111,8 +124,8 @@ class GameDriver:
         r = self.post_game_page(body=body)
         result = ''
         if r.text.find(incorrect_code_locator) == -1 and \
-            r.text.find(correct_code_locator) != -1 and \
-                r.text.find(blocked_code_locator) == -1:
+                        r.text.find(correct_code_locator) != -1 and \
+                        r.text.find(blocked_code_locator) == -1:
             result = u'\r\n{smile}: {code}'.format(smile=RIGHT_APPEND,
                                                    code=code)
         elif r.text.find(incorrect_code_locator) != -1:
@@ -262,7 +275,17 @@ class GameDriver:
             codes_left_end = codes_left_start + text[codes_left_start:].find(codes_left_end_locator)
             return int(html2text.html2text(text[codes_left_start: codes_left_end]))
 
-    def get_finish_message(self, text):
+    def get_not_started_message(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        message_start_locator = u'Игра начнется в'
+        message_end_locator = u'<span'
+        if text.find(message_start_locator) != -1:
+            message_start = text.find(message_start_locator)
+            message_end = text[message_start:].find(message_end_locator)
+            return text[message_start:message_start + message_end]
+
+    def get_finish_message(self, text=None):
         if text is None:
             text = self.get_game_page()
         finish_start_locator = u'<div class="t_center">'

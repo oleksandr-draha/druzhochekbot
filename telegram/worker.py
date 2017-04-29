@@ -53,9 +53,8 @@ class TelegramWorker:
             self.telegram_driver.admin_message(CHECK_SETTINGS_MESSAGES)
             return False
 
-    @staticmethod
-    def check_answer_from_chat_id(chat_id, messages):
-        for message in messages:
+    def check_answer_from_chat_id(self, chat_id):
+        for message in self.check_new_messages():
             if message["from_id"] == chat_id:
                 return message
 
@@ -67,7 +66,7 @@ class TelegramWorker:
         :rtype: dict
         """
         while True:
-            answer = self.check_answer_from_chat_id(from_id, self.check_new_messages())
+            answer = self.check_answer_from_chat_id(from_id)
             if answer is None:
                 time.sleep(config.answer_check_interval)
                 continue
@@ -80,8 +79,7 @@ class TelegramWorker:
         :rtype: list of dict
         """
         messages = []
-        updates = self.telegram_driver.get_updates()
-        for message in updates:
+        for message in self.telegram_driver.get_updates():
             if message.get('message', {}).get('text') is not None:
                 messages.append(
                     {'id': message.get('message', {}).get('message_id'),
@@ -91,8 +89,7 @@ class TelegramWorker:
         return messages
 
     def check_codes(self, message, command):
-        codes = message["text"].replace(command, '').rstrip().lstrip()
-        codes = codes.split()
+        codes = message["text"].replace(command, '').rstrip().lstrip().split()
         results = NO_CODE_FOUND_MESSAGE
         if len(codes):
             results = ''
@@ -183,8 +180,9 @@ class TelegramWorker:
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
 
-    def _do_codes(self, message, command):
+    def _do_codes(self, message):
         if not self.paused:
+            command = self.get_command(message)
             result = self.check_codes(message, command)
             self.telegram_driver.answer_message(message, result)
         else:
@@ -194,23 +192,24 @@ class TelegramWorker:
                 else PAUSED_MESSAGES[-1]
             self.telegram_driver.answer_message(message, pause_message)
 
-    def codes_command(self, message, command):
+    def codes_command(self, message):
         from_id = message["from_id"]
         chat_id = message["chat_id"]
         if chat_id < 0:
             if chat_id == self.group_chat_id:
-                self._do_codes(message, command)
+                self._do_codes(message)
             elif self._is_admin(from_id):
                 self.telegram_driver.answer_message(message, NOT_GROUP_CHAT_MESSAGES)
             elif config.answer_forbidden:
                 self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
-            self._do_codes(message, command)
+            self._do_codes(message)
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
 
-    def _do_code(self, message, command):
+    def _do_code(self, message):
         if not self.paused:
+            command = self.get_command(message)
             result = self.check_code(message, command)
             self.telegram_driver.answer_message(message, result)
         else:
@@ -220,18 +219,18 @@ class TelegramWorker:
                 else PAUSED_MESSAGES[-1]
             self.telegram_driver.answer_message(message, pause_message)
 
-    def code_command(self, message, command):
+    def code_command(self, message):
         from_id = message["from_id"]
         chat_id = message["chat_id"]
         if chat_id < 0:
             if chat_id == self.group_chat_id:
-                self._do_code(message, command)
+                self._do_code(message)
             elif self._is_admin(from_id):
                 self.telegram_driver.answer_message(message, NO_GROUP_CHAT_MESSAGES)
             elif config.answer_forbidden:
                 self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
-            self._do_code(message, command)
+            self._do_code(message)
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
 
@@ -482,9 +481,9 @@ class TelegramWorker:
             command = self.get_command(message)
 
             if command in config.code_command:
-                self.code_command(message, command)
+                self.code_command(message)
             elif command in config.codes_command:
-                self.codes_command(message, command)
+                self.codes_command(message)
             elif command == config.stop_command:
                 self.stop_command(message)
             elif command == config.resume_command:
