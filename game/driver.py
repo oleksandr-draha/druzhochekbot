@@ -245,7 +245,7 @@ class GameDriver:
         if text is None:
             text = self.get_game_page()
         ap_locator = u'<h3 class="timer">'
-        ap_end_locator = 'u</h3>'
+        ap_end_locator = u'</h3>'
         ap_start = text.find(ap_locator)
         if ap_start != -1:
             ap_start += len(ap_locator)
