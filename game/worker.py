@@ -155,13 +155,12 @@ class GameWorker:
             # Process codes left
             if codes_left_text is not None:
                 for codes_left in config.show_codes_left:
-                    if codes_left == codes_left_text and codes_left not in self.codes_left_shown:
+                    if codes_left_text <= codes_left and codes_left not in self.codes_left_shown:
                         if CODES_LEFT_TEXT.get(codes_left) is not None:
                             updates.append(CODES_LEFT_TEXT.get(codes_left).format(codes=codes_left))
-                            self.codes_left_shown.append(codes_left)
                         else:
                             updates.append(CODES_LEFT_TEXT['all'].format(codes=codes_left))
-                            self.codes_left_shown.append(codes_left)
+                        self.codes_left_shown.append(codes_left)
             # Catch task was changed
             if self.last_task_text != task_text:
                 self.last_task_text = task_text
