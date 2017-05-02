@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 from random import choice
 
@@ -18,6 +20,10 @@ class TelegramDriver:
                                            offset=self.start_offset))
             messages = json.loads(r.content)['result']
             income_message_count = len(messages)
+            # Use in order to get smile code
+            # send /c_+ smile
+            # ord(messages[0]["message"]["text"][3])
+            # ord(messages[0]["message"]["text"][4])
             self.start_offset = messages[income_message_count - 1]['update_id'] + 1 \
                 if income_message_count else 0
             return messages

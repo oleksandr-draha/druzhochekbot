@@ -2,11 +2,11 @@
 import time
 
 from config.config import config
-from config.dictionary import PAUSED_MESSAGES, LETS_GO_MESSAGES, START_PAUSE_MESSAGES, \
-    RESUME_MESSAGES, END_PAUSE_MESSAGES, BYE_MESSAGES, NO_CODE_FOUND_MESSAGE, GIVE_ME_LOGIN, GIVE_ME_PASSWORD, \
+from config.dictionary import PAUSED_MESSAGE, LETS_GO_MESSAGES, START_PAUSE_MESSAGES, \
+    RESUME_MESSAGE, END_PAUSE_MESSAGES, BYE_MESSAGES, NO_CODE_FOUND_MESSAGE, GIVE_ME_LOGIN, GIVE_ME_PASSWORD, \
     GIVE_ME_HOST, GIVE_ME_GAME, AFFIRMATIVE_MESSAGES, NOT_GROUP_CHAT_MESSAGES, CONNECTION_PROBLEM_MESSAGES, \
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, ACCESS_VIOLATION_MESSAGES, \
-    ALREADY_PAUSED_MESSAGES, UNKNOWN_MESSAGES, STATUS_MESSAGE, \
+    ALREADY_PAUSED_MESSAGE, UNKNOWN_MESSAGES, STATUS_MESSAGE, \
     PAUSED_STATUS_MESSAGES, GAME_CONNECTION_MESSAGES, INFO_MESSAGE, NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGES, \
     DISAPPROVE_MESSAGES, BOT_WAS_RESET_MESSAGE, ADMIN_HELP_MESSAGE, CHECK_SETTINGS_MESSAGES, \
     SETTINGS_WERE_CHANGED_MESSAGES, \
@@ -29,8 +29,6 @@ class TelegramWorker:
         self.group_chat_id = None
 
         # Messages dictionary
-        self.pause_messages = 0
-        self.resume_messages = 0
 
         self.load_settings()
 
@@ -130,15 +128,10 @@ class TelegramWorker:
 
     def _do_pause(self, message):
         if not self.paused:
-            self.pause_messages = 0
             self.telegram_driver.answer_message(message, START_PAUSE_MESSAGES)
             self.paused = True
         else:
-            self.pause_messages += 1
-            pause_message = ALREADY_PAUSED_MESSAGES[self.pause_messages - 1] \
-                if len(ALREADY_PAUSED_MESSAGES) > self.pause_messages \
-                else ALREADY_PAUSED_MESSAGES[-1]
-            self.telegram_driver.answer_message(message, pause_message)
+            self.telegram_driver.answer_message(message, ALREADY_PAUSED_MESSAGE)
 
     def pause_command(self, message):
         from_id = message["from_id"]
@@ -156,15 +149,10 @@ class TelegramWorker:
 
     def _do_resume(self, message):
         if self.paused:
-            self.resume_messages = 0
             self.telegram_driver.answer_message(message, END_PAUSE_MESSAGES)
             self.paused = False
         else:
-            self.resume_messages += 1
-            resume_message = RESUME_MESSAGES[self.resume_messages - 1] \
-                if len(RESUME_MESSAGES) > self.resume_messages \
-                else RESUME_MESSAGES[-1]
-            self.telegram_driver.answer_message(message, resume_message)
+            self.telegram_driver.answer_message(message, RESUME_MESSAGE)
 
     def resume_command(self, message):
         from_id = message["from_id"]
@@ -186,11 +174,7 @@ class TelegramWorker:
             result = self.check_codes(message, command)
             self.telegram_driver.answer_message(message, result)
         else:
-            self.pause_messages += 1
-            pause_message = PAUSED_MESSAGES[self.pause_messages - 1] \
-                if len(PAUSED_MESSAGES) > self.pause_messages \
-                else PAUSED_MESSAGES[-1]
-            self.telegram_driver.answer_message(message, pause_message)
+            self.telegram_driver.answer_message(message, PAUSED_MESSAGE)
 
     def codes_command(self, message):
         from_id = message["from_id"]
@@ -213,11 +197,7 @@ class TelegramWorker:
             result = self.check_code(message, command)
             self.telegram_driver.answer_message(message, result)
         else:
-            self.pause_messages += 1
-            pause_message = PAUSED_MESSAGES[self.pause_messages - 1] \
-                if len(PAUSED_MESSAGES) > self.pause_messages \
-                else PAUSED_MESSAGES[-1]
-            self.telegram_driver.answer_message(message, pause_message)
+            self.telegram_driver.answer_message(message, PAUSED_MESSAGE)
 
     def code_command(self, message):
         from_id = message["from_id"]

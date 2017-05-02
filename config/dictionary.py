@@ -3,31 +3,19 @@ from config import config
 
 TASK_APPEND = unichr(55356) + unichr(57152)
 HINTS_APPEND = unichr(55356) + unichr(57119)
-RIGHT_APPEND = unichr(55357) + unichr(56474)
-WRONG_APPEND = unichr(55357) + unichr(56468)
+CORRECT_CODE_APPEND = unichr(9989)
+WRONG_CODE_APPEND = unichr(10060)
 LIMIT_APPEND = unichr(55357) + unichr(56489)
-ORG_MESSAGE_APPEND = unichr(55357) + unichr(56803)
+ORG_MESSAGE_APPEND = unichr(55357) + unichr(56596)
+CODES_LEFT_MESSAGE_APPEND = unichr(9757) + unichr(65039)
+CODE_LEFT_MESSAGE_APPEND = unichr(10071) + unichr(65039)
+ONLY_CODE_LEFT_MESSAGE_APPEND = unichr(8252) + unichr(65039)
+AP_MESSAGE_APPEND = unichr(9201)
+TASK_EDITED_MESSAGE_APPEND = unichr(8265) + unichr(65039)
 
-PAUSED_MESSAGES = [u'Я на паузе.',
-                   u'Серьёзно, я пока не буду коды вбивать.',
-                   u'Ты слышишь? Коды не вбиваю, задания не присылаю',
-                   u'Алё, гараж? Ты или запусти меня или хватит слать тут.',
-                   u'Я ща реально обижусь',
-                   u'Ох ну ты и тугой.',
-                   u'Всё. Ничего не делаю']
-ALREADY_PAUSED_MESSAGES = [u'Я и так на паузе.',
-                           u'Не поверишь. Я и так давно на паузе',
-                           u'Чё ты хочешь? На паузе я']
-RESUME_MESSAGES = [u'Я тебя сейчас наверное удивлю, но я и так работаю.',
-                   u'Прикинь, да, вот просто так можешь отсылать коды и всё будет ок.',
-                   u'Ну хватит уже, нечем другим заняться больше? Давай, работай',
-                   u'Ох ну ты и тугой.',
-                   u'Я и так работаю']
-GREETINGS_MESSAGES = [u"Привет! Я твой дружочек. Соскучился? А я да.",
-                      u"Здравствуй, дорогой! Как дела?",
-                      u"Приветули",
-                      u"Оп-па, какие люди!",
-                      ]
+PAUSED_MESSAGE = u'Я на паузе.'
+ALREADY_PAUSED_MESSAGE = u'Не поверишь. Я и так на паузе'
+RESUME_MESSAGE = u'Я тебя сейчас наверное удивлю, но я и так работаю.'
 BYE_MESSAGES = [u"Всё, давай, пока!",
                 u"Давай, до свидания!",
                 u"До скорых встреч, уважаемый.",
@@ -37,20 +25,11 @@ AFFIRMATIVE_MESSAGES = [u"Я понял тебя, братан",
                         u"Так точно"]
 UNKNOWN_MESSAGES = [u"Я тебя не понимаю"]
 NOT_GROUP_CHAT_MESSAGES = [u"Напиши мне в групповом чате, а не в личку."]
-START_PAUSE_MESSAGES = [u"Отдохну немного.",
-                        u"Ну пауза так пауза",
-                        u"Так. Не трогаю пока ничего тут",
-                        ]
-END_PAUSE_MESSAGES = [u"Так, продолжаем.",
-                      u"И снова здравствуйте!",
-                      u"Бот возобновил работу.",
-                      ]
-LETS_GO_MESSAGES = [u"Ну всё, погнали!",
-                    u"Поехали!",
-                    u"Воо-оо-оойтии-ии-и в игруу-уу-уу"]
-DISAPPROVE_MESSAGES = [u"Что-то мне они не нравятся. Не буду пока их слушать."]
-NO_CODE_FOUND_MESSAGE = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c code1 code2_'
-WRONG_CODE_MESSAGE = u'Неверный код!'
+START_PAUSE_MESSAGES = [u"Так. Не трогаю пока ничего тут"]
+END_PAUSE_MESSAGES = [u"И снова здравствуйте!"]
+LETS_GO_MESSAGES = [u"Воо-оо-оойтии-ии-и в игруу-уу-уу"]
+DISAPPROVE_MESSAGES = [u"Если ты им не доверяешь - значит и я."]
+NO_CODE_FOUND_MESSAGE = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c long code или /cc code 1 code2_'
 GIVE_ME_LOGIN = [u"Давай мне свой *логин* для игры."]
 GIVE_ME_PASSWORD = [u"Давай мне свой *пароль*."]
 GIVE_ME_HOST = [u"На каком *домене* игра?"]
@@ -65,15 +44,9 @@ PLEASE_APPROVE_MESSAGES = [
     u"---*Для дальнейшей работы выполни команду* /approve *в игровом чате*---"]
 TOO_MUCH_ATTEMPTS_MESSAGES = [
     u"---*Слишком много неуспешных попыток авторизоваться. *---"]
-ACCESS_VIOLATION_MESSAGES = [
-    u"*Данная операция запрещена для вас, уважаемый.*",
-]
-NO_GROUP_CHAT_MESSAGES = [
-    u"Я не хочу при незнакомых людях. Давай в личку."
-]
-NOT_FOR_GROUP_CHAT_MESSAGES = [
-    u"Ну не при всех же. Давай в личку."
-]
+ACCESS_VIOLATION_MESSAGES = [u"*Данная операция запрещена для вас, уважаемый.*"]
+NO_GROUP_CHAT_MESSAGES = [u"Я не доверяю этой группе людей."]
+NOT_FOR_GROUP_CHAT_MESSAGES = [u"Такое лучше писать в личку."]
 
 GAME_FINISHED_MESSAGE = u"\r\nИгра окончена."
 CODES_BLOCKED_MESSAGE = u"\r\nВвод кодов заблокирован."
@@ -106,19 +79,19 @@ NEW_HINT_MESSAGE = u'{smile}<b>Новая подсказка!</b> \r\n' \
                    u'<b>---------------------------</b>\r\n' \
                    u'\r\n' \
                    u'\r\n {hint}'
-TASK_EDITED_MESSAGE = u'<b>Задание было изменено!</b> \r\n' \
-                      u'<b>---------------------------</b>\r\n' \
-                      u'\r\n' \
-                      u'\r\n{task}'
+TASK_EDITED_MESSAGE = TASK_EDITED_MESSAGE_APPEND + u'<b>Задание было изменено!</b> \r\n' \
+                                                   u'<b>---------------------------</b>\r\n' \
+                                                   u'\r\n' \
+                                                   u'\r\n{task}'
 
-CODES_LEFT_TEXT = {1: u'<b>Остался {codes} код!</b>',
-                   2: u'Осталось {codes} кода!',
-                   3: u'Осталось {codes} кода!',
-                   4: u'Осталось {codes} кода!',
-                   'all': u'Всего кодов осталось: {codes}'}
+CODES_LEFT_TEXT = {1: ONLY_CODE_LEFT_MESSAGE_APPEND + u'<b>Остался {codes} код!</b>',
+                   2: CODE_LEFT_MESSAGE_APPEND + u'Осталось {codes} кода!',
+                   3: CODE_LEFT_MESSAGE_APPEND + u'Осталось {codes} кода!',
+                   4: CODE_LEFT_MESSAGE_APPEND + u'Осталось {codes} кода!',
+                   'all': CODES_LEFT_MESSAGE_APPEND + u'Всего кодов осталось: {codes}'}
 
 ADMIN_HELP_MESSAGE = u"""
-{code} : Вбить код целиком. Пример: {code} один длинный код
+{code} : Вбить один код целиком. Пример: {code} один длинный код
 {codes} : Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
 {task} : Повторно вывести текущее задание
 {hints} : Повторно вывести список всех подсказок
@@ -151,7 +124,7 @@ ADMIN_HELP_MESSAGE = u"""
     help=config.help_command)
 
 REGULAR_HELP_MESSAGE = u"""
-{code} : Вбить код целиком. Пример: {code} один длинный код
+{code} : Вбить один код целиком. Пример: {code} один длинный код
 {codes} : Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
 {task} : Повторно вывести текущее задание
 {hints} : Повторно вывести список всех подсказок

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+import codecs
+
 from requests import ConnectionError, session
 import html2text
 
-from config.dictionary import RIGHT_APPEND, GAME_FINISHED_MESSAGE, CODES_BLOCKED_MESSAGE, WRONG_APPEND
+from config.dictionary import CORRECT_CODE_APPEND, GAME_FINISHED_MESSAGE, CODES_BLOCKED_MESSAGE, WRONG_CODE_APPEND
 
 QUEST_URL = "http://m.{host}/{path}"
 LOGIN_URL = "login/signin/?return=%2f"
@@ -46,11 +48,11 @@ class GameDriver:
         if text is None:
             text = self.get_game_page()
         logged_locator = u'<label for="Answer">'
-        finish_locator = u'<font size="+2"><span id="animate">Поздравляем!!!</span></font>'
         blocked_locator = u'<div class="blocked"><div>вы сможете ввести код через'
         return text.find(logged_locator) != -1 or \
-               text.find(finish_locator) != -1 or \
-               text.find(blocked_locator) != -1
+               self.is_finished() or \
+               text.find(blocked_locator) != -1 or \
+               self.not_started()
 
     def not_started(self, text=None):
         if text is None:
@@ -73,6 +75,10 @@ class GameDriver:
 
     def get_game_page(self):
         try:
+            # Use to emulate game page
+            # f = codecs.open("list_codes.htm", encoding='utf-8')
+            # game_page = f.read()
+            # return game_page
             return self.session.get(
                 QUEST_URL.format(host=self.host,
                                  path=GAME_URL.format(game_id=self.game_id))).text
@@ -126,12 +132,12 @@ class GameDriver:
         if r.text.find(incorrect_code_locator) == -1 and \
                         r.text.find(correct_code_locator) != -1 and \
                         r.text.find(blocked_code_locator) == -1:
-            result = u'\r\n{smile}: {code}'.format(smile=RIGHT_APPEND,
+            result = u'\r\n{smile}: {code}'.format(smile=CORRECT_CODE_APPEND,
                                                    code=code)
         elif r.text.find(incorrect_code_locator) != -1:
             result = u'\r\n{smile}: {code}'.format(
                 code=code,
-                smile=WRONG_APPEND)
+                smile=WRONG_CODE_APPEND)
         elif r.text.find(blocked_code_locator) != -1:
             result = CODES_BLOCKED_MESSAGE
         elif self.is_finished(r.text):
