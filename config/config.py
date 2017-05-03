@@ -194,4 +194,5 @@ class DruzhochekConfig(object):
     def show_first_hint_time(self):
         return self.config.get("game", {}).get("show_first_hint_time")
 
+
 config = DruzhochekConfig()
