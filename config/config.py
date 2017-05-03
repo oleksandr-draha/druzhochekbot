@@ -142,6 +142,10 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("help")
 
     @property
+    def gap_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("gap")
+
+    @property
     def admin_ids(self):
         encoded = self.config.get("bot", {}).get("obfuscation_id").split()
         return [int(base64.decodestring(password)) for password in encoded]

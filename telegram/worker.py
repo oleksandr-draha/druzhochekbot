@@ -377,6 +377,27 @@ class TelegramWorker:
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
 
+    def gap_command(self, message):
+        from_id = message["from_id"]
+        chat_id = message["chat_id"]
+        if chat_id < 0:
+            if chat_id == self.group_chat_id:
+                self._do_gap(message)
+            elif self._is_admin(from_id):
+                self.telegram_driver.answer_message(message, NO_GROUP_CHAT_MESSAGES)
+            elif config.answer_forbidden:
+                self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
+        elif self._is_admin(from_id):
+            self._do_gap(message)
+        elif config.answer_forbidden:
+            self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
+
+    def _do_gap(self, message):
+        codes_gap = self.game_worker.game_driver.get_codes_gap()
+        self.telegram_driver.answer_message(message,
+                                            codes_gap)
+
+
     def _do_edit_settings(self, message):
         from_id = message["from_id"]
 
@@ -490,6 +511,8 @@ class TelegramWorker:
                 self.hints_command(message)
             elif command.startswith(config.help_command):
                 self.help_command(message)
+            elif command.startswith(config.gap_command):
+                self.gap_command(message)
             # TODO: add adding admins
             # NTI1MjkyNzc=
             # Step 1 - add admin

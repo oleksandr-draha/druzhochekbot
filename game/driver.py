@@ -76,9 +76,9 @@ class GameDriver:
     def get_game_page(self):
         try:
             # Use to emulate game page
-            # f = codecs.open("list_codes.htm", encoding='utf-8')
-            # game_page = f.read()
-            # return game_page
+            f = codecs.open("list_codes.htm", encoding='utf-8')
+            game_page = f.read()
+            return game_page
             return self.session.get(
                 QUEST_URL.format(host=self.host,
                                  path=GAME_URL.format(game_id=self.game_id))).text
@@ -329,3 +329,56 @@ class GameDriver:
             org_message_start += len(org_message_locator)
             org_message_end = org_message_start + text[org_message_start:].find(org_message_end_locator)
             return html2text.html2text(text[org_message_start: org_message_end])
+
+    def get_codes_gap(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        not_entered_code_locator = u"""<span class="color_dis">код не введён</span>"""
+        code_name_locator_end = u">p<"
+        code_name_locator_start = u"< :"
+        start = 0
+        codes = []
+        code_index = text.find(not_entered_code_locator[start:])
+        while code_index != -1:
+            text_reversed = text[code_index::-1]
+            code_name_start = text_reversed.find(code_name_locator_start) + len(code_name_locator_start)
+            code_name_end = text_reversed.find(code_name_locator_end)
+            code_name = text_reversed[code_name_start:code_name_end][::-1]
+            codes.append(code_name)
+            start = code_index + len(not_entered_code_locator)
+            code_index = text[start:].find(not_entered_code_locator)
+            if code_index != -1:
+                code_index += start
+        # Group codes
+        all_numbers = True
+        for code in codes:
+            if not code.isdigit():
+                all_numbers = False
+                break
+        codes_grouped = ''
+        if all_numbers:
+            decade = None
+            consistent_codes = []
+            for code in codes:
+                # TODO: Write consisten codes
+                # if not(len(consistent_codes)):
+                #     consistent_codes.append(int(code))
+                # if int(code) - 1 == consistent_codes[-1]:
+                #     consistent_codes.append(int(code))
+                # else:
+                #     if len(consistent_codes) > 1:
+                #         codes_grouped += '%s - %s' % (consistent_codes[0], consistent_codes[-1])
+                #     consistent_codes = [int(code)]
+                current_decade = divmod(int(code), 10)[0]
+                if decade is None:
+                    decade = current_decade
+                if current_decade != decade:
+                    codes_grouped = codes_grouped[:-2]
+                    codes_grouped += '\r\n'
+                    decade = current_decade
+                codes_grouped += code + ', '
+            codes_grouped = codes_grouped[:-2]
+        else:
+            for code in codes:
+                codes_grouped += code + '\r\n'
+        return codes_grouped
