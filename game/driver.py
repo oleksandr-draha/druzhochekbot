@@ -76,9 +76,9 @@ class GameDriver:
     def get_game_page(self):
         try:
             # Use to emulate game page
-            f = codecs.open("list_codes.htm", encoding='utf-8')
-            game_page = f.read()
-            return game_page
+            # f = codecs.open("list_codes.htm", encoding='utf-8')
+            # game_page = f.read()
+            # return game_page
             return self.session.get(
                 QUEST_URL.format(host=self.host,
                                  path=GAME_URL.format(game_id=self.game_id))).text
