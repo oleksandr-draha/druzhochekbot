@@ -60,7 +60,7 @@ class TelegramWorker:
         """
         Wait for message from specified id
         :param from_id: int
-        :return: 
+        :return:
         :rtype: dict
         """
         while True:
@@ -397,7 +397,6 @@ class TelegramWorker:
         self.telegram_driver.answer_message(message,
                                             codes_gap)
 
-
     def _do_edit_settings(self, message):
         from_id = message["from_id"]
 
@@ -514,7 +513,8 @@ class TelegramWorker:
             elif command.startswith(config.gap_command):
                 self.gap_command(message)
             # TODO: add adding admins
-            # NTI1MjkyNzc=
+            # main MTcwMzAyMTI3
+            # varg NTI1MjkyNzc=
             # Step 1 - add admin
             # Step 2 - select password
             # Step 3 - wait for some account to send this password and

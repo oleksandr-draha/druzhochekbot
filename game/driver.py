@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import codecs
-
 from requests import ConnectionError, session
 import html2text
 
@@ -50,9 +48,9 @@ class GameDriver:
         logged_locator = u'<label for="Answer">'
         blocked_locator = u'<div class="blocked"><div>вы сможете ввести код через'
         return text.find(logged_locator) != -1 or \
-               self.is_finished() or \
-               text.find(blocked_locator) != -1 or \
-               self.not_started()
+            self.is_finished() or \
+            text.find(blocked_locator) != -1 or \
+            self.not_started()
 
     def not_started(self, text=None):
         if text is None:
@@ -130,8 +128,8 @@ class GameDriver:
         r = self.post_game_page(body=body)
         result = ''
         if r.text.find(incorrect_code_locator) == -1 and \
-                        r.text.find(correct_code_locator) != -1 and \
-                        r.text.find(blocked_code_locator) == -1:
+           r.text.find(correct_code_locator) != -1 and \
+           r.text.find(blocked_code_locator) == -1:
             result = u'\r\n{smile}: {code}'.format(smile=CORRECT_CODE_APPEND,
                                                    code=code)
         elif r.text.find(incorrect_code_locator) != -1:
@@ -322,8 +320,8 @@ class GameDriver:
     def get_org_message(self, text=None):
         if text is None:
             text = self.get_game_page()
-        org_message_locator = u'<p class="globalmess">'
-        org_message_end_locator = u'</p>'
+        org_message_locator = u"""<p class="globalmess">"""
+        org_message_end_locator = u"""</p>"""
         org_message_start = text.find(org_message_locator)
         if org_message_start != -1:
             org_message_start += len(org_message_locator)
@@ -339,6 +337,7 @@ class GameDriver:
         start = 0
         codes = []
         code_index = text.find(not_entered_code_locator[start:])
+        # Find all not entered codes
         while code_index != -1:
             text_reversed = text[code_index::-1]
             code_name_start = text_reversed.find(code_name_locator_start) + len(code_name_locator_start)
@@ -349,36 +348,64 @@ class GameDriver:
             code_index = text[start:].find(not_entered_code_locator)
             if code_index != -1:
                 code_index += start
+        # Test example of codes
+        # codes = ['1', '2', '3', '5', '6', '8', '9', '10',
+        #          '11', '12', '13', '14', '15', '16', '17',
+        #          '18', '19', '20', '21', '22', '23', '24',
+        #          '25', '26', '27', '28', '29', '30', '31',
+        #          '32', '33', '34', '35', '36', '37', '38',
+        #          '39', '40', '51', '52', '53', '54', '64',
+        #          '67', '68', '77', '101', '111', '112',
+        #          '113', '114', '177']
+
         # Group codes
-        all_numbers = True
+        numbers = []
+        not_numbers = []
         for code in codes:
-            if not code.isdigit():
-                all_numbers = False
-                break
+            if code.isdigit():
+                numbers.append(code)
+            else:
+                not_numbers.append(code)
         codes_grouped = ''
-        if all_numbers:
-            decade = None
+        if len(numbers):
             consistent_codes = []
-            for code in codes:
-                # TODO: Write consisten codes
-                # if not(len(consistent_codes)):
-                #     consistent_codes.append(int(code))
-                # if int(code) - 1 == consistent_codes[-1]:
-                #     consistent_codes.append(int(code))
-                # else:
-                #     if len(consistent_codes) > 1:
-                #         codes_grouped += '%s - %s' % (consistent_codes[0], consistent_codes[-1])
-                #     consistent_codes = [int(code)]
-                current_decade = divmod(int(code), 10)[0]
+            separated_by_intervals = []
+            if len(numbers):
+                consistent_codes.append(int(numbers[0]))
+                # TODO:
+                # Crutch in order not to lose last code number
+                # If you don't like it - fell free to create new algorithm!
+                numbers.append(0)
+            for code in numbers[1:]:
+
+                if int(code) - 1 == consistent_codes[-1]:
+                    consistent_codes.append(int(code))
+                else:
+                    if len(consistent_codes) == 2:
+                        separated_by_intervals.append([consistent_codes[0], consistent_codes[0]])
+                        separated_by_intervals.append([consistent_codes[1], consistent_codes[1]])
+                    else:
+                        separated_by_intervals.append([consistent_codes[0], consistent_codes[-1]])
+                    consistent_codes = [int(code)]
+
+            decade = None
+            for code_pair in separated_by_intervals:
+                # Format by decades
+                current_decade = divmod(int(code_pair[0]), 10)[0]
                 if decade is None:
                     decade = current_decade
                 if current_decade != decade:
                     codes_grouped = codes_grouped[:-2]
                     codes_grouped += '\r\n'
                     decade = current_decade
-                codes_grouped += code + ', '
+                if code_pair[0] == code_pair[1]:
+                    codes_grouped += str(code_pair[0]) + ', '
+                else:
+                    # Add intervals
+                    codes_grouped += str(code_pair[0]) + ' — ' + str(code_pair[1]) + ', '
             codes_grouped = codes_grouped[:-2]
-        else:
-            for code in codes:
+            codes_grouped += '\r\n'
+        if len(not_numbers):
+            for code in not_numbers:
                 codes_grouped += code + '\r\n'
         return codes_grouped
