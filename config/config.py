@@ -154,6 +154,10 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("add_admin")
 
     @property
+    def delete_admin_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("delete_admin")
+
+    @property
     def add_field_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("add_field")
 
@@ -172,6 +176,12 @@ class DruzhochekConfig(object):
 
     def add_admin_id(self, admin_id):
         admin_ids = self.admin_ids + [admin_id]
+        encoded = [base64.encodestring(str(a)) for a in admin_ids]
+        self.admin_ids = encoded
+
+    def delete_admin_id(self, admin_id):
+        admin_ids = self.admin_ids[:]
+        admin_ids.remove(admin_id)
         encoded = [base64.encodestring(str(a)) for a in admin_ids]
         self.admin_ids = encoded
 

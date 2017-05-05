@@ -2,7 +2,7 @@
 from time import sleep
 
 from config import config
-from config.dictionary import CODES_LEFT_TEXT, NEW_TASK_MESSAGE, TASK_MESSAGE, AP_MESSAGE_APPEND, NEW_HINT_MESSAGE, \
+from config.dictionary import CODES_LEFT_TEXT, NEW_TASK_MESSAGE, AP_MESSAGE_APPEND, NEW_HINT_MESSAGE, \
     HINTS_APPEND, LIMIT_APPEND, ORG_MESSAGE_APPEND, TASK_EDITED_MESSAGE
 from game.driver import GameDriver
 
@@ -11,6 +11,7 @@ class Processor:
     game_page = None
     last_level_shown = None
     last_task_text = None
+    all_hints = {}
     ap_time_shown = []
     hints_time_shown = []
     codes_left_shown = []
@@ -30,6 +31,7 @@ class Processor:
     def reset_level(self):
         self.last_level_shown = None
         self.last_task_text = None
+        self.all_hints = {}
         self.ap_time_shown = []
         self.hints_time_shown = []
         self.codes_left_shown = []
@@ -82,17 +84,6 @@ class Processor:
                 task=task_text))
         return updates
 
-    def process_force_task_text(self):
-        updates = []
-        current_level = self.game_driver.set_level_params(self.game_page)
-        task_text = self.game_driver.get_task(self.game_page)
-        if self._request_task_text:
-            self._request_task_text = False
-            updates.append(TASK_MESSAGE.format(
-                level_number=current_level["LevelNumber"],
-                task=task_text))
-        return updates
-
     def process_ap_time(self):
         updates = []
         time_to_ap_text = self.game_driver.get_time_to_ap(self.game_page)
@@ -114,6 +105,7 @@ class Processor:
         updates = []
         hint_will_be_shown = False
         hints = self.game_driver.get_all_hints(self.game_page)
+        self.all_hints = hints
         time_to_hints_text = self.game_driver.get_time_to_hints(self.game_page)
         for hint_id in sorted(hints.keys()):
             if hint_id not in self.hints_shown and hint_id:

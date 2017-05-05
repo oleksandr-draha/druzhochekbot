@@ -42,8 +42,6 @@ class GameWorker(Processor):
 
             # If new task was received:
             updates += self.process_new_task_received()
-            # If task text was requested
-            updates += self.process_force_task_text()
             # Process AP time
             updates += self.process_ap_time()
             # Process hints

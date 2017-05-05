@@ -12,7 +12,9 @@ from config.dictionary import PAUSED_MESSAGE, LETS_GO_MESSAGES, START_PAUSE_MESS
     SETTINGS_WERE_CHANGED_MESSAGES, \
     SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, REGULAR_HELP_MESSAGE, \
     GAME_FINISHED_MESSAGE, CODES_BLOCKED_MESSAGE, CREATE_PASSPHRASE_FOR_ADD_ADMIN, WAITING_FOR_NEW_ADMIN, \
-    WAITING_FOR_NEW_ADMIN_WAS_CANCELED, WAITING_FOR_NEW_ADMIN_WAS_FINISHED, DUPLICATE_ADMIN_ID
+    WAITING_FOR_NEW_ADMIN_WAS_CANCELED, WAITING_FOR_NEW_ADMIN_WAS_FINISHED, DUPLICATE_ADMIN_ID, TASK_MESSAGE, \
+    NEW_HINT_MESSAGE, HINTS_APPEND, ADMIN_NOT_FOUND_MESSAGE, ADMIN_DELETED_MESSAGE, CANNOT_DELETE_ADMIN_MESSAGE, \
+    DELETE_ADMIN_ID_MESSAGE
 from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.driver import TelegramDriver
@@ -254,30 +256,48 @@ class TelegramWorker:
 
     def _do_add_admin(self, message):
         from_id = message["from_id"]
-        self.telegram_driver.send_message(
-            from_id,
-            CREATE_PASSPHRASE_FOR_ADD_ADMIN)
-        self.add_user_passphrase = self.wait_for_answer(from_id)["text"]
-        self.telegram_driver.answer_message(message, WAITING_FOR_NEW_ADMIN)
-        new_user_message = self.wait_for_message_from_new_user(self.add_user_passphrase)
-        if new_user_message["text"] != config.cancel_command:
-            if self._is_admin(new_user_message["from_id"]):
-                self.telegram_driver.answer_message(
-                    new_user_message,
-                    DUPLICATE_ADMIN_ID)
-                self.telegram_driver.answer_message(message, WAITING_FOR_NEW_ADMIN_WAS_CANCELED)
+        if len(message["text"].split()) > 1:
+            admin_to_add = message["text"].split()[1]
+            if not admin_to_add.isdigit():
+                self.telegram_driver.answer_message(message, ADMIN_NOT_FOUND_MESSAGE)
             else:
-                config.add_admin_id(new_user_message["from_id"])
-                self.telegram_driver.answer_message(
-                    message,
-                    WAITING_FOR_NEW_ADMIN_WAS_FINISHED.format(admin_id=new_user_message["from_id"]))
-                self.telegram_driver.answer_message(
-                    new_user_message,
-                    WAITING_FOR_NEW_ADMIN_WAS_FINISHED.format(admin_id=new_user_message["from_id"]))
+                if self._is_admin(int(admin_to_add)):
+                    self.telegram_driver.answer_message(
+                        message,
+                        DUPLICATE_ADMIN_ID)
+                else:
+                    config.add_admin_id(int(admin_to_add))
+                    self.telegram_driver.answer_message(
+                        message,
+                        WAITING_FOR_NEW_ADMIN_WAS_FINISHED.format(admin_id=int(admin_to_add)))
+                    self.telegram_driver.send_message(
+                        admin_to_add,
+                        WAITING_FOR_NEW_ADMIN_WAS_FINISHED.format(admin_id=int(admin_to_add)))
         else:
-            self.telegram_driver.answer_message(message, WAITING_FOR_NEW_ADMIN_WAS_CANCELED)
+            self.telegram_driver.send_message(
+                from_id,
+                CREATE_PASSPHRASE_FOR_ADD_ADMIN)
+            self.add_user_passphrase = self.wait_for_answer(from_id)["text"]
+            self.telegram_driver.answer_message(message, WAITING_FOR_NEW_ADMIN)
+            new_user_message = self.wait_for_message_from_new_user(self.add_user_passphrase)
+            if new_user_message["text"] != config.cancel_command:
+                if self._is_admin(new_user_message["from_id"]):
+                    self.telegram_driver.answer_message(
+                        new_user_message,
+                        DUPLICATE_ADMIN_ID)
+                    self.telegram_driver.answer_message(message, WAITING_FOR_NEW_ADMIN_WAS_CANCELED)
+                else:
+                    config.add_admin_id(new_user_message["from_id"])
+                    self.telegram_driver.answer_message(
+                        message,
+                        WAITING_FOR_NEW_ADMIN_WAS_FINISHED.format(admin_id=new_user_message["from_id"]))
+                    self.telegram_driver.answer_message(
+                        new_user_message,
+                        WAITING_FOR_NEW_ADMIN_WAS_FINISHED.format(admin_id=new_user_message["from_id"]))
+            else:
+                self.telegram_driver.answer_message(message, WAITING_FOR_NEW_ADMIN_WAS_CANCELED)
 
-        self.add_user_passphrase = None
+            self.add_user_passphrase = None
 
     def add_admin_command(self, message):
         from_id = message["from_id"]
@@ -290,6 +310,36 @@ class TelegramWorker:
                     self.telegram_driver.answer_message(message, NO_GROUP_CHAT_MESSAGES)
             else:
                 self._do_add_admin(message)
+        elif config.answer_forbidden:
+            self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
+
+    def _do_delete_admin(self, message):
+        from_id = message["from_id"]
+        if len(config.admin_ids) == 1:
+            self.telegram_driver.answer_message(message, CANNOT_DELETE_ADMIN_MESSAGE)
+        else:
+            if len(message["text"].split()) > 1:
+                admin_to_delete = message["text"].split()[1]
+            else:
+                self.telegram_driver.answer_message(message, DELETE_ADMIN_ID_MESSAGE)
+                admin_to_delete = self.wait_for_answer(from_id)["text"]
+            if not admin_to_delete.isdigit() or int(admin_to_delete) not in config.admin_ids:
+                self.telegram_driver.answer_message(message, ADMIN_NOT_FOUND_MESSAGE)
+            else:
+                config.delete_admin_id(int(admin_to_delete))
+                self.telegram_driver.answer_message(message, ADMIN_DELETED_MESSAGE)
+
+    def delete_admin_command(self, message):
+        from_id = message["from_id"]
+        chat_id = message["chat_id"]
+        if self._is_admin(from_id):
+            if chat_id < 0:
+                if chat_id == self.group_chat_id:
+                    self.telegram_driver.answer_message(message, NOT_FOR_GROUP_CHAT_MESSAGES)
+                else:
+                    self.telegram_driver.answer_message(message, NO_GROUP_CHAT_MESSAGES)
+            else:
+                self._do_delete_admin(message)
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
 
@@ -347,7 +397,8 @@ class TelegramWorker:
             login=self.game_worker.game_driver.login,
             password=self.game_worker.game_driver.password,
             host=self.game_worker.game_driver.host,
-            game_id=self.game_worker.game_driver.game_id)
+            game_id=self.game_worker.game_driver.game_id,
+            admins=config.admin_ids)
         self.telegram_driver.answer_message(message, info_message)
 
     def info_command(self, message):
@@ -381,39 +432,49 @@ class TelegramWorker:
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
 
-    def _do_task(self):
-        self.game_worker._request_task_text = True
+    def _do_task(self, message):
+        task_text = TASK_MESSAGE.format(
+            level_number=self.game_worker.last_level_shown,
+            task=self.game_worker.last_task_text)
+        self.telegram_driver.answer_message(message, task_text, parse_mode="HTML")
 
     def task_command(self, message):
         from_id = message["from_id"]
         chat_id = message["chat_id"]
         if chat_id < 0:
             if chat_id == self.group_chat_id:
-                self._do_task()
+                self._do_task(message)
             elif self._is_admin(from_id):
                 self.telegram_driver.answer_message(message, NO_GROUP_CHAT_MESSAGES)
             elif config.answer_forbidden:
                 self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
-            self._do_task()
+            self._do_task(message)
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
 
-    def _do_hints(self):
-        self.game_worker.hints_shown = []
+    def _do_hints(self, message):
+        hints = []
+        for hint_id in sorted(self.game_worker.all_hints.keys()):
+            message.append(NEW_HINT_MESSAGE.format(
+                smile=HINTS_APPEND,
+                hint_number=hint_id,
+                hint=self.game_worker.all_hints[hint_id]))
+        for hint in hints:
+            self.telegram_driver.answer_message(message, hint, parse_mode="HTML")
 
     def hints_command(self, message):
         from_id = message["from_id"]
         chat_id = message["chat_id"]
         if chat_id < 0:
             if chat_id == self.group_chat_id:
-                self._do_hints()
+                self._do_hints(message)
             elif self._is_admin(from_id):
                 self.telegram_driver.answer_message(message, NO_GROUP_CHAT_MESSAGES)
             elif config.answer_forbidden:
                 self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
         elif self._is_admin(from_id):
-            self._do_hints()
+            self._do_hints(message)
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
 
@@ -576,6 +637,8 @@ class TelegramWorker:
                 self.gap_command(message)
             elif command == config.add_admin_command:
                 self.add_admin_command(message)
+            elif command == config.delete_admin_command:
+                self.delete_admin_command(message)
             # TODO: add adding admins
             # main MTcwMzAyMTI3
             # varg NTI1MjkyNzc=
@@ -594,4 +657,6 @@ class TelegramWorker:
                 self.telegram_driver.admin_message(CONNECTION_PROBLEM_MESSAGES)
             else:
                 for update in updates:
-                    self.telegram_driver.send_message(self.group_chat_id, update, parse_mode="HTML")
+                    self.telegram_driver.send_message(self.group_chat_id,
+                                                      update,
+                                                      parse_mode="HTML")
