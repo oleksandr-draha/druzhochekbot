@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from game.processors import Processor
+from game.processors import GameProcessor
 
 REPLACE_DICTIONARY = {u'<br/>': "\r\n",
                       u'**Автопереход**': u'<b>Автопереход</b>'}
 
 
-class GameWorker(Processor):
+class GameWorker(GameProcessor):
     @staticmethod
     def replace_forbidden_words(updates):
         """

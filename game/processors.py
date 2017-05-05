@@ -7,7 +7,7 @@ from config.dictionary import CODES_LEFT_TEXT, NEW_TASK_MESSAGE, AP_MESSAGE_APPE
 from game.driver import GameDriver
 
 
-class Processor:
+class GameProcessor:
     game_page = None
     last_level_shown = None
     last_task_text = None

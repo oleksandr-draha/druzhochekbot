@@ -22,7 +22,9 @@ bot:
   kc_passphrase: 'dGVzdDF0ZXN0MQ==
 
     '
-  obfuscation_id: kc4KJpqv
+  obfuscation_id: 'kc4KJpqv
+
+    '
   send-message-path: https://api.telegram.org/bot{key}/sendMessage
   token: 289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w
   updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}
