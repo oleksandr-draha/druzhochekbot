@@ -12,7 +12,7 @@ from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGE
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, CONNECTION_PROBLEM_MESSAGES, CHECK_SETTINGS_MESSAGES, \
     SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, UNKNOWN_MESSAGES, NEW_ADMIN_WAS_ADDED, \
     NEW_FIELD_WAS_ADDED, NEW_KC_WAS_ADDED, NO_USER_ID_MESSAGE, HELLO_NEW_USER, HELLO_NEW_ADMIN, FIELD_TRIED_CODE, \
-    NO_HINTS
+    NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED
 from game.driver import GameDriver
 from game.worker import GameWorker
 
@@ -314,6 +314,18 @@ class TelegramProcessor:
                 self.telegram_driver.answer_message(
                     message,
                     DUPLICATE_PASS)
+
+    def do_clearadmin(self, message):
+        config.clear_admins()
+        self.telegram_driver.answer_message(message, ADMIN_CLEARED)
+
+    def do_clearfield(self, message):
+        config.clear_fields()
+        self.telegram_driver.answer_message(message, FIELD_CLEARED)
+
+    def do_clearkc(self, message):
+        config.clear_kcs()
+        self.telegram_driver.answer_message(message, KC_CLEARED)
 
     def _do_disapprove(self, message):
         chat_id = message["chat_id"]

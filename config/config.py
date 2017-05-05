@@ -191,6 +191,18 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("edit_kc_pass")
 
     @property
+    def clearadmin_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("clearadmin")
+
+    @property
+    def clearfield_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("clearfield")
+
+    @property
+    def clearkc_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("clearkc")
+
+    @property
     def passphrases(self):
         return [self.admin_passphrase, self.field_passphrase, self.kc_passphrase]
 
@@ -244,6 +256,18 @@ class DruzhochekConfig(object):
         admin_ids.remove(admin_id)
         encoded = msgpack.dumps(admin_ids)
         self.admin_ids = base64.encodestring(encoded)
+
+    def clear_admins(self):
+        encoded = msgpack.dumps([])
+        self.admin_ids = base64.encodestring(encoded)
+
+    def clear_fields(self):
+        encoded = msgpack.dumps([])
+        self.field_ids = base64.encodestring(encoded)
+
+    def clear_kcs(self):
+        encoded = msgpack.dumps([])
+        self.kc_ids = base64.encodestring(encoded)
 
     @property
     def field_ids(self):

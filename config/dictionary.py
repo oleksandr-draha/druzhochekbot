@@ -30,13 +30,16 @@ LETS_GO_MESSAGES = [u"Воо-оо-оойтии-ии-и в игруу-уу-уу"]
 DISAPPROVE_MESSAGES = [u"Если ты им не доверяешь - значит и я."]
 NO_CODE_FOUND_MESSAGE = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c long code или /cc code 1 code2_'
 
-HELLO_NEW_USER = u"""Добро пожаловать в рядах нашей доблестной команды.
-Для знакомства с ботом прочитайте доступные команды /help
+ADMIN_CLEARED = u"""Все админы были удалены."""
+FIELD_CLEARED = u"""Все полевые игроки были удалены."""
+KC_CLEARED = u"""Все штабные игроки были удалены."""
+HELLO_NEW_USER = u"""Добро пожаловать в ряды нашей доблестной команды.
+Для знакомства с ботом прочитай доступные команды /help
 *ВНИМАНИЕ!*
 Все следующие сообщения, которые ты будешь писать мне в личку - будут автоматически вбиваться в систему как коды. 
 Будь внимателен!"""
 HELLO_NEW_ADMIN = u"""Добро пожаловать в ряды нашей доблестной команды.
-Для знакомства с ботом прочитайте доступные команды /help"""
+Для знакомства с ботом прочитай доступные команды /help"""
 NO_USER_ID_MESSAGE = u"""Нет user id для добавления. Пример:
 /addadmin 123456"""
 NEW_ADMIN_WAS_ADDED = u"""Новый админ добавлен: {nickname}.
@@ -137,47 +140,6 @@ CODES_LEFT_TEXT = {1: ONLY_CODE_LEFT_MESSAGE_APPEND + u'<b>Остался {codes
                    4: CODE_LEFT_MESSAGE_APPEND + u'Осталось {codes} кода!',
                    'all': CODES_LEFT_MESSAGE_APPEND + u'Всего кодов осталось: {codes}'}
 
-ADMIN_HELP_MESSAGE = u"""
-Админ-секция:
-{approve} : Добавить чат в список доверенных
-{disapprove} : Удалить чат из списка доверенных
-
-{edit} : Изменить текущие настройки бота
-{save} : Перезаписать настройки бота по-умолчанию
-{reset} : Обнулить список полученных заданий/подсказок
-
-{pause} : Прекратить отслеживание заданий и вбитие кодов
-{resume} : Возобновить отслеживание заданий и вбитие кодов
-{stop} : Закончить работу с ботом
-
-Пользовательские функции:
-{code} : Вбить один код целиком. Пример: {code} один длинный код
-{codes} : Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
-{gap} : Вывести список отсутсвующих кодов
-{task} : Повторно вывести текущее задание
-{hints} : Повторно вывести список всех подсказок
-
-{status} : Показать текущий статус бота
-{info} : Вывести детальную информацию о настройках бота
-{help} : Вывести помощь
-""".format(
-    code=config.code_command[0],
-    codes=config.codes_command[0],
-    gap=config.gap_command,
-    task=config.task_command,
-    hints=config.hints_command,
-    approve=config.approve_command,
-    disapprove=config.disapprove_command,
-    edit=config.edit_command,
-    save=config.save_command,
-    reset=config.reset_command,
-    pause=config.pause_command,
-    stop=config.stop_command,
-    resume=config.resume_command,
-    status=config.status_command,
-    info=config.info_command,
-    help=config.help_command)
-
 REGULAR_HELP_MESSAGE = u"""
 {code} : Вбить один код целиком. Пример: {code} один длинный код
 {codes} : Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
@@ -192,3 +154,57 @@ REGULAR_HELP_MESSAGE = u"""
     hints=config.hints_command,
     status=config.status_command,
     help=config.help_command)
+
+ADMIN_HELP_MESSAGE = u"""
+*Админ-секция:*
+{approve} : Добавить чат в список доверенных
+{disapprove} : Удалить чат из списка доверенных
+
+{edit} : Изменить текущие настройки бота
+{save} : Перезаписать настройки бота по-умолчанию
+{reset} : Обнулить список полученных заданий/подсказок
+
+{pause} : Прекратить отслеживание заданий и вбитие кодов
+{resume} : Возобновить отслеживание заданий и вбитие кодов
+{stop} : Закончить работу с ботом
+
+{addadmin}: Добавить нового админа. Необходимо указать id пользователя
+{addfield}: Добавить нового полевого игрока. Необходимо указать id пользователя
+{addkc}: Добавить нового штабного игрока. Необходимо указать id пользователя
+{deleteadmin}: Удалить админа по его id
+{deletefield}: Удалить полевого игрока по его id
+{deletekc}: Удалить штабного игрока по его id
+{clearadmin}: Очистить список админов
+{clearfield}: Очистить список полевых игроков
+{clearkc}: Очистить список штабных игроков
+
+{eap}: Изменить инвайт-код для админов
+{efp}: Изменить инвайт-код для полевых игроков
+{ekp}: Изменить инвайт код для штабных игроков
+
+*Пользовательские функции:*
+{regular}
+""".format(
+    approve=config.approve_command,
+    disapprove=config.disapprove_command,
+    edit=config.edit_command,
+    save=config.save_command,
+    reset=config.reset_command,
+    pause=config.pause_command,
+    stop=config.stop_command,
+    resume=config.resume_command,
+    info=config.info_command,
+    help=config.help_command,
+    addadmin=config.add_admin_command,
+    addfield=config.add_field_command,
+    addkc=config.add_kc_command,
+    deleteadmin=config.delete_admin_command,
+    deletefield=config.delete_field_command,
+    deletekc=config.delete_kc_command,
+    clearadmin=config.clearadmin_command,
+    clearfield=config.clearfield_command,
+    clearkc=config.clearkc_command,
+    eap=config.edit_admin_pass,
+    efp=config.edit_field_pass,
+    ekp=config.edit_kc_pass,
+    regular=REGULAR_HELP_MESSAGE)

@@ -102,6 +102,12 @@ class TelegramWorker(TelegramProcessor):
                 self.admin_command(message, self.do_edit_field_pass)
             elif command == config.edit_kc_pass:
                 self.admin_command(message, self.do_edit_kc_pass)
+            elif command == config.clearadmin_command:
+                self.admin_command(message, self.do_clearadmin)
+            elif command == config.clearfield_command:
+                self.admin_command(message, self.do_clearfield)
+            elif command == config.clearkc_command:
+                self.admin_command(message, self.do_clearkc)
             else:
                 self.unknown_command(message)
 

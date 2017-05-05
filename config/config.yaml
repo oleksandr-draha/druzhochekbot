@@ -9,7 +9,8 @@ bot:
     delete_admin: /deleteadmin, delete_field: /deletefield, delete_kc: /deletekc,
     disapprove: /disapprove, edit: /edit, edit_admin_pass: /eap, edit_field_pass: /efp,
     edit_kc_pass: /ekp, gap: /gap, help: /help, hints: /hints, info: /info, pause: /pause,
-    reset: /reset, resume: /resume, save: /save, status: /status, stop: /stop, task: /task}
+    reset: /reset, resume: /resume, save: /save, status: /status, stop: /stop, task: /task,
+    clearfield: /clearfield, clearkc: /clearkc, clearadmin: /clearadmin}
   field_ids: 'kc4FL5FM
 
     '
