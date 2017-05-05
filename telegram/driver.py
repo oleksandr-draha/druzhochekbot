@@ -30,6 +30,15 @@ class TelegramDriver:
         except ConnectionError:
             return {}
 
+    def get_username(self, user_id):
+        try:
+            r = self.session.get(
+                config.users_path.format(key=config.bot_token,
+                                         user_id=user_id))
+            return json.loads(r.content).get('result', {}).get('username')
+        except ConnectionError:
+            return {}
+
     def send_message(self, chat_id, text, parse_mode="Markdown", reply_to=None):
         if isinstance(text, list):
             text_message = choice(text)

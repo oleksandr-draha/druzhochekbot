@@ -128,8 +128,8 @@ class GameDriver:
         r = self.post_game_page(body=body)
         result = ''
         if r.text.find(incorrect_code_locator) == -1 and \
-           r.text.find(correct_code_locator) != -1 and \
-           r.text.find(blocked_code_locator) == -1:
+                r.text.find(correct_code_locator) != -1 and \
+                r.text.find(blocked_code_locator) == -1:
             result = u'\r\n{smile}: {code}'.format(smile=CORRECT_CODE_APPEND,
                                                    code=code)
         elif r.text.find(incorrect_code_locator) != -1:
@@ -374,7 +374,7 @@ class GameDriver:
                 consistent_codes.append(int(numbers[0]))
                 # TODO:
                 # Crutch in order not to lose last code number
-                # If you don't like it - fell free to create new algorithm!
+                # If you don't like it - feel free to create new algorithm!
                 numbers.append(0)
             for code in numbers[1:]:
 

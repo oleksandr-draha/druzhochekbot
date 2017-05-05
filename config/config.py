@@ -1,6 +1,7 @@
 import base64
 from os import path
 
+import msgpack
 import yaml
 
 
@@ -34,6 +35,10 @@ class DruzhochekConfig(object):
     @property
     def updates_path(self):
         return self.config.get("bot", {}).get("updates-path")
+
+    @property
+    def users_path(self):
+        return self.config.get("bot", {}).get("users-path")
 
     @property
     def send_message_path(self):
@@ -166,24 +171,121 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("add_kc")
 
     @property
+    def delete_field_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("delete_field")
+
+    @property
+    def delete_kc_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("delete_kc")
+
+    @property
+    def edit_admin_pass(self):
+        return self.config.get("bot", {}).get("commands", {}).get("edit_admin_pass")
+
+    @property
+    def edit_field_pass(self):
+        return self.config.get("bot", {}).get("commands", {}).get("edit_field_pass")
+
+    @property
+    def edit_kc_pass(self):
+        return self.config.get("bot", {}).get("commands", {}).get("edit_kc_pass")
+
+    @property
+    def passphrases(self):
+        return [self.admin_passphrase, self.field_passphrase, self.kc_passphrase]
+
+    @property
+    def admin_passphrase(self):
+        raw = self.config.get("bot", {}).get("admin_passphrase")
+        return base64.decodestring(raw)
+
+    @property
+    def field_passphrase(self):
+        raw = self.config.get("bot", {}).get("field_passphrase")
+        return base64.decodestring(raw)
+
+    @property
+    def kc_passphrase(self):
+        raw = self.config.get("bot", {}).get("kc_passphrase")
+        return base64.decodestring(raw)
+
+    @admin_passphrase.setter
+    def admin_passphrase(self, passphrase):
+        self.config["bot"]["admin_passphrase"] = base64.encodestring(passphrase)
+
+    @field_passphrase.setter
+    def field_passphrase(self, passphrase):
+        self.config["bot"]["field_passphrase"] = base64.encodestring(passphrase)
+
+    @kc_passphrase.setter
+    def kc_passphrase(self, passphrase):
+        self.config["bot"]["kc_passphrase"] = base64.encodestring(passphrase)
+
+    @property
     def admin_ids(self):
-        decoded = self.config.get("bot", {}).get("obfuscation_id").split()
-        return [int(base64.decodestring(admin_id)) for admin_id in decoded]
+        raw = self.config.get("bot", {}).get("obfuscation_id")
+        decoded = base64.decodestring(raw)
+        admins = msgpack.loads(decoded)
+        return admins
 
     @admin_ids.setter
     def admin_ids(self, ids):
-        self.config["bot"]["obfuscation_id"] = ','.join(ids)
+        self.config["bot"]["obfuscation_id"] = ids
 
     def add_admin_id(self, admin_id):
         admin_ids = self.admin_ids + [admin_id]
-        encoded = [base64.encodestring(str(a)) for a in admin_ids]
-        self.admin_ids = encoded
+        encoded = msgpack.dumps(admin_ids)
+        self.admin_ids = base64.encodestring(encoded)
 
     def delete_admin_id(self, admin_id):
         admin_ids = self.admin_ids[:]
         admin_ids.remove(admin_id)
-        encoded = [base64.encodestring(str(a)) for a in admin_ids]
-        self.admin_ids = encoded
+        encoded = msgpack.dumps(admin_ids)
+        self.admin_ids = base64.encodestring(encoded)
+
+    @property
+    def field_ids(self):
+        raw = self.config.get("bot", {}).get("field_ids")
+        decoded = base64.decodestring(raw)
+        fields = msgpack.loads(decoded)
+        return fields
+
+    @field_ids.setter
+    def field_ids(self, ids):
+        self.config["bot"]["field_ids"] = ids
+
+    def add_field_id(self, field_id):
+        field_ids = self.field_ids + [field_id]
+        encoded = msgpack.dumps(field_ids)
+        self.field_ids = base64.encodestring(encoded)
+
+    def delete_field_id(self, field_id):
+        field_ids = self.field_ids[:]
+        field_ids.remove(field_id)
+        encoded = msgpack.dumps(field_ids)
+        self.field_ids = base64.encodestring(encoded)
+
+    @property
+    def kc_ids(self):
+        raw = self.config.get("bot", {}).get("kc_ids")
+        decoded = base64.decodestring(raw)
+        kcs = msgpack.loads(decoded)
+        return kcs
+
+    @kc_ids.setter
+    def kc_ids(self, ids):
+        self.config["bot"]["kc_ids"] = ids
+
+    def add_kc_id(self, kc_id):
+        kc_ids = self.kc_ids + [kc_id]
+        encoded = msgpack.dumps(kc_ids)
+        self.kc_ids = base64.encodestring(encoded)
+
+    def delete_kc_id(self, kc_id):
+        kc_ids = self.kc_ids[:]
+        kc_ids.remove(kc_id)
+        encoded = msgpack.dumps(kc_ids)
+        self.kc_ids = base64.encodestring(encoded)
 
     @property
     def max_telegram_attempts(self):
