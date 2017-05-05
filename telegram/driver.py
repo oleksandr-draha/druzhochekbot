@@ -90,15 +90,19 @@ class TelegramDriver:
         return messages
 
     @staticmethod
-    def _is_admin(from_id):
+    def is_user(from_id):
+        return from_id in config.admin_ids + config.field_ids + config.field_ids
+
+    @staticmethod
+    def is_admin(from_id):
         return from_id in config.admin_ids
 
     @staticmethod
-    def _is_field(from_id):
+    def is_field(from_id):
         return from_id in config.field_ids
 
     @staticmethod
-    def _is_kc(from_id):
+    def is_kc(from_id):
         return from_id in config.kc_ids
 
     @staticmethod

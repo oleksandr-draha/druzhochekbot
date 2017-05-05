@@ -46,7 +46,9 @@ class TelegramWorker(TelegramProcessor):
             if self.initial_message is None:
                 self.initial_message = message
             command = self.telegram_driver.get_command(message)
-
+            if self.process_new_user(message) is None:
+                continue
+            self.process_code_simple_message(message)
             # User commands:
             if command in config.code_command:
                 self.user_command(message, self.do_code)

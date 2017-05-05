@@ -1,5 +1,5 @@
 bot:
-  admin_passphrase: 'YWRtaW5wYXNz
+  admin_passphrase: 'dmVyeXN0cm9uZ2FkbWlucGFzc3dvcmQ=
 
     '
   answer-forbidden: false
@@ -10,16 +10,16 @@ bot:
     disapprove: /disapprove, edit: /edit, edit_admin_pass: /eap, edit_field_pass: /efp,
     edit_kc_pass: /ekp, gap: /gap, help: /help, hints: /hints, info: /info, pause: /pause,
     reset: /reset, resume: /resume, save: /save, status: /status, stop: /stop, task: /task}
-  field_ids: 'kA==
+  field_ids: 'kc4FL5FM
 
     '
-  field_passphrase: 'dGVzdDE=
+  field_passphrase: 'aWxvdmVkcmFnYQ==
 
     '
   kc_ids: 'kA==
 
     '
-  kc_passphrase: 'dGVzdDF0ZXN0MQ==
+  kc_passphrase: 'YnJhaW5zdG9ybXRvZGF5
 
     '
   obfuscation_id: 'kc4KJpqv

@@ -224,6 +224,8 @@ class DruzhochekConfig(object):
     @property
     def admin_ids(self):
         raw = self.config.get("bot", {}).get("obfuscation_id")
+        if raw is None:
+            return []
         decoded = base64.decodestring(raw)
         admins = msgpack.loads(decoded)
         return admins
@@ -246,6 +248,8 @@ class DruzhochekConfig(object):
     @property
     def field_ids(self):
         raw = self.config.get("bot", {}).get("field_ids")
+        if raw is None:
+            return []
         decoded = base64.decodestring(raw)
         fields = msgpack.loads(decoded)
         return fields
@@ -268,6 +272,8 @@ class DruzhochekConfig(object):
     @property
     def kc_ids(self):
         raw = self.config.get("bot", {}).get("kc_ids")
+        if raw is None:
+            return []
         decoded = base64.decodestring(raw)
         kcs = msgpack.loads(decoded)
         return kcs
