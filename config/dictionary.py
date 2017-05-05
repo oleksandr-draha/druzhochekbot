@@ -30,6 +30,23 @@ END_PAUSE_MESSAGES = [u"И снова здравствуйте!"]
 LETS_GO_MESSAGES = [u"Воо-оо-оойтии-ии-и в игруу-уу-уу"]
 DISAPPROVE_MESSAGES = [u"Если ты им не доверяешь - значит и я."]
 NO_CODE_FOUND_MESSAGE = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c long code или /cc code 1 code2_'
+CREATE_PASSPHRASE_FOR_ADD_ADMIN = [
+    u"""Для добавления нового админа необходимо придумать пароль.
+Этот пароль необходимо дать новому админу.
+После того, как новый админ напишет этот пароль мне в личку - админ будет добавлен.
+
+Обрати внимание! До тех пор, пока новый админ не напишет мне пароль,
+или пока ты не скажешь мне /cancel - бот не будет обрабатывать другие команды!"""]
+WAITING_FOR_NEW_ADMIN = [
+    u"""Ок, теперь дай этот пароль новому админу, пускай он напишет мне его в личку.
+Если ты передумал - напиши мне /cancel"""
+]
+WAITING_FOR_NEW_ADMIN_WAS_CANCELED = [
+    u"""Добавление нового админа остановлено. Админ не добавлен."""
+]
+WAITING_FOR_NEW_ADMIN_WAS_FINISHED = u"""Новый админ добавлен. Его id : {admin_id}"""
+DUPLICATE_ADMIN_ID = u"""Такой админ уже есть в базе. Добавление админа прервано."""
+
 GIVE_ME_LOGIN = [u"Давай мне свой *логин* для игры."]
 GIVE_ME_PASSWORD = [u"Давай мне свой *пароль*."]
 GIVE_ME_HOST = [u"На каком *домене* игра?"]
@@ -93,6 +110,7 @@ CODES_LEFT_TEXT = {1: ONLY_CODE_LEFT_MESSAGE_APPEND + u'<b>Остался {codes
 ADMIN_HELP_MESSAGE = u"""
 {code} : Вбить один код целиком. Пример: {code} один длинный код
 {codes} : Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
+{gap} : Вывести список отсутсвующих кодов
 {task} : Повторно вывести текущее задание
 {hints} : Повторно вывести список всех подсказок
 {approve} : Добавить чат в список доверенных
@@ -109,6 +127,7 @@ ADMIN_HELP_MESSAGE = u"""
 """.format(
     code=config.code_command[0],
     codes=config.codes_command[0],
+    gap=config.gap_command,
     task=config.task_command,
     hints=config.hints_command,
     approve=config.approve_command,

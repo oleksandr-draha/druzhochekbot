@@ -146,9 +146,34 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("gap")
 
     @property
+    def cancel_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("cancel")
+
+    @property
+    def add_admin_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("add_admin")
+
+    @property
+    def add_field_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("add_field")
+
+    @property
+    def add_kc_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("add_kc")
+
+    @property
     def admin_ids(self):
-        encoded = self.config.get("bot", {}).get("obfuscation_id").split()
-        return [int(base64.decodestring(password)) for password in encoded]
+        decoded = self.config.get("bot", {}).get("obfuscation_id").split()
+        return [int(base64.decodestring(admin_id)) for admin_id in decoded]
+
+    @admin_ids.setter
+    def admin_ids(self, ids):
+        self.config["bot"]["obfuscation_id"] = ','.join(ids)
+
+    def add_admin_id(self, admin_id):
+        admin_ids = self.admin_ids + [admin_id]
+        encoded = [base64.encodestring(str(a)) for a in admin_ids]
+        self.admin_ids = encoded
 
     @property
     def max_telegram_attempts(self):
