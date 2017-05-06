@@ -14,10 +14,10 @@ class TelegramWorker(TelegramProcessor):
         self.telegram_driver.get_updates()
         self.initial_message = None
         self.initialize_attempts = 0
-        self.paused = False
+        self.paused = config.paused
         self.stopped = False
         self.game_worker = None
-        self.group_chat_id = None
+        self.group_chat_id = config.group_chat_id
         self.add_admin_passphrase = None
         self.add_field_passphrase = None
         self.add_kc_passphrase = None
@@ -33,8 +33,9 @@ class TelegramWorker(TelegramProcessor):
         GameDriver.host = config.game_host
         self.game_worker = GameWorker()
         if self.game_worker.connected:
-            self.telegram_driver.admin_message(CONNECTION_OK_MESSAGES)
-            self.telegram_driver.admin_message(PLEASE_APPROVE_MESSAGES)
+            if self.group_chat_id is None:
+                self.telegram_driver.admin_message(CONNECTION_OK_MESSAGES)
+                self.telegram_driver.admin_message(PLEASE_APPROVE_MESSAGES)
             return True
         else:
             self.telegram_driver.admin_message(CONNECTION_PROBLEM_MESSAGES)
@@ -108,6 +109,16 @@ class TelegramWorker(TelegramProcessor):
                 self.admin_command(message, self.do_clearfield)
             elif command == config.clearkc_command:
                 self.admin_command(message, self.do_clearkc)
+            elif command == config.alert_command:
+                self.admin_command(message, self.do_alert)
+            elif command == config.message_admin_command:
+                self.admin_command(message, self.do_message_admin)
+            elif command == config.message_field_command:
+                self.admin_command(message, self.do_message_field)
+            elif command == config.message_kc_command:
+                self.admin_command(message, self.do_message_kc)
+            elif command == config.message_command:
+                self.admin_command(message, self.do_message)
             else:
                 self.unknown_command(message)
 

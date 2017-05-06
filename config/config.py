@@ -33,6 +33,36 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("token")
 
     @property
+    def group_chat_id(self):
+        return self.config.get("bot", {}).get("approved_chat")
+
+    @property
+    def paused(self):
+        return self.config.get("bot", {}).get("paused")
+
+    @property
+    def autosave(self):
+        return self.config.get("bot", {}).get("autosave")
+
+    @autosave.setter
+    def autosave(self, value):
+        self.config["bot"]["autosave"] = value
+        if self.autosave:
+            config.save_config()
+
+    @group_chat_id.setter
+    def group_chat_id(self, value):
+        self.config["bot"]["approved_chat"] = value
+        if self.autosave:
+            config.save_config()
+
+    @paused.setter
+    def paused(self, value):
+        self.config["bot"]["paused"] = value
+        if self.autosave:
+            config.save_config()
+
+    @property
     def updates_path(self):
         return self.config.get("bot", {}).get("updates-path")
 
@@ -60,6 +90,8 @@ class DruzhochekConfig(object):
     @game_login.setter
     def game_login(self, value):
         self.config["game"]["login"] = base64.encodestring(value)
+        if self.autosave:
+            config.save_config()
 
     @property
     def game_password(self):
@@ -69,6 +101,8 @@ class DruzhochekConfig(object):
     @game_password.setter
     def game_password(self, value):
         self.config["game"]["password"] = base64.encodestring(value)
+        if self.autosave:
+            config.save_config()
 
     @property
     def game_host(self):
@@ -77,6 +111,8 @@ class DruzhochekConfig(object):
     @game_host.setter
     def game_host(self, value):
         self.config["game"]["host"] = value
+        if self.autosave:
+            config.save_config()
 
     @property
     def game_id(self):
@@ -85,6 +121,8 @@ class DruzhochekConfig(object):
     @game_id.setter
     def game_id(self, value):
         self.config["game"]["id"] = value
+        if self.autosave:
+            config.save_config()
 
     @property
     def code_command(self):
@@ -203,6 +241,26 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("clearkc")
 
     @property
+    def alert_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("alert")
+
+    @property
+    def message_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("message")
+
+    @property
+    def message_admin_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("message_admin")
+
+    @property
+    def message_field_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("message_field")
+
+    @property
+    def message_kc_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("message_kc")
+
+    @property
     def passphrases(self):
         return [self.admin_passphrase, self.field_passphrase, self.kc_passphrase]
 
@@ -224,14 +282,20 @@ class DruzhochekConfig(object):
     @admin_passphrase.setter
     def admin_passphrase(self, passphrase):
         self.config["bot"]["admin_passphrase"] = base64.encodestring(passphrase)
+        if self.autosave:
+            config.save_config()
 
     @field_passphrase.setter
     def field_passphrase(self, passphrase):
         self.config["bot"]["field_passphrase"] = base64.encodestring(passphrase)
+        if self.autosave:
+            config.save_config()
 
     @kc_passphrase.setter
     def kc_passphrase(self, passphrase):
         self.config["bot"]["kc_passphrase"] = base64.encodestring(passphrase)
+        if self.autosave:
+            config.save_config()
 
     @property
     def admin_ids(self):
@@ -245,29 +309,41 @@ class DruzhochekConfig(object):
     @admin_ids.setter
     def admin_ids(self, ids):
         self.config["bot"]["obfuscation_id"] = ids
+        if self.autosave:
+            config.save_config()
 
     def add_admin_id(self, admin_id):
         admin_ids = self.admin_ids + [admin_id]
         encoded = msgpack.dumps(admin_ids)
         self.admin_ids = base64.encodestring(encoded)
+        if self.autosave:
+            config.save_config()
 
     def delete_admin_id(self, admin_id):
         admin_ids = self.admin_ids[:]
         admin_ids.remove(admin_id)
         encoded = msgpack.dumps(admin_ids)
         self.admin_ids = base64.encodestring(encoded)
+        if self.autosave:
+            config.save_config()
 
     def clear_admins(self):
         encoded = msgpack.dumps([])
         self.admin_ids = base64.encodestring(encoded)
+        if self.autosave:
+            config.save_config()
 
     def clear_fields(self):
         encoded = msgpack.dumps([])
         self.field_ids = base64.encodestring(encoded)
+        if self.autosave:
+            config.save_config()
 
     def clear_kcs(self):
         encoded = msgpack.dumps([])
         self.kc_ids = base64.encodestring(encoded)
+        if self.autosave:
+            config.save_config()
 
     @property
     def field_ids(self):
@@ -281,17 +357,23 @@ class DruzhochekConfig(object):
     @field_ids.setter
     def field_ids(self, ids):
         self.config["bot"]["field_ids"] = ids
+        if self.autosave:
+            config.save_config()
 
     def add_field_id(self, field_id):
         field_ids = self.field_ids + [field_id]
         encoded = msgpack.dumps(field_ids)
         self.field_ids = base64.encodestring(encoded)
+        if self.autosave:
+            config.save_config()
 
     def delete_field_id(self, field_id):
         field_ids = self.field_ids[:]
         field_ids.remove(field_id)
         encoded = msgpack.dumps(field_ids)
         self.field_ids = base64.encodestring(encoded)
+        if self.autosave:
+            config.save_config()
 
     @property
     def kc_ids(self):
@@ -305,17 +387,23 @@ class DruzhochekConfig(object):
     @kc_ids.setter
     def kc_ids(self, ids):
         self.config["bot"]["kc_ids"] = ids
+        if self.autosave:
+            config.save_config()
 
     def add_kc_id(self, kc_id):
         kc_ids = self.kc_ids + [kc_id]
         encoded = msgpack.dumps(kc_ids)
         self.kc_ids = base64.encodestring(encoded)
+        if self.autosave:
+            config.save_config()
 
     def delete_kc_id(self, kc_id):
         kc_ids = self.kc_ids[:]
         kc_ids.remove(kc_id)
         encoded = msgpack.dumps(kc_ids)
         self.kc_ids = base64.encodestring(encoded)
+        if self.autosave:
+            config.save_config()
 
     @property
     def max_telegram_attempts(self):

@@ -107,7 +107,17 @@ class TelegramDriver:
 
     @staticmethod
     def get_command(message):
-        return message["text"].split()[0].split('@')[0]
+        if message["text"].startswith('/'):
+            return message["text"].split()[0].split('@')[0]
+        else:
+            return ''
+
+    @staticmethod
+    def get_message_text(message):
+        if TelegramDriver.get_command(message) is not None:
+            return message["text"].replace(TelegramDriver.get_command(message), '').lstrip()
+        else:
+            return message["text"]
 
     def check_answer_from_chat_id(self, chat_id):
         for message in self.check_new_messages():
