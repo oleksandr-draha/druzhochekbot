@@ -44,20 +44,19 @@ NO_USER_ID_MESSAGE = u"""Нет user id для добавления. Приме�
 /addadmin 123456"""
 NO_MESSAGE = u"""Нет user id для сообщения. Пример:
 /command 123456"""
-NEW_ADMIN_WAS_ADDED = u"""Новый админ добавлен: {user_id} : {nickname}.
-Для сохранения измений после перезапуска - сохраните настройки в базу."""
-NEW_FIELD_WAS_ADDED = u"""Новый полевой игрок добавлен: {user_id} : {nickname}.
-Для сохранения измений после перезапуска - сохраните настройки в базу."""
-NEW_KC_WAS_ADDED = u"""Новый штабной игрок добавлен: {user_id} : {nickname}.
-Для сохранения измений после перезапуска - сохраните настройки в базу."""
+NEED_SAVE = u"""
+Для сохранения измений после перезапуска - сохраните настройки в базу."""\
+    if not config.autosave else ''
+NEW_ADMIN_WAS_ADDED = u"""Новый админ добавлен: {user_id} : {nickname}.""" + NEED_SAVE
+NEW_FIELD_WAS_ADDED = u"""Новый полевой игрок добавлен: {user_id} : {nickname}.""" + NEED_SAVE
+NEW_KC_WAS_ADDED = u"""Новый штабной игрок добавлен: {user_id} : {nickname}.""" + NEED_SAVE
 DUPLICATE_USER_ID = u"""Такой пользователь уже есть в базе. Добавление прервано."""
 CANNOT_DELETE_ADMIN_MESSAGE = u"""Нельзя удалить последнего админа."""
 WRONG_USER_ID_MESSAGE = u"""Неверный id"""
 DELETE_USER_ID_MESSAGE = u"""Текущие пользователи: 
 {current_ids}
 Введите id, который нужно удалить."""
-USER_DELETED_MESSAGE = u"""Пользователь удалён.
-Для сохранения измений после перезапуска - сохраните настройки в базу."""
+USER_DELETED_MESSAGE = u"""Пользователь удалён.""" + NEED_SAVE
 
 FIELD_TRIED_CODE = u"""{nickname}: 
 {codes}"""
@@ -217,4 +216,9 @@ ADMIN_HELP_MESSAGE = u"""
     eap=config.edit_admin_pass,
     efp=config.edit_field_pass,
     ekp=config.edit_kc_pass,
-    regular=REGULAR_HELP_MESSAGE)
+    message=config.message_command,
+    alert=config.alert_command,
+    message_admin=config.message_admin_command,
+    message_field=config.message_field_command,
+    message_kc=config.message_kc_command,
+    regular=REGULAR_HELP_MESSAGE, )
