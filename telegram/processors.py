@@ -54,7 +54,7 @@ class TelegramProcessor:
         command = self.telegram_driver.get_command(message)
         codes = message["text"].replace(command, '').rstrip().lstrip().split()
         codes = list(set(codes))
-        results = NO_CODE_FOUND_MESSAGE
+        results = ""
         if len(codes):
             results = ''
             for code in codes:
@@ -69,7 +69,7 @@ class TelegramProcessor:
     def check_code(self, message):
         command = self.telegram_driver.get_command(message)
         code = message["text"].replace(command, '').rstrip().lstrip()
-        results = NO_CODE_FOUND_MESSAGE
+        results = ""
         if len(code):
             results = self.game_worker.game_driver.try_code(code)
         return results
@@ -98,17 +98,23 @@ class TelegramProcessor:
 
     def do_codes(self, message):
         if not self.paused:
-            result = self.check_codes(message)
-            self.telegram_driver.answer_message(message, result)
-            self.dublicate_code_to_group_chat(message, result)
+            if len(message["text"].split()) > 1:
+                result = self.check_codes(message)
+                self.telegram_driver.answer_message(message, result)
+                self.dublicate_code_to_group_chat(message, result)
+            else:
+                self.telegram_driver.answer_message(message, NO_CODE_FOUND_MESSAGE)
         else:
             self.telegram_driver.answer_message(message, PAUSED_MESSAGE)
 
     def do_code(self, message):
         if not self.paused:
-            result = self.check_code(message)
-            self.telegram_driver.answer_message(message, result)
-            self.dublicate_code_to_group_chat(message, result)
+            if len(message["text"].split()) > 1:
+                result = self.check_code(message)
+                self.telegram_driver.answer_message(message, result)
+                self.dublicate_code_to_group_chat(message, result)
+            else:
+                self.telegram_driver.answer_message(message, NO_CODE_FOUND_MESSAGE)
         else:
             self.telegram_driver.answer_message(message, PAUSED_MESSAGE)
 
