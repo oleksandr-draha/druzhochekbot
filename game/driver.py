@@ -127,7 +127,7 @@ class GameDriver:
             return
         if r.text.find(incorrect_code_locator) == -1 and \
             r.text.find(correct_code_locator) != -1 and \
-            r.text.find(blocked_code_locator) == -1:
+                r.text.find(blocked_code_locator) == -1:
             result = u'\r\n{smile}: {code}'.format(smile=CORRECT_CODE_APPEND,
                                                    code=code)
             # Save entered codes
