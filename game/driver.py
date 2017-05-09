@@ -2,12 +2,18 @@
 from requests import ConnectionError, session
 import html2text
 
+from config import config
 from config.dictionary import CORRECT_CODE_APPEND, GAME_FINISHED_MESSAGE, CODES_BLOCKED_MESSAGE, WRONG_CODE_APPEND
-
-QUEST_URL = "http://m.{host}/{path}"
-LOGIN_URL = "login/signin/?return=%2f"
-GAME_URL = "gameengines/encounter/play/{game_id}/"
-IMAGES_URL = "http://d1.endata.cx/data/games/{game_id}{image_name}"
+from game.locators import logged_locator, blocked_locator, div_start_locator, div_end_locator, message_locator, \
+    finish_locator, level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
+    correct_code_locator, blocked_code_locator, hint_number_start_locator, hint_number_end_locator, \
+    hint_text_start_locator, hint_text_end_locator, task_header_locator, another_task_header_locator, \
+    task_start_locator, task_end_locator, audio_start_locator, audio_end_locator, iframe_start_locator, \
+    iframe_end_locator, source_start_locator, source_end_locator, ap_locator, ap_end_locator, hint_locator, \
+    hint_end_locator, codes_left_locator, codes_left_end_locator, message_start_locator, message_end_locator, \
+    finish_start_locator, finish_end_locator, answer_text_start_locator, answer_text_end_locator, limit_start_locator, \
+    limit_end_locator, org_message_locator, org_message_end_locator, not_entered_code_locator, code_name_locator_start, \
+    code_name_locator_end
 
 
 class GameDriver:
@@ -35,9 +41,9 @@ class GameDriver:
             body = {"Login": self.login,
                     "Password": self.password,
                     "SelectedNetworkId": 2}
-            return self.session.post(QUEST_URL.format(
+            return self.session.post(config.quest_url.format(
                 host=self.host,
-                path=LOGIN_URL),
+                path=config.quest_login_url),
                 params=body).text
         except ConnectionError:
             return ''
@@ -45,8 +51,6 @@ class GameDriver:
     def is_logged(self, text=None):
         if text is None:
             text = self.get_game_page()
-        logged_locator = u'<label for="Answer">'
-        blocked_locator = u'<div class="blocked"><div>вы сможете ввести код через'
         return text.find(logged_locator) != -1 or \
             self.is_finished() or \
             text.find(blocked_locator) != -1 or \
@@ -55,9 +59,6 @@ class GameDriver:
     def not_started(self, text=None):
         if text is None:
             text = self.get_game_page()
-        div_start_locator = u'<div class="infomessage" style="display:block">'
-        div_end_locator = u'</div>'
-        message_locator = u'Игра начнется в'
         if text.find(div_start_locator) != -1:
             div_start = text.find(div_start_locator)
             div_end = text[div_start:].find(div_end_locator)
@@ -68,7 +69,6 @@ class GameDriver:
     def is_finished(self, text=None):
         if text is None:
             text = self.get_game_page()
-        finish_locator = u'<font size="+2"><span id="animate">Поздравляем!!!</span></font>'
         return text.find(finish_locator) != -1
 
     def get_game_page(self):
@@ -78,16 +78,16 @@ class GameDriver:
             # game_page = f.read()
             # return game_page
             return self.session.get(
-                QUEST_URL.format(host=self.host,
-                                 path=GAME_URL.format(game_id=self.game_id))).text
+                config.quest_url.format(host=self.host,
+                                 path=config.quest_game_url.format(game_id=self.game_id))).text
         except ConnectionError:
             return ""
 
     def post_game_page(self, body):
         try:
             return self.session.post(
-                QUEST_URL.format(host=self.host,
-                                 path=GAME_URL.format(game_id=self.game_id)), params=body)
+                config.quest_url.format(host=self.host,
+                                 path=config.quest_game_url.format(game_id=self.game_id)), params=body)
         except ConnectionError:
             return ""
 
@@ -95,9 +95,6 @@ class GameDriver:
     def get_level_params(self, text=None):
         if text is None:
             text = self.get_game_page()
-        level_id_locator = '<input type="hidden" name="LevelId" value="'
-        level_number_locator = '<input type="hidden" name="LevelNumber" value="'
-        level_params_end_locator = '"'
         level_id_start = \
             text[text.find(level_id_locator) +
                  len(level_id_locator):]
@@ -118,9 +115,6 @@ class GameDriver:
         return level_params
 
     def try_code(self, code=""):
-        incorrect_code_locator = u'<span class="color_incorrect" id="incorrect">'
-        correct_code_locator = u'<span class="color_correct">'
-        blocked_code_locator = u'<div class="blocked"><div>'
         body = {"rnd": "0,663014513283509",
                 "LevelId": self.level_id,
                 "LevelNumber": self.level_number,
@@ -155,10 +149,6 @@ class GameDriver:
         if text is None:
             text = self.get_game_page()
         hints = {}
-        hint_number_start_locator = u'<h3>Подсказка '
-        hint_number_end_locator = u'</h3>'
-        hint_text_start_locator = u'<p>'
-        hint_text_end_locator = u'</p>'
         hint_text_end = 0
         hint_start = text.find(hint_number_start_locator)
         while hint_start != -1:
@@ -182,10 +172,6 @@ class GameDriver:
     def get_task(self, text=None):
         if text is None:
             text = self.get_game_page()
-        task_header_locator = u'<h3>Задание</h3>'
-        another_task_header_locator = u'<h2>Уровень <span>'
-        task_start_locator = u'<p>'
-        task_end_locator = u'</p>'
         task_header_start = text.find(task_header_locator)
         if task_header_start == -1 and text.find(another_task_header_locator) == -1:
             return
@@ -210,8 +196,6 @@ class GameDriver:
         :type text: str
         :return:
         """
-        audio_start_locator = u'<audio'
-        audio_end_locator = u'/audio>'
         while text.find(audio_start_locator) != -1:
             audio_start = text.find(audio_start_locator)
             audio_end = audio_start + text[audio_start:].find(audio_end_locator) + len(audio_end_locator)
@@ -227,8 +211,6 @@ class GameDriver:
         :type text: str
         :return:
         """
-        iframe_start_locator = u'<iframe'
-        iframe_end_locator = u'</iframe>'
         while text.find(iframe_start_locator) != -1:
             iframe_start = text.find(iframe_start_locator)
             iframe_end = iframe_start + text[iframe_start:].find(iframe_end_locator) + len(iframe_end_locator)
@@ -239,8 +221,6 @@ class GameDriver:
 
     @staticmethod
     def get_source(text):
-        source_start_locator = u'src="'
-        source_end_locator = u'"'
         source_start = text.find(source_start_locator)
         if source_start != -1:
             source_start += len(source_start_locator)
@@ -250,8 +230,6 @@ class GameDriver:
     def get_time_to_ap(self, text=None):
         if text is None:
             text = self.get_game_page()
-        ap_locator = u'<h3 class="timer">'
-        ap_end_locator = u'</h3>'
         ap_start = text.find(ap_locator)
         if ap_start != -1:
             ap_start += len(ap_locator)
@@ -259,22 +237,18 @@ class GameDriver:
             return html2text.html2text(text[ap_start: ap_end])
 
     def get_time_to_hints(self, text=None):
-        ap_locator = u'<span class="color_dis"><b>Подсказка'
-        ap_end_locator = u'</span>'
         time_to_hints = []
-        ap_start = text.find(ap_locator)
+        ap_start = text.find(hint_locator)
         while ap_start != -1:
-            ap_end = ap_start + text[ap_start:].find(ap_end_locator)
+            ap_end = ap_start + text[ap_start:].find(hint_end_locator)
             time_to_hints.append(html2text.html2text(text[ap_start: ap_end]))
             text = text.replace(text[ap_start: ap_end], '')
-            ap_start = text.find(ap_locator)
+            ap_start = text.find(hint_locator)
         return time_to_hints
 
     def get_codes_left_text(self, text=None):
         if text is None:
             text = self.get_game_page()
-        codes_left_locator = u'осталось закрыть'
-        codes_left_end_locator = u')</span>'
         codes_left_start = text.find(codes_left_locator)
         if codes_left_start != -1:
             codes_left_start += len(codes_left_locator)
@@ -284,8 +258,6 @@ class GameDriver:
     def get_not_started_message(self, text=None):
         if text is None:
             text = self.get_game_page()
-        message_start_locator = u'Игра начнется в'
-        message_end_locator = u'<span'
         if text.find(message_start_locator) != -1:
             message_start = text.find(message_start_locator)
             message_end = text[message_start:].find(message_end_locator)
@@ -294,8 +266,6 @@ class GameDriver:
     def get_finish_message(self, text=None):
         if text is None:
             text = self.get_game_page()
-        finish_start_locator = u'<div class="t_center">'
-        finish_end_locator = u'</div>'
         finish_start = text.find(finish_start_locator)
         if finish_start != -1:
             finish_start += len(finish_start_locator)
@@ -305,10 +275,6 @@ class GameDriver:
     def answer_limit(self, text=None):
         if text is None:
             text = self.get_game_page()
-        answer_text_start_locator = u'<form method="post">'
-        answer_text_end_locator = u'</form>'
-        limit_start_locator = u'Не более'
-        limit_end_locator = u'</label>'
         answer_text_start = text.find(answer_text_start_locator)
         if answer_text_start != -1:
             answer_text_start += len(answer_text_start_locator)
@@ -322,8 +288,6 @@ class GameDriver:
     def get_org_message(self, text=None):
         if text is None:
             text = self.get_game_page()
-        org_message_locator = u"""<p class="globalmess">"""
-        org_message_end_locator = u"""</p>"""
         org_message_start = text.find(org_message_locator)
         if org_message_start != -1:
             org_message_start += len(org_message_locator)
@@ -333,9 +297,6 @@ class GameDriver:
     def get_codes_gap(self, text=None):
         if text is None:
             text = self.get_game_page()
-        not_entered_code_locator = u"""<span class="color_dis">код не введён</span>"""
-        code_name_locator_end = u">p<"
-        code_name_locator_start = u"< :"
         start = 0
         codes = []
         code_index = text.find(not_entered_code_locator[start:])

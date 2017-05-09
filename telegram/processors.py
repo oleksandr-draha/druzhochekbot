@@ -53,6 +53,7 @@ class TelegramProcessor:
     def check_codes(self, message):
         command = self.telegram_driver.get_command(message)
         codes = message["text"].replace(command, '').rstrip().lstrip().split()
+        codes = list(set(codes))
         results = NO_CODE_FOUND_MESSAGE
         if len(codes):
             results = ''

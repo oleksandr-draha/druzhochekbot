@@ -90,6 +90,22 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("answer-forbidden")
 
     @property
+    def quest_images_url(self):
+        return self.config.get("game", {}).get("quest_images_url")
+
+    @property
+    def quest_game_url(self):
+        return self.config.get("game", {}).get("quest_game_url")
+
+    @property
+    def quest_login_url(self):
+        return self.config.get("game", {}).get("quest_login_url")
+
+    @property
+    def quest_url(self):
+        return self.config.get("game", {}).get("quest_url")
+
+    @property
     def game_login(self):
         login = self.config.get("game", {}).get("login")
         return base64.decodestring(login) if login is not None else None

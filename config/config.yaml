@@ -40,7 +40,12 @@ game: {host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723', login
 
     ', password: 'WW84OWthVDc=
 
-    ', show_codes_left: 1 2 3 10 20 50 100, show_first_ap_time: true, show_first_hint_time: true,
+    ',
+    quest_images_url: 'http://d1.endata.cx/data/games/{game_id}{image_name}',
+    quest_game_url: 'gameengines/encounter/play/{game_id}/',
+    quest_login_url: 'login/signin/?return=%2f',
+    quest_url: 'http://m.{host}/{path}',
+    show_codes_left: 1 2 3 10 20 50 100, show_first_ap_time: true, show_first_hint_time: true,
   show_time_left_minutes: 1 4 9, show_time_to_hint: false}
 timeouts: {answer_check_interval: 1, max_attempts: 3, message_check_interval: 1, process_check_interval: 1,
   relogin_interval: 5}
