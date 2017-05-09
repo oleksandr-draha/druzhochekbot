@@ -127,6 +127,8 @@ class GameDriver:
                 "LevelAction.Answer": code}
         r = self.post_game_page(body=body)
         result = ''
+        if self.level_number != self.get_level_params(r.text)["LevelNumber"]:
+            return
         if r.text.find(incorrect_code_locator) == -1 and \
                 r.text.find(correct_code_locator) != -1 and \
                 r.text.find(blocked_code_locator) == -1:

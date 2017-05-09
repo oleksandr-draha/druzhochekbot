@@ -57,9 +57,12 @@ class TelegramProcessor:
         if len(codes):
             results = ''
             for code in codes:
-                results += self.game_worker.game_driver.try_code(code)
-                if results in [CODES_BLOCKED_MESSAGE, GAME_FINISHED_MESSAGE]:
-                    return results
+                result = self.game_worker.game_driver.try_code(code)
+                if result in [CODES_BLOCKED_MESSAGE, GAME_FINISHED_MESSAGE]:
+                    return result
+                if result is None:
+                    return
+                results += result
         return results
 
     def check_code(self, message):
@@ -589,7 +592,8 @@ class TelegramProcessor:
         from_id = message["from_id"]
         if self.telegram_driver.is_field(from_id) \
                 and self.group_chat_id is not None \
-                and message["chat_id"] != self.group_chat_id:
+                and message["chat_id"] != self.group_chat_id \
+                and result is not None:
             self.telegram_driver.send_message(
                 self.group_chat_id,
                 FIELD_TRIED_CODE.format(
@@ -599,11 +603,11 @@ class TelegramProcessor:
     def process_code_simple_message(self, message):
         from_id = message["from_id"]
         if from_id in config.field_ids:
-            if message['text'][0] != '/':
+            if not message['text'].startswith('/'):
                 result = self.check_code(message)
                 self.telegram_driver.answer_message(message, result)
                 self.dublicate_code_to_group_chat(message, result)
         elif from_id in config.kc_ids:
-            if message['text'][0] != '/':
+            if not message['text'].startswith('/'):
                 result = self.check_code(message)
                 self.telegram_driver.answer_message(message, result)
