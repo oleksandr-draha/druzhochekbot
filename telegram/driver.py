@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import StringIO
 import json
 from random import choice
 

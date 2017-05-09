@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-
 from config.config import config
 from config.dictionary import CONNECTION_PROBLEM_MESSAGES, \
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, CHECK_SETTINGS_MESSAGES
@@ -11,7 +9,6 @@ from telegram.processors import TelegramProcessor
 
 
 class TelegramWorker(TelegramProcessor):
-
     def __init__(self):
         self.telegram_driver = TelegramDriver()
         self.telegram_driver.get_updates()

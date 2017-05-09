@@ -479,4 +479,5 @@ class DruzhochekConfig(object):
             errors += str(date_error) + '\r\n' + error.replace('\n', '\r\n') + '\r\n'
         return errors
 
+
 config = DruzhochekConfig()
