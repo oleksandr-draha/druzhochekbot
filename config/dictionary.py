@@ -105,6 +105,8 @@ INFO_MESSAGE = u"""
 Активные админы: {admins}
 Полевые игроки: {fields}
 Штабные игроки: {kcs}
+Ошибок: {bot_errors}
+Запущен: {time_start}
 """
 BOT_WAS_RESET_MESSAGE = u"Состояние бота было сброшено на начальное."
 
@@ -191,6 +193,9 @@ ADMIN_HELP_MESSAGE = u"""
 {message_field}: Сделать рассылку в личку всему полю
 {message_kc}: Сделать рассылку в личку всему КЦ
 
+{source}: Отправить текущую страницу
+{errors}: Отправить лог ошибок
+
 *Пользовательские функции:*
 {regular}
 """.format(
@@ -221,4 +226,6 @@ ADMIN_HELP_MESSAGE = u"""
     message_admin=config.message_admin_command,
     message_field=config.message_field_command,
     message_kc=config.message_kc_command,
-    regular=REGULAR_HELP_MESSAGE, )
+    source=config.send_source_command,
+    errors=config.send_errors_command,
+    regular=REGULAR_HELP_MESSAGE)

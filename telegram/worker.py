@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from config.config import config
 from config.dictionary import CONNECTION_PROBLEM_MESSAGES, \
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, CHECK_SETTINGS_MESSAGES
@@ -9,6 +11,7 @@ from telegram.processors import TelegramProcessor
 
 
 class TelegramWorker(TelegramProcessor):
+
     def __init__(self):
         self.telegram_driver = TelegramDriver()
         self.telegram_driver.get_updates()
@@ -46,7 +49,7 @@ class TelegramWorker(TelegramProcessor):
         for message in self.telegram_driver.check_new_messages():
             if self.initial_message is None:
                 self.initial_message = message
-            command = self.telegram_driver.get_command(message)
+            command = self.telegram_driver.get_command(message).lower()
             if self.process_new_user(message) is None:
                 continue
             self.process_code_simple_message(message)
@@ -109,6 +112,8 @@ class TelegramWorker(TelegramProcessor):
                 self.admin_command(message, self.do_clearfield)
             elif command == config.clearkc_command:
                 self.admin_command(message, self.do_clearkc)
+            elif command == config.chat_message_command:
+                self.admin_command(message, self.do_chat_message)
             elif command == config.alert_command:
                 self.admin_command(message, self.do_alert)
             elif command == config.message_admin_command:
@@ -119,6 +124,10 @@ class TelegramWorker(TelegramProcessor):
                 self.admin_command(message, self.do_message_kc)
             elif command == config.message_command:
                 self.admin_command(message, self.do_message)
+            elif command == config.send_source_command:
+                self.admin_command(message, self.do_send_source)
+            elif command == config.send_errors_command:
+                self.admin_command(message, self.do_send_errors)
             else:
                 self.unknown_command(message)
 

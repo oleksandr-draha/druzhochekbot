@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import StringIO
 import json
 from random import choice
 
@@ -54,6 +54,19 @@ class TelegramDriver:
             self.session.post(
                 config.send_message_path.format(key=config.bot_token),
                 params=response)
+        except ConnectionError:
+            return
+
+    def send_file(self, chat_id, document, name):
+        files = {'document': (name, document)}
+        response = {"chat_id": chat_id,
+                    "document": None,
+                    "caption": "source"}
+        try:
+            self.session.post(
+                config.send_document_path.format(key=config.bot_token),
+                params=response,
+                files=files)
         except ConnectionError:
             return
 

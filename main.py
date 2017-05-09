@@ -15,3 +15,4 @@ while not bot.stopped:
         sleep(config.process_check_interval)
     except Exception, e:
         bot.telegram_driver.admin_message(format_exc())
+        config.log_error(format_exc())

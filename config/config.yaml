@@ -7,14 +7,15 @@ bot:
   approved_chat: -177724202
   autosave: true
   commands: {add_admin: /addadmin, add_field: /addfield, add_kc: /addkc, alert: /alert,
-    approve: /approve, cancel: /cancel, clearadmin: /clearadmin, clearfield: /clearfield,
-    clearkc: /clearkc, code: "/c /\u0441", codes: "/cc /\u0441\u0441 /\u0441c /c\u0441",
-    delete_admin: /deleteadmin, delete_field: /deletefield, delete_kc: /deletekc,
-    disapprove: /disapprove, edit: /edit, edit_admin_pass: /eap, edit_field_pass: /efp,
-    edit_kc_pass: /ekp, gap: /gap, help: /help, hints: /hints, info: /info, message: /message,
-    message_admin: /ma, message_field: /mf, message_kc: /mk, pause: /pause, reset: /reset,
-    resume: /resume, save: /save, status: /status, stop: /stop, task: /task}
-  field_ids: 'ks4KJpqvzgUvkUw=
+    approve: /approve, cancel: /cancel, chat_message: /cm, clearadmin: /clearadmin,
+    clearfield: /clearfield, clearkc: /clearkc, code: "/c /\u0441", codes: "/cc /\u0441\
+      \u0441 /\u0441c /c\u0441", delete_admin: /deleteadmin, delete_field: /deletefield,
+    delete_kc: /deletekc, disapprove: /disapprove, edit: /edit, edit_admin_pass: /eap,
+    edit_field_pass: /efp, edit_kc_pass: /ekp, errors: /errors, gap: /gap, help: /help,
+    hints: /hints, info: /info, message: /message, message_admin: /ma, message_field: /mf,
+    message_kc: /mk, pause: /pause, reset: /reset, resume: /resume, save: /save, send_source: /source,
+    status: /status, stop: /stop, task: /task}
+  field_ids: 'kA==
 
     '
   field_passphrase: 'aWxvdmVkcmFnYQ==
@@ -30,6 +31,7 @@ bot:
 
     '
   paused: false
+  send-document-path: https://api.telegram.org/bot{key}/sendDocument
   send-message-path: https://api.telegram.org/bot{key}/sendMessage
   token: 289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w
   updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}

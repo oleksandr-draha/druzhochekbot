@@ -6,7 +6,7 @@ from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGE
     ALREADY_PAUSED_MESSAGE, END_PAUSE_MESSAGES, RESUME_MESSAGE, PAUSED_MESSAGE, LETS_GO_MESSAGES, \
     NOT_GROUP_CHAT_MESSAGES, WRONG_USER_ID_MESSAGE, DUPLICATE_USER_ID, CANNOT_DELETE_ADMIN_MESSAGE, \
     DELETE_USER_ID_MESSAGE, USER_DELETED_MESSAGE, PASS_WAS_CHANGED, DUPLICATE_PASS, ENTER_NEW_PASS, \
-    AFFIRMATIVE_MESSAGES, DISAPPROVE_MESSAGES, STATUS_MESSAGE, PAUSED_STATUS_MESSAGES, GAME_CONNECTION_MESSAGES, \
+    DISAPPROVE_MESSAGES, STATUS_MESSAGE, PAUSED_STATUS_MESSAGES, GAME_CONNECTION_MESSAGES, \
     INFO_MESSAGE, BOT_WAS_RESET_MESSAGE, TASK_MESSAGE, NEW_HINT_MESSAGE, HINTS_APPEND, ADMIN_HELP_MESSAGE, \
     REGULAR_HELP_MESSAGE, GIVE_ME_LOGIN, GIVE_ME_PASSWORD, GIVE_ME_HOST, GIVE_ME_GAME, SETTINGS_WERE_CHANGED_MESSAGES, \
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, CONNECTION_PROBLEM_MESSAGES, CHECK_SETTINGS_MESSAGES, \
@@ -143,6 +143,7 @@ class TelegramProcessor:
                         NEW_ADMIN_WAS_ADDED.format(
                             user_id=admin_to_add,
                             nickname=self.telegram_driver.get_username(admin_to_add)))
+                    self.telegram_driver.send_message(admin_to_add, HELLO_NEW_ADMIN)
         else:
             self.telegram_driver.answer_message(message,
                                                 NO_USER_ID_MESSAGE)
@@ -164,6 +165,7 @@ class TelegramProcessor:
                         NEW_FIELD_WAS_ADDED.format(
                             user_id=field_to_add,
                             nickname=self.telegram_driver.get_username(field_to_add)))
+                    self.telegram_driver.send_message(field_to_add, HELLO_NEW_USER)
         else:
             self.telegram_driver.answer_message(message,
                                                 NO_USER_ID_MESSAGE)
@@ -185,6 +187,7 @@ class TelegramProcessor:
                         NEW_KC_WAS_ADDED.format(
                             user_id=kc_to_add,
                             nickname=self.telegram_driver.get_username(kc_to_add)))
+                    self.telegram_driver.send_message(kc_to_add, HELLO_NEW_USER)
         else:
             self.telegram_driver.answer_message(message,
                                                 NO_USER_ID_MESSAGE)
@@ -348,6 +351,13 @@ class TelegramProcessor:
         config.clear_kcs()
         self.telegram_driver.answer_message(message, KC_CLEARED)
 
+    def do_chat_message(self, message):
+        if self.group_chat_id is not None:
+            message_text = self.telegram_driver.get_message_text(message)
+            self.telegram_driver.send_message(
+                self.group_chat_id,
+                message_text)
+
     def do_alert(self, message):
         if self.group_chat_id is not None:
             usernames = self.telegram_driver.get_usernames(config.field_ids)
@@ -394,6 +404,19 @@ class TelegramProcessor:
             self.telegram_driver.send_message(kc_id,
                                               message_text)
 
+    def do_send_source(self, message):
+        from_id = message["from_id"]
+        source = self.game_worker.game_page
+        self.telegram_driver.send_file(from_id,
+                                       source,
+                                       'source.htm')
+
+    def do_send_errors(self, message):
+        from_id = message["from_id"]
+        self.telegram_driver.send_file(from_id,
+                                       str(config.repr_errors()),
+                                       'errors.txt')
+
     def _do_disapprove(self, message):
         self.group_chat_id = None
         config.group_chat_id = self.group_chat_id
@@ -439,7 +462,9 @@ class TelegramProcessor:
             kcs=json.dumps(self.telegram_driver.get_usernames(config.kc_ids)),
             admin_passphrase=config.admin_passphrase,
             field_passphrase=config.field_passphrase,
-            kc_passphrase=config.kc_passphrase)
+            kc_passphrase=config.kc_passphrase,
+            time_start=config.start_time,
+            bot_errors=len(config.errors))
         self.telegram_driver.answer_message(message, info_message)
 
     def do_reset(self, message):
@@ -537,7 +562,8 @@ class TelegramProcessor:
                 config.add_admin_id(int(from_id))
                 self.telegram_driver.answer_message(message, HELLO_NEW_ADMIN)
                 self.telegram_driver.admin_message(
-                    NEW_ADMIN_WAS_ADDED.format(nickname=self.telegram_driver.get_username(from_id)))
+                    NEW_ADMIN_WAS_ADDED.format(user_id=from_id,
+                                               nickname=self.telegram_driver.get_username(from_id)))
         elif passphrase == config.field_passphrase:
             if from_id in config.field_ids:
                 self.telegram_driver.answer_message(message, DUPLICATE_USER_ID)
@@ -545,7 +571,8 @@ class TelegramProcessor:
                 config.add_field_id(int(from_id))
                 self.telegram_driver.answer_message(message, HELLO_NEW_USER)
                 self.telegram_driver.admin_message(
-                    NEW_FIELD_WAS_ADDED.format(nickname=self.telegram_driver.get_username(from_id)))
+                    NEW_FIELD_WAS_ADDED.format(user_id=from_id,
+                                               nickname=self.telegram_driver.get_username(from_id)))
         elif passphrase == config.kc_passphrase:
             if from_id in config.kc_ids:
                 self.telegram_driver.answer_message(message, DUPLICATE_USER_ID)
@@ -553,13 +580,14 @@ class TelegramProcessor:
                 config.add_kc_id(int(from_id))
                 self.telegram_driver.answer_message(message, HELLO_NEW_USER)
                 self.telegram_driver.admin_message(
-                    NEW_KC_WAS_ADDED.format(nickname=self.telegram_driver.get_username(from_id)))
+                    NEW_KC_WAS_ADDED.format(user_id=from_id,
+                                            nickname=self.telegram_driver.get_username(from_id)))
         else:
             return True
 
     def dublicate_code_to_group_chat(self, message, result):
         from_id = message["from_id"]
-        if self.telegram_driver.is_field(from_id)\
+        if self.telegram_driver.is_field(from_id) \
                 and self.group_chat_id is not None \
                 and message["chat_id"] != self.group_chat_id:
             self.telegram_driver.send_message(

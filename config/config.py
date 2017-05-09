@@ -3,10 +3,13 @@ from os import path
 
 import msgpack
 import yaml
+from datetime import datetime
 
 
 class DruzhochekConfig(object):
     config = None
+    errors = []
+    start_time = datetime.now()
 
     def _load_config(self):
         default_config_name = 'config.yaml'
@@ -69,6 +72,10 @@ class DruzhochekConfig(object):
     @property
     def users_path(self):
         return self.config.get("bot", {}).get("users-path")
+
+    @property
+    def send_document_path(self):
+        return self.config.get("bot", {}).get("send-document-path")
 
     @property
     def send_message_path(self):
@@ -245,6 +252,10 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("alert")
 
     @property
+    def chat_message_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("chat_message")
+
+    @property
     def message_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("message")
 
@@ -259,6 +270,14 @@ class DruzhochekConfig(object):
     @property
     def message_kc_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("message_kc")
+
+    @property
+    def send_source_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("send_source")
+
+    @property
+    def send_errors_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("errors")
 
     @property
     def passphrases(self):
@@ -449,5 +468,15 @@ class DruzhochekConfig(object):
     def show_first_hint_time(self):
         return self.config.get("game", {}).get("show_first_hint_time")
 
+    def log_error(self, error):
+        if len(self.errors) > 100:
+            self.errors = list()
+        self.errors.append([datetime.now(), error])
+
+    def repr_errors(self):
+        errors = ""
+        for date_error, error in self.errors:
+            errors += str(date_error) + '\r\n' + error.replace('\n', '\r\n') + '\r\n'
+        return errors
 
 config = DruzhochekConfig()
