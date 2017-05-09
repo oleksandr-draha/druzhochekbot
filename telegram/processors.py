@@ -12,7 +12,7 @@ from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGE
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, CONNECTION_PROBLEM_MESSAGES, CHECK_SETTINGS_MESSAGES, \
     SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, UNKNOWN_MESSAGES, NEW_ADMIN_WAS_ADDED, \
     NEW_FIELD_WAS_ADDED, NEW_KC_WAS_ADDED, NO_USER_ID_MESSAGE, HELLO_NEW_USER, HELLO_NEW_ADMIN, FIELD_TRIED_CODE, \
-    NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID
+    NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID, CONFIM_DELETEION
 from game.driver import GameDriver
 from game.worker import GameWorker
 
@@ -350,16 +350,25 @@ class TelegramProcessor:
                     DUPLICATE_PASS)
 
     def do_clearadmin(self, message):
-        config.clear_admins()
-        self.telegram_driver.answer_message(message, ADMIN_CLEARED)
+        self.telegram_driver.answer_message(message, CONFIM_DELETEION)
+        answer = self.telegram_driver.wait_for_answer(message["from_id"])
+        if answer["text"] == "YES":
+            config.clear_admins()
+            self.telegram_driver.answer_message(message, ADMIN_CLEARED)
 
     def do_clearfield(self, message):
-        config.clear_fields()
-        self.telegram_driver.answer_message(message, FIELD_CLEARED)
+        self.telegram_driver.answer_message(message, CONFIM_DELETEION)
+        answer = self.telegram_driver.wait_for_answer(message["from_id"])
+        if answer["text"] == "YES":
+            config.clear_fields()
+            self.telegram_driver.answer_message(message, FIELD_CLEARED)
 
     def do_clearkc(self, message):
-        config.clear_kcs()
-        self.telegram_driver.answer_message(message, KC_CLEARED)
+        self.telegram_driver.answer_message(message, CONFIM_DELETEION)
+        answer = self.telegram_driver.wait_for_answer(message["from_id"])
+        if answer["text"] == "YES":
+            config.clear_kcs()
+            self.telegram_driver.answer_message(message, KC_CLEARED)
 
     def do_chat_message(self, message):
         if self.group_chat_id is not None:

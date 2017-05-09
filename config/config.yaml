@@ -6,15 +6,15 @@ bot:
   answer-unknown: false
   approved_chat: -177724202
   autosave: true
-  commands: {add_admin: /addadmin, add_field: /addfield, add_kc: /addkc, alert: /alert,
-    approve: /approve, cancel: /cancel, chat_message: /cm, clearadmin: /clearadmin,
-    clearfield: /clearfield, clearkc: /clearkc, code: "/c /\u0441", codes: "/cc /\u0441\
-      \u0441 /\u0441c /c\u0441", codes_history: /codes, delete_admin: /deleteadmin,
-    delete_field: /deletefield, delete_kc: /deletekc, disapprove: /disapprove, edit: /edit,
-    edit_admin_pass: /eap, edit_field_pass: /efp, edit_kc_pass: /ekp, errors: /errors,
-    gap: /gap, help: /help, hints: /hints, info: /info, message: /message, message_admin: /ma,
-    message_field: /mf, message_kc: /mk, pause: /pause, reset: /reset, resume: /resume,
-    save: /save, send_source: /source, status: /status, stop: /stop, task: /task}
+  commands: {add_admin: /aa, add_field: /af, add_kc: /ak, alert: /alert, approve: /approve,
+    cancel: /cancel, chat_message: /cm, clearadmin: /clearadmin, clearfield: /clearfield,
+    clearkc: /clearkc, code: "/c /\u0441", codes: "/cc /\u0441\u0441 /\u0441c /c\u0441",
+    codes_history: /codes, delete_admin: /da, delete_field: /df, delete_kc: /dk, disapprove: /disapprove,
+    edit: /edit, edit_admin_pass: /eap, edit_field_pass: /efp, edit_kc_pass: /ekp,
+    errors: /errors, gap: /gap, help: /help, hints: /hints, info: /info, message: /message,
+    message_admin: /ma, message_field: /mf, message_kc: /mk, pause: /pause, reset: /reset,
+    resume: /resume, save: /save, send_source: /source, status: /status, stop: /stop,
+    task: /task}
   field_ids: 'kc4KJpqv
 
     '
