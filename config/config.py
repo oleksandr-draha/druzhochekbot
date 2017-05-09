@@ -196,6 +196,10 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("task")
 
     @property
+    def codes_history_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("codes_history")
+
+    @property
     def hints_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("hints")
 

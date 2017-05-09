@@ -24,6 +24,7 @@ class GameDriver:
     game_id = None
     host = None
     connected = False
+    codes_entered = {}
 
     def __init__(self):
         self.session = session()
@@ -79,7 +80,7 @@ class GameDriver:
             # return game_page
             return self.session.get(
                 config.quest_url.format(host=self.host,
-                                 path=config.quest_game_url.format(game_id=self.game_id))).text
+                                        path=config.quest_game_url.format(game_id=self.game_id))).text
         except ConnectionError:
             return ""
 
@@ -87,7 +88,8 @@ class GameDriver:
         try:
             return self.session.post(
                 config.quest_url.format(host=self.host,
-                                 path=config.quest_game_url.format(game_id=self.game_id)), params=body)
+                                        path=config.quest_game_url.format(game_id=self.game_id)),
+                params=body)
         except ConnectionError:
             return ""
 
@@ -124,10 +126,12 @@ class GameDriver:
         if self.level_number != self.get_level_params(r.text)["LevelNumber"]:
             return
         if r.text.find(incorrect_code_locator) == -1 and \
-                r.text.find(correct_code_locator) != -1 and \
-                r.text.find(blocked_code_locator) == -1:
+            r.text.find(correct_code_locator) != -1 and \
+            r.text.find(blocked_code_locator) == -1:
             result = u'\r\n{smile}: {code}'.format(smile=CORRECT_CODE_APPEND,
                                                    code=code)
+            # Save entered codes
+            self.codes_entered.setdefault(self.level_number, []).append(code)
         elif r.text.find(incorrect_code_locator) != -1:
             result = u'\r\n{smile}: {code}'.format(
                 code=code,

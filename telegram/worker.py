@@ -59,6 +59,8 @@ class TelegramWorker(TelegramProcessor):
                 self.user_command(message, self.do_status)
             elif command == config.task_command:
                 self.user_command(message, self.do_task)
+            elif command == config.codes_history_command:
+                self.user_command(message, self.do_codes_history)
             elif command == config.hints_command:
                 self.user_command(message, self.do_hints)
             elif command == config.help_command:

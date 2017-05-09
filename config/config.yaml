@@ -9,12 +9,12 @@ bot:
   commands: {add_admin: /addadmin, add_field: /addfield, add_kc: /addkc, alert: /alert,
     approve: /approve, cancel: /cancel, chat_message: /cm, clearadmin: /clearadmin,
     clearfield: /clearfield, clearkc: /clearkc, code: "/c /\u0441", codes: "/cc /\u0441\
-      \u0441 /\u0441c /c\u0441", delete_admin: /deleteadmin, delete_field: /deletefield,
-    delete_kc: /deletekc, disapprove: /disapprove, edit: /edit, edit_admin_pass: /eap,
-    edit_field_pass: /efp, edit_kc_pass: /ekp, errors: /errors, gap: /gap, help: /help,
-    hints: /hints, info: /info, message: /message, message_admin: /ma, message_field: /mf,
-    message_kc: /mk, pause: /pause, reset: /reset, resume: /resume, save: /save, send_source: /source,
-    status: /status, stop: /stop, task: /task}
+      \u0441 /\u0441c /c\u0441", codes_history: /codes, delete_admin: /deleteadmin,
+    delete_field: /deletefield, delete_kc: /deletekc, disapprove: /disapprove, edit: /edit,
+    edit_admin_pass: /eap, edit_field_pass: /efp, edit_kc_pass: /ekp, errors: /errors,
+    gap: /gap, help: /help, hints: /hints, info: /info, message: /message, message_admin: /ma,
+    message_field: /mf, message_kc: /mk, pause: /pause, reset: /reset, resume: /resume,
+    save: /save, send_source: /source, status: /status, stop: /stop, task: /task}
   field_ids: 'kc4KJpqv
 
     '
@@ -40,12 +40,9 @@ game: {host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723', login
 
     ', password: 'WW84OWthVDc=
 
-    ',
-    quest_images_url: 'http://d1.endata.cx/data/games/{game_id}{image_name}',
-    quest_game_url: 'gameengines/encounter/play/{game_id}/',
-    quest_login_url: 'login/signin/?return=%2f',
-    quest_url: 'http://m.{host}/{path}',
-    show_codes_left: 1 2 3 10 20 50 100, show_first_ap_time: true, show_first_hint_time: true,
+    ', quest_game_url: 'gameengines/encounter/play/{game_id}/', quest_images_url: 'http://d1.endata.cx/data/games/{game_id}{image_name}',
+  quest_login_url: 'login/signin/?return=%2f', quest_url: 'http://m.{host}/{path}',
+  show_codes_left: 1 2 3 10 20 50 100, show_first_ap_time: true, show_first_hint_time: true,
   show_time_left_minutes: 1 4 9, show_time_to_hint: false}
 timeouts: {answer_check_interval: 1, max_attempts: 3, message_check_interval: 1, process_check_interval: 1,
   relogin_interval: 5}

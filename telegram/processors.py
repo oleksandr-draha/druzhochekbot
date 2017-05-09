@@ -12,7 +12,7 @@ from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGE
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, CONNECTION_PROBLEM_MESSAGES, CHECK_SETTINGS_MESSAGES, \
     SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, UNKNOWN_MESSAGES, NEW_ADMIN_WAS_ADDED, \
     NEW_FIELD_WAS_ADDED, NEW_KC_WAS_ADDED, NO_USER_ID_MESSAGE, HELLO_NEW_USER, HELLO_NEW_ADMIN, FIELD_TRIED_CODE, \
-    NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE
+    NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID
 from game.driver import GameDriver
 from game.worker import GameWorker
 
@@ -476,10 +476,27 @@ class TelegramProcessor:
         self.telegram_driver.answer_message(message, BOT_WAS_RESET_MESSAGE)
 
     def do_task(self, message):
-        task_text = TASK_MESSAGE.format(
-            level_number=self.game_worker.last_level_shown,
-            task=self.game_worker.last_task_text)
+        if len(message["text"].split()) > 1:
+            level_to_show = int(message["text"].split()[1])
+            task_text = self.game_worker.tasks_received.get(level_to_show,
+                                                            WRONG_LEVEL_ID_MESSAGE)
+        else:
+            task_text = TASK_MESSAGE.format(
+                level_number=self.game_worker.last_level_shown,
+                task=self.game_worker.last_task_text)
         self.telegram_driver.answer_message(message, task_text, parse_mode="HTML")
+
+    def do_codes_history(self, message):
+        if len(message["text"].split()) > 1:
+            level_to_show = int(message["text"].split()[1])
+            task_text = self.game_worker.game_driver.codes_entered.get(level_to_show)
+            if task_text is not None:
+                codes = '\r\n'.join(task_text)
+            else:
+                codes = WRONG_LEVEL_ID_MESSAGE
+            self.telegram_driver.answer_message(message, codes)
+        else:
+            self.telegram_driver.answer_message(message, NO_TASK_ID)
 
     def do_hints(self, message):
         hints = []

@@ -23,6 +23,7 @@ class GameProcessor:
     codes_limit_shown = False
     _request_task_text = False
     last_org_message_shown = None
+    tasks_received = {}
 
     def __init__(self):
         self.game_driver = GameDriver()
@@ -82,6 +83,7 @@ class GameProcessor:
             updates.append(NEW_TASK_MESSAGE.format(
                 level_number=current_level["LevelNumber"],
                 task=task_text))
+            self.tasks_received.setdefault(current_level["LevelNumber"], task_text)
         return updates
 
     def process_ap_time(self):
@@ -180,8 +182,10 @@ class GameProcessor:
 
     def process_task_was_changed(self):
         updates = []
+        level_number = self.game_driver.set_level_params(self.game_page)["LevelNumber"]
         task_text = self.game_driver.get_task(self.game_page)
         if self.last_task_text != task_text:
             self.last_task_text = task_text
             updates.append(TASK_EDITED_MESSAGE.format(task=task_text))
+            self.tasks_received[level_number] = task_text
         return updates
