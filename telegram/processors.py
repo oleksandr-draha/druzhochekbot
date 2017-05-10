@@ -1,5 +1,5 @@
+# -*- coding: utf-8 -*-
 import json
-import pprint
 
 import datetime
 
@@ -444,7 +444,7 @@ class TelegramProcessor:
         from_id = message["from_id"]
         message = ""
         for unknown in self.unknown_users:
-            message += "{timestamp}\r\n{user_id}:{username}\r\n{message}\r\n\r\n".format(
+            message += u"{timestamp}\r\n{user_id} : {username}\r\n{message}\r\n\r\n".format(
                 timestamp=unknown["timestamp"],
                 user_id=unknown["user_id"],
                 message=unknown["message_text"],
