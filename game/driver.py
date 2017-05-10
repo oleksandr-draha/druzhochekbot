@@ -13,7 +13,7 @@ from game.locators import logged_locator, blocked_locator, div_start_locator, di
     hint_end_locator, codes_left_locator, codes_left_end_locator, message_start_locator, message_end_locator, \
     finish_start_locator, finish_end_locator, answer_text_start_locator, answer_text_end_locator, limit_start_locator, \
     limit_end_locator, org_message_locator, org_message_end_locator, not_entered_code_locator, code_name_locator_start, \
-    code_name_locator_end
+    code_name_locator_end, not_payed_locator
 
 
 class GameDriver:
@@ -31,9 +31,12 @@ class GameDriver:
         try:
             self.login_user()
             game_page = self.get_game_page()
-            if self.is_logged(game_page) and not self.is_finished(game_page):
-                self.set_level_params(game_page)
-            self.connected = True
+            if self.is_logged(game_page):
+                if not self.is_finished(game_page):
+                    self.set_level_params(game_page)
+                self.connected = True
+            else:
+                self.connected = False
         except ConnectionError:
             self.connected = False
 
@@ -56,6 +59,11 @@ class GameDriver:
             self.is_finished() or \
             text.find(blocked_locator) != -1 or \
             self.not_started()
+
+    def not_payed(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        return text.find(not_payed_locator) != -1
 
     def not_started(self, text=None):
         if text is None:
@@ -258,6 +266,9 @@ class GameDriver:
             codes_left_start += len(codes_left_locator)
             codes_left_end = codes_left_start + text[codes_left_start:].find(codes_left_end_locator)
             return int(html2text.html2text(text[codes_left_start: codes_left_end]))
+
+    def get_not_payed_message(self, text=None):
+        return not_payed_locator
 
     def get_not_started_message(self, text=None):
         if text is None:

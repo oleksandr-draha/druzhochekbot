@@ -3,6 +3,8 @@
 logged_locator = u'<label for="Answer">'
 blocked_locator = u'<div class="blocked"><div>вы сможете ввести код через'
 
+not_payed_locator = u"""Ваша команда не сделала взнос на эту игру"""
+
 div_start_locator = u'<div class="infomessage" style="display:block">'
 div_end_locator = u'</div>'
 message_locator = u'Игра начнется в'

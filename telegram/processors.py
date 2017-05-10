@@ -1,4 +1,5 @@
 import json
+import pprint
 
 from config import config
 from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGES, ACCESS_VIOLATION_MESSAGES, \
@@ -20,6 +21,7 @@ from game.worker import GameWorker
 class TelegramProcessor:
     telegram_driver = None
     game_worker = None
+    unknown_users = {}
 
     def admin_command(self, message, do_function):
         from_id = message["from_id"]
@@ -436,6 +438,12 @@ class TelegramProcessor:
                                        str(config.repr_errors()),
                                        'errors.txt')
 
+    def do_send_unknown(self, message):
+        from_id = message["from_id"]
+        self.telegram_driver.send_file(from_id,
+                                       pprint.pformat(self.unknown_users),
+                                       'unkown.txt')
+
     def _do_disapprove(self, message):
         self.group_chat_id = None
         config.group_chat_id = self.group_chat_id
@@ -472,6 +480,7 @@ class TelegramProcessor:
 
     def do_info(self, message):
         info_message = INFO_MESSAGE.format(
+            chat_id=self.group_chat_id,
             login=self.game_worker.game_driver.login,
             password=self.game_worker.game_driver.password,
             host=self.game_worker.game_driver.host,
@@ -483,7 +492,8 @@ class TelegramProcessor:
             field_passphrase=config.field_passphrase,
             kc_passphrase=config.kc_passphrase,
             time_start=config.start_time,
-            bot_errors=len(config.errors))
+            bot_errors=len(config.errors),
+            unknown_users=len(self.unknown_users))
         self.telegram_driver.answer_message(message, info_message)
 
     def do_reset(self, message):
@@ -588,6 +598,16 @@ class TelegramProcessor:
         if config.answer_unknown:
             self.telegram_driver.answer_message(message, UNKNOWN_MESSAGES)
 
+    def process_unknown_user(self, message):
+        from_id = message["from_id"]
+        if from_id not in config.admin_ids + config.field_ids + config.kc_ids:
+            self.unknown_users.setdefault(from_id, []).append(message["text"])
+            if len(self.unknown_users[from_id]) > 100:
+                self.unknown_users[from_id].pop()
+            return True
+        else:
+            return False
+
     def process_new_user(self, message):
         passphrase = message["text"]
         from_id = message["from_id"]
@@ -600,6 +620,7 @@ class TelegramProcessor:
                 self.telegram_driver.admin_message(
                     NEW_ADMIN_WAS_ADDED.format(user_id=from_id,
                                                nickname=self.telegram_driver.get_username(from_id)))
+                return True
         elif passphrase == config.field_passphrase:
             if from_id in config.field_ids:
                 self.telegram_driver.answer_message(message, DUPLICATE_USER_ID)
@@ -609,6 +630,7 @@ class TelegramProcessor:
                 self.telegram_driver.admin_message(
                     NEW_FIELD_WAS_ADDED.format(user_id=from_id,
                                                nickname=self.telegram_driver.get_username(from_id)))
+                return True
         elif passphrase == config.kc_passphrase:
             if from_id in config.kc_ids:
                 self.telegram_driver.answer_message(message, DUPLICATE_USER_ID)
@@ -618,8 +640,9 @@ class TelegramProcessor:
                 self.telegram_driver.admin_message(
                     NEW_KC_WAS_ADDED.format(user_id=from_id,
                                             nickname=self.telegram_driver.get_username(from_id)))
+                return True
         else:
-            return True
+            return False
 
     def dublicate_code_to_group_chat(self, message, result):
         from_id = message["from_id"]

@@ -103,14 +103,18 @@ INFO_MESSAGE = u"""
 Пароль: {password}
 Хост: {host}
 Игра: {game_id}
+Активная группа: {chat_id}
+-------------------------------
 Инвайт-код для админов: {admin_passphrase}
 Инвайт-код для поля: {field_passphrase}
 Инвайт-код для КЦ: {kc_passphrase}
 Активные админы: {admins}
 Полевые игроки: {fields}
 Штабные игроки: {kcs}
-Ошибок: {bot_errors}
+-------------------------------
 Запущен: {time_start}
+Ошибок: {bot_errors}
+Неизвестных пользователей: {unknown_users}
 """
 BOT_WAS_RESET_MESSAGE = u"Состояние бота было сброшено на начальное."
 
@@ -202,6 +206,7 @@ ADMIN_HELP_MESSAGE = u"""
 
 {source}: Отправить текущую страницу
 {errors}: Отправить лог ошибок
+{unknown}: Отправить лог запросов от неизвестных пользователей
 
 *Пользовательские функции:*
 {regular}
@@ -235,4 +240,5 @@ ADMIN_HELP_MESSAGE = u"""
     message_kc=config.message_kc_command,
     source=config.send_source_command,
     errors=config.send_errors_command,
+    unknown=config.send_unknown_command,
     regular=REGULAR_HELP_MESSAGE)

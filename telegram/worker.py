@@ -13,7 +13,6 @@ class TelegramWorker(TelegramProcessor):
         self.telegram_driver = TelegramDriver()
         self.telegram_driver.get_updates()
         self.initial_message = None
-        self.initialize_attempts = 0
         self.paused = config.paused
         self.stopped = False
         self.game_worker = None
@@ -21,8 +20,6 @@ class TelegramWorker(TelegramProcessor):
         self.add_admin_passphrase = None
         self.add_field_passphrase = None
         self.add_kc_passphrase = None
-
-        # Messages dictionary
 
         self.load_settings()
 
@@ -47,7 +44,9 @@ class TelegramWorker(TelegramProcessor):
             if self.initial_message is None:
                 self.initial_message = message
             command = self.telegram_driver.get_command(message).lower()
-            if self.process_new_user(message) is None:
+            if self.process_new_user(message):
+                continue
+            if self.process_unknown_user(message):
                 continue
             self.process_code_simple_message(message)
             # User commands:
@@ -127,6 +126,8 @@ class TelegramWorker(TelegramProcessor):
                 self.admin_command(message, self.do_send_source)
             elif command == config.send_errors_command:
                 self.admin_command(message, self.do_send_errors)
+            elif command == config.send_unknown_command:
+                self.admin_command(message, self.do_send_unknown)
             else:
                 self.unknown_command(message)
 

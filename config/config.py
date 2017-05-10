@@ -300,6 +300,10 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("errors")
 
     @property
+    def send_unknown_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("unknown")
+
+    @property
     def passphrases(self):
         return [self.admin_passphrase, self.field_passphrase, self.kc_passphrase]
 

@@ -20,6 +20,7 @@ class GameProcessor:
     connected = False
     finished_shown = False
     not_started_shown = False
+    not_payed = False
     codes_limit_shown = False
     _request_task_text = False
     last_org_message_shown = None
@@ -38,6 +39,7 @@ class GameProcessor:
         self.codes_left_shown = []
         self.hints_shown = []
         self.finished_shown = False
+        self.not_payed = False
         self.not_started_shown = False
         self.codes_limit_shown = False
 
@@ -51,6 +53,14 @@ class GameProcessor:
                 return True
             sleep(config.relogin_interval)
         return False
+
+    def process_game_not_payed(self):
+        updates = []
+        if self.game_driver.not_payed(self.game_page):
+            if not self.not_payed:
+                self.not_payed = True
+                updates.append(self.game_driver.get_not_payed_message(self.game_page))
+        return updates
 
     def process_game_not_started(self):
         updates = []
