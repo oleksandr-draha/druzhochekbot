@@ -1,6 +1,8 @@
 import json
 import pprint
 
+import datetime
+
 from config import config
 from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGES, ACCESS_VIOLATION_MESSAGES, \
     NO_CODE_FOUND_MESSAGE, CODES_BLOCKED_MESSAGE, GAME_FINISHED_MESSAGE, BYE_MESSAGES, START_PAUSE_MESSAGES, \
@@ -21,7 +23,7 @@ from game.worker import GameWorker
 class TelegramProcessor:
     telegram_driver = None
     game_worker = None
-    unknown_users = {}
+    unknown_users = []
 
     def admin_command(self, message, do_function):
         from_id = message["from_id"]
@@ -440,9 +442,16 @@ class TelegramProcessor:
 
     def do_send_unknown(self, message):
         from_id = message["from_id"]
+        message = ""
+        for unknown in self.unknown_users:
+            message += "{timestamp}\r\n{user_id}:{username}\r\n{message}\r\n\r\n".format(
+                timestamp=unknown["timestamp"],
+                user_id=unknown["user_id"],
+                message=unknown["message_text"],
+                username=unknown["username"])
         self.telegram_driver.send_file(from_id,
-                                       pprint.pformat(self.unknown_users),
-                                       'unkown.txt')
+                                       message,
+                                       'unknown.txt')
 
     def _do_disapprove(self, message):
         self.group_chat_id = None
@@ -601,8 +610,11 @@ class TelegramProcessor:
     def process_unknown_user(self, message):
         from_id = message["from_id"]
         if from_id not in config.admin_ids + config.field_ids + config.kc_ids:
-            self.unknown_users.setdefault(from_id, []).append(message["text"])
-            if len(self.unknown_users[from_id]) > 100:
+            self.unknown_users.append({"timestamp": datetime.datetime.now(),
+                                       "user_id": from_id,
+                                       "username": message["username"],
+                                       "message_text": message["text"]})
+            if len(self.unknown_users) > 100:
                 self.unknown_users[from_id].pop()
             return True
         else:

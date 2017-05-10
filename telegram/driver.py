@@ -98,6 +98,7 @@ class TelegramDriver:
                     {'id': message.get('message', {}).get('message_id'),
                      'text': message.get('message', {}).get('text'),
                      'from_id': message.get('message', {}).get('from', {}).get('id'),
+                     'username': message.get('message', {}).get('from', {}).get('username'),
                      'chat_id': message.get('message', {}).get('chat', {}).get('id')})
         return messages
 
