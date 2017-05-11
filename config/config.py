@@ -494,7 +494,7 @@ class DruzhochekConfig(object):
 
     def log_error(self, error):
         if len(self.errors) > 100:
-            self.errors = list()
+            self.errors.pop(0)
         self.errors.append([datetime.now(), error])
 
     def repr_errors(self):

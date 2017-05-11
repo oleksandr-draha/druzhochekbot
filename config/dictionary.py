@@ -90,6 +90,7 @@ NOT_FOR_GROUP_CHAT_MESSAGES = [u"Такое лучше писать в личк�
 
 GAME_FINISHED_MESSAGE = u"\r\nИгра окончена."
 CODES_BLOCKED_MESSAGE = u"\r\nВвод кодов заблокирован."
+NO_DATA_TO_DISPLAY = u"Нет данных для отображения."
 
 STATUS_MESSAGE = u"""
 Статус дружочка: {paused}

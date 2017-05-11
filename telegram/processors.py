@@ -15,7 +15,8 @@ from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGE
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, CONNECTION_PROBLEM_MESSAGES, CHECK_SETTINGS_MESSAGES, \
     SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, UNKNOWN_MESSAGES, NEW_ADMIN_WAS_ADDED, \
     NEW_FIELD_WAS_ADDED, NEW_KC_WAS_ADDED, NO_USER_ID_MESSAGE, HELLO_NEW_USER, HELLO_NEW_ADMIN, FIELD_TRIED_CODE, \
-    NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID, CONFIM_DELETEION
+    NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID, CONFIM_DELETEION, \
+    NO_DATA_TO_DISPLAY
 from game.driver import GameDriver
 from game.worker import GameWorker
 
@@ -430,28 +431,40 @@ class TelegramProcessor:
     def do_send_source(self, message):
         from_id = message["from_id"]
         source = self.game_worker.game_page
-        self.telegram_driver.send_file(from_id,
-                                       source,
-                                       'source.htm')
+        if len(source):
+            self.telegram_driver.send_file(from_id,
+                                           source,
+                                           'source.htm')
+        else:
+            self.telegram_driver.answer_message(message,
+                                                NO_DATA_TO_DISPLAY)
 
     def do_send_errors(self, message):
         from_id = message["from_id"]
-        self.telegram_driver.send_file(from_id,
-                                       str(config.repr_errors()),
-                                       'errors.txt')
+        if len(config.errors):
+            self.telegram_driver.send_file(from_id,
+                                           str(config.repr_errors()),
+                                           'errors.txt')
+        else:
+            self.telegram_driver.answer_message(message,
+                                                NO_DATA_TO_DISPLAY)
 
     def do_send_unknown(self, message):
         from_id = message["from_id"]
-        message = ""
+        unknown_message = ""
         for unknown in self.unknown_users:
-            message += u"{timestamp}\r\n{user_id} : {username}\r\n{message}\r\n\r\n".format(
+            unknown_message += u"{timestamp}\r\n{user_id} : {username}\r\n{message}\r\n\r\n".format(
                 timestamp=unknown["timestamp"],
                 user_id=unknown["user_id"],
                 message=unknown["message_text"],
                 username=unknown["username"])
-        self.telegram_driver.send_file(from_id,
-                                       message,
-                                       'unknown.txt')
+        if len(unknown_message):
+            self.telegram_driver.send_file(from_id,
+                                           unknown_message,
+                                           'unknown.txt')
+        else:
+            self.telegram_driver.answer_message(message,
+                                                NO_DATA_TO_DISPLAY)
 
     def _do_disapprove(self, message):
         self.group_chat_id = None
@@ -615,7 +628,7 @@ class TelegramProcessor:
                                        "username": message["username"],
                                        "message_text": message["text"]})
             if len(self.unknown_users) > 100:
-                self.unknown_users[from_id].pop()
+                self.unknown_users[from_id].pop(0)
             return True
         else:
             return False
