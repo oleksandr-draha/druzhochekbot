@@ -30,6 +30,9 @@ LETS_GO_MESSAGES = [u"Воо-оо-оойтии-ии-и в игруу-уу-уу"]
 DISAPPROVE_MESSAGES = [u"Если ты им не доверяешь - значит и я."]
 NO_CODE_FOUND_MESSAGE = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c long code или /cc code 1 code2_'
 
+NEW_TOKEN_MESSAGE = u"""Введи новый токен бота или *NO* для отмены операции"""
+TOKEN_CHANGED = u"""Токен был изменен"""
+TOKEN_CANCELLED = u"""Изменение токена отменено"""
 CONFIM_DELETEION = u"""Эту операцию нельзя отменить. Для подтверждения напиши *"YES"* """
 ADMIN_CLEARED = u"""Все админы были удалены."""
 FIELD_CLEARED = u"""Все полевые игроки были удалены."""
@@ -180,6 +183,7 @@ ADMIN_HELP_MESSAGE = u"""
 {edit} : Изменить текущие настройки бота
 {save} : Перезаписать настройки бота по-умолчанию
 {reset} : Обнулить список полученных заданий/подсказок
+{token}: Изменить токен бота
 
 {pause} : Прекратить отслеживание заданий и вбитие кодов
 {resume} : Возобновить отслеживание заданий и вбитие кодов
@@ -214,6 +218,7 @@ ADMIN_HELP_MESSAGE = u"""
 """.format(
     approve=config.approve_command,
     disapprove=config.disapprove_command,
+    token=config.token_command,
     edit=config.edit_command,
     save=config.save_command,
     reset=config.reset_command,

@@ -35,6 +35,12 @@ class DruzhochekConfig(object):
     def bot_token(self):
         return self.config.get("bot", {}).get("token")
 
+    @bot_token.setter
+    def bot_token(self, value):
+        self.config["bot"]["token"] = value
+        if self.autosave:
+            config.save_config()
+
     @property
     def group_chat_id(self):
         return self.config.get("bot", {}).get("approved_chat")
@@ -274,6 +280,10 @@ class DruzhochekConfig(object):
     @property
     def chat_message_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("chat_message")
+
+    @property
+    def token_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("token")
 
     @property
     def message_command(self):

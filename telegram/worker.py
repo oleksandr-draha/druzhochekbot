@@ -128,6 +128,8 @@ class TelegramWorker(TelegramProcessor):
                 self.admin_command(message, self.do_send_errors)
             elif command == config.send_unknown_command:
                 self.admin_command(message, self.do_send_unknown)
+            elif command == config.token_command:
+                self.admin_command(message, self.do_token)
             else:
                 self.unknown_command(message)
 

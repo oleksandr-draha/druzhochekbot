@@ -16,7 +16,7 @@ from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGE
     SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, UNKNOWN_MESSAGES, NEW_ADMIN_WAS_ADDED, \
     NEW_FIELD_WAS_ADDED, NEW_KC_WAS_ADDED, NO_USER_ID_MESSAGE, HELLO_NEW_USER, HELLO_NEW_ADMIN, FIELD_TRIED_CODE, \
     NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID, CONFIM_DELETEION, \
-    NO_DATA_TO_DISPLAY
+    NO_DATA_TO_DISPLAY, NEW_TOKEN_MESSAGE, TOKEN_CHANGED, TOKEN_CANCELLED
 from game.driver import GameDriver
 from game.worker import GameWorker
 
@@ -448,6 +448,15 @@ class TelegramProcessor:
         else:
             self.telegram_driver.answer_message(message,
                                                 NO_DATA_TO_DISPLAY)
+
+    def do_token(self, message):
+        self.telegram_driver.answer_message(message, NEW_TOKEN_MESSAGE)
+        answer = self.telegram_driver.wait_for_answer(message["from_id"])
+        if answer["text"] != "NO":
+            config.bot_token = answer["text"]
+            self.telegram_driver.answer_message(message, TOKEN_CHANGED)
+        else:
+            self.telegram_driver.answer_message(message, TOKEN_CANCELLED)
 
     def do_send_unknown(self, message):
         from_id = message["from_id"]
