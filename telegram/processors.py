@@ -24,11 +24,21 @@ from game.worker import GameWorker
 from telegram.driver import TelegramDriver
 
 
-class TelegramProcessor:
+class TelegramProcessor(object):
     telegram_driver = None
     game_worker = None
     group_chat_id = None
     unknown_users = []
+
+    def reset(self):
+        self.telegram_driver = TelegramDriver()
+        self.telegram_driver.get_updates()
+        self.initial_message = None
+        self.paused = True
+        self.stopped = False
+        self.game_worker = None
+        self.group_chat_id = None
+        self.load_settings()
 
     def __init__(self):
         self.telegram_driver = TelegramDriver()
@@ -38,10 +48,6 @@ class TelegramProcessor:
         self.stopped = False
         self.game_worker = None
         self.group_chat_id = config.group_chat_id
-        self.add_admin_passphrase = None
-        self.add_field_passphrase = None
-        self.add_kc_passphrase = None
-
         self.load_settings()
 
     def load_settings(self):
@@ -498,11 +504,9 @@ class TelegramProcessor:
         if answer["text"] != "NO":
             if config.bot_token != answer["text"]:
                 config.bot_token = answer["text"]
-                self.game_worker.reset_level()
-                self.group_chat_id = None
-                self.paused = True
-                self.load_settings()
-            self.telegram_driver.answer_message(message, TOKEN_CHANGED)
+                self.reset()
+            from_id = message["from_id"]
+            self.telegram_driver.send_message(from_id, TOKEN_CHANGED)
         else:
             self.telegram_driver.answer_message(message, TOKEN_CANCELLED)
 

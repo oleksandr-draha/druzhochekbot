@@ -17,7 +17,6 @@ class GameProcessor:
     codes_left_shown = []
     codes_left_text_shown = []
     hints_shown = []
-    connected = False
     finished_shown = False
     not_started_shown = False
     not_payed = False

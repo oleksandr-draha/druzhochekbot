@@ -4,7 +4,7 @@ bot:
     '
   answer-forbidden: false
   answer-unknown: false
-  approved_chat: -207617788
+  approved_chat: -1001050462991
   autosave: true
   commands: {add_admin: /aa, add_field: /af, add_kc: /ak, alert: /alert, approve: /approve,
     cancel: /cancel, chat_message: /cm, clearadmin: /clearadmin, clearfield: /clearfield,
@@ -33,7 +33,7 @@ bot:
   paused: false
   send-document-path: https://api.telegram.org/bot{key}/sendDocument
   send-message-path: https://api.telegram.org/bot{key}/sendMessage
-  token: !!python/unicode '372024830:AAGvlY9KpOflca8dXSKX-q1LWC2BdUwAneE'
+  token: !!python/unicode '289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w'
   updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}
   users-path: https://api.telegram.org/bot{key}/getChat?chat_id={user_id}
 game: {code_limit: 20, host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723',
