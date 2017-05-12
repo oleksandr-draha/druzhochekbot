@@ -1,43 +1,10 @@
 # -*- coding: utf-8 -*-
 from config.config import config
-from config.dictionary import CONNECTION_PROBLEM_MESSAGES, \
-    CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, CHECK_SETTINGS_MESSAGES
-from game.driver import GameDriver
-from game.worker import GameWorker
-from telegram.driver import TelegramDriver
+from config.dictionary import CONNECTION_PROBLEM_MESSAGES
 from telegram.processors import TelegramProcessor
 
 
 class TelegramWorker(TelegramProcessor):
-    def __init__(self):
-        self.telegram_driver = TelegramDriver()
-        self.telegram_driver.get_updates()
-        self.initial_message = None
-        self.paused = config.paused
-        self.stopped = False
-        self.game_worker = None
-        self.group_chat_id = config.group_chat_id
-        self.add_admin_passphrase = None
-        self.add_field_passphrase = None
-        self.add_kc_passphrase = None
-
-        self.load_settings()
-
-    def load_settings(self):
-        GameDriver.login = config.game_login
-        GameDriver.password = config.game_password
-        GameDriver.game_id = config.game_id
-        GameDriver.host = config.game_host
-        self.game_worker = GameWorker()
-        if self.game_worker.connected:
-            if self.group_chat_id is None:
-                self.telegram_driver.admin_message(CONNECTION_OK_MESSAGES)
-                self.telegram_driver.admin_message(PLEASE_APPROVE_MESSAGES)
-            return True
-        else:
-            self.telegram_driver.admin_message(CONNECTION_PROBLEM_MESSAGES)
-            self.telegram_driver.admin_message(CHECK_SETTINGS_MESSAGES)
-            return False
 
     def process_messages(self):
         for message in self.telegram_driver.check_new_messages():

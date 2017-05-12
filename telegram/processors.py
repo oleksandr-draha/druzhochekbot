@@ -21,12 +21,44 @@ from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGE
     CODE_LIMIT_MESSAGE, CODE_LIMIT
 from game.driver import GameDriver
 from game.worker import GameWorker
+from telegram.driver import TelegramDriver
 
 
 class TelegramProcessor:
     telegram_driver = None
     game_worker = None
+    group_chat_id = None
     unknown_users = []
+
+    def __init__(self):
+        self.telegram_driver = TelegramDriver()
+        self.telegram_driver.get_updates()
+        self.initial_message = None
+        self.paused = config.paused
+        self.stopped = False
+        self.game_worker = None
+        self.group_chat_id = config.group_chat_id
+        self.add_admin_passphrase = None
+        self.add_field_passphrase = None
+        self.add_kc_passphrase = None
+
+        self.load_settings()
+
+    def load_settings(self):
+        GameDriver.login = config.game_login
+        GameDriver.password = config.game_password
+        GameDriver.game_id = config.game_id
+        GameDriver.host = config.game_host
+        self.game_worker = GameWorker()
+        if self.game_worker.connected:
+            if self.group_chat_id is None:
+                self.telegram_driver.admin_message(CONNECTION_OK_MESSAGES)
+                self.telegram_driver.admin_message(PLEASE_APPROVE_MESSAGES)
+            return True
+        else:
+            self.telegram_driver.admin_message(CONNECTION_PROBLEM_MESSAGES)
+            self.telegram_driver.admin_message(CHECK_SETTINGS_MESSAGES)
+            return False
 
     def admin_command(self, message, do_function):
         from_id = message["from_id"]
@@ -464,7 +496,12 @@ class TelegramProcessor:
         self.telegram_driver.answer_message(message, NEW_TOKEN_MESSAGE)
         answer = self.telegram_driver.wait_for_answer(message["from_id"])
         if answer["text"] != "NO":
-            config.bot_token = answer["text"]
+            if config.bot_token != answer["text"]:
+                config.bot_token = answer["text"]
+                self.game_worker.reset_level()
+                self.group_chat_id = None
+                self.paused = True
+                self.load_settings()
             self.telegram_driver.answer_message(message, TOKEN_CHANGED)
         else:
             self.telegram_driver.answer_message(message, TOKEN_CANCELLED)
@@ -501,7 +538,7 @@ class TelegramProcessor:
     def _do_disapprove(self, message):
         self.group_chat_id = None
         config.group_chat_id = self.group_chat_id
-        self.paused = False
+        self.paused = True
         config.paused = self.paused
         self.telegram_driver.answer_message(message, DISAPPROVE_MESSAGES)
 
