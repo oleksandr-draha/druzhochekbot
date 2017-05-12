@@ -15,8 +15,10 @@ from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGE
     CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, CONNECTION_PROBLEM_MESSAGES, CHECK_SETTINGS_MESSAGES, \
     SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, UNKNOWN_MESSAGES, NEW_ADMIN_WAS_ADDED, \
     NEW_FIELD_WAS_ADDED, NEW_KC_WAS_ADDED, NO_USER_ID_MESSAGE, HELLO_NEW_USER, HELLO_NEW_ADMIN, FIELD_TRIED_CODE, \
-    NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID, CONFIM_DELETEION, \
-    NO_DATA_TO_DISPLAY, NEW_TOKEN_MESSAGE, TOKEN_CHANGED, TOKEN_CANCELLED
+    NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID, \
+    CONFIM_DELETEION, \
+    NO_DATA_TO_DISPLAY, NEW_TOKEN_MESSAGE, TOKEN_CHANGED, TOKEN_CANCELLED, CODE_LIMIT_CANCELLED, CODE_LIMIT_CHANGED, \
+    CODE_LIMIT_MESSAGE, CODE_LIMIT
 from game.driver import GameDriver
 from game.worker import GameWorker
 
@@ -54,6 +56,10 @@ class TelegramProcessor:
             do_function(message)
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
+
+    def get_new_value(self, prompt_message, value_type):
+        # TODO: write a common function to set new values
+        pass
 
     def check_codes(self, message):
         command = self.telegram_driver.get_command(message)
@@ -104,9 +110,14 @@ class TelegramProcessor:
     def do_codes(self, message):
         if not self.paused:
             if len(message["text"].split()) > 1:
-                result = self.check_codes(message)
-                self.telegram_driver.answer_message(message, result)
-                self.dublicate_code_to_group_chat(message, result)
+                if len(message["text"].split()) <= config.code_limit + 1:
+                    result = self.check_codes(message)
+                    self.telegram_driver.answer_message(message, result)
+                    self.dublicate_code_to_group_chat(message, result)
+                else:
+                    self.telegram_driver.answer_message(
+                        message,
+                        CODE_LIMIT.format(codelimit=config.code_limit))
             else:
                 self.telegram_driver.answer_message(message, NO_CODE_FOUND_MESSAGE)
         else:
@@ -458,6 +469,18 @@ class TelegramProcessor:
         else:
             self.telegram_driver.answer_message(message, TOKEN_CANCELLED)
 
+    def do_codes_limit(self, message):
+        self.telegram_driver.answer_message(message, CODE_LIMIT_MESSAGE)
+        answer = self.telegram_driver.wait_for_answer(message["from_id"])
+        if answer["text"] != "NO":
+            if answer["text"].isdigit():
+                config.code_limit = int(answer["text"])
+                self.telegram_driver.answer_message(message, CODE_LIMIT_CHANGED)
+            else:
+                self.telegram_driver.answer_message(message, CODE_LIMIT_CANCELLED)
+        else:
+            self.telegram_driver.answer_message(message, CODE_LIMIT_CANCELLED)
+
     def do_send_unknown(self, message):
         from_id = message["from_id"]
         unknown_message = ""
@@ -524,8 +547,11 @@ class TelegramProcessor:
             kc_passphrase=config.kc_passphrase,
             time_start=config.start_time,
             bot_errors=len(config.errors),
-            unknown_users=len(self.unknown_users))
-        self.telegram_driver.answer_message(message, info_message)
+            token=config.bot_token,
+            rnd=self.game_worker.game_driver.rnd,
+            codelimit=config.code_limit,
+            unknown_users=len(self.unknown_users)),
+        self.telegram_driver.answer_message(message, info_message, parse_mode="html")
 
     def do_reset(self, message):
         self.game_worker.reset_level()

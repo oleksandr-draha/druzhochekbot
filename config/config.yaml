@@ -9,12 +9,12 @@ bot:
   commands: {add_admin: /aa, add_field: /af, add_kc: /ak, alert: /alert, approve: /approve,
     cancel: /cancel, chat_message: /cm, clearadmin: /clearadmin, clearfield: /clearfield,
     clearkc: /clearkc, code: "/c /\u0441", codes: "/cc /\u0441\u0441 /\u0441c /c\u0441",
-    codes_history: /codes, delete_admin: /da, delete_field: /df, delete_kc: /dk, disapprove: /disapprove,
-    edit: /edit, edit_admin_pass: /eap, edit_field_pass: /efp, edit_kc_pass: /ekp,
-    errors: /errors, gap: /gap, help: /help, hints: /hints, info: /info, message: /message,
-    message_admin: /ma, message_field: /mf, message_kc: /mk, pause: /pause, reset: /reset,
-    resume: /resume, save: /save, send_source: /source, status: /status, stop: /stop,
-    task: /task, token: /token, unknown: /unknown}
+    codes_history: /codes, codes_limit: /codelimit, delete_admin: /da, delete_field: /df,
+    delete_kc: /dk, disapprove: /disapprove, edit: /edit, edit_admin_pass: /eap, edit_field_pass: /efp,
+    edit_kc_pass: /ekp, errors: /errors, gap: /gap, help: /help, hints: /hints, info: /info,
+    message: /message, message_admin: /ma, message_field: /mf, message_kc: /mk, pause: /pause,
+    reset: /reset, resume: /resume, save: /save, send_source: /source, status: /status,
+    stop: /stop, task: /task, token: /token, unknown: /unknown}
   field_ids: 'kA==
 
     '
@@ -36,7 +36,8 @@ bot:
   token: !!python/unicode '289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w'
   updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}
   users-path: https://api.telegram.org/bot{key}/getChat?chat_id={user_id}
-game: {host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723', login: 'ZHJhZ2F0ZW1w
+game: {code_limit: 20, host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723',
+  login: 'ZHJhZ2F0ZW1w
 
     ', password: 'WW84OWthVDc=
 

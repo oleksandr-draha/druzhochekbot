@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from random import randint
+
 from requests import ConnectionError, session
 import html2text
 
@@ -25,6 +27,7 @@ class GameDriver:
     host = None
     connected = False
     codes_entered = {}
+    rnd = "0,%s" % randint(100000000000000, 999999999999999)
 
     def __init__(self):
         self.session = session()
@@ -125,7 +128,7 @@ class GameDriver:
         return level_params
 
     def try_code(self, code=""):
-        body = {"rnd": "0,663014513283509",
+        body = {"rnd": self.rnd,
                 "LevelId": self.level_id,
                 "LevelNumber": self.level_number,
                 "LevelAction.Answer": code}
@@ -307,7 +310,12 @@ class GameDriver:
         if org_message_start != -1:
             org_message_start += len(org_message_locator)
             org_message_end = org_message_start + text[org_message_start:].find(org_message_end_locator)
-            return html2text.html2text(text[org_message_start: org_message_end])
+            org_message = html2text.html2text(text[org_message_start: org_message_end])
+            org_message = org_message.replace('[', '', 1).replace(']', '', 1)
+            delete_start = org_message.index('(')
+            delete_end = org_message.index(')') + 1
+            org_message = org_message[:delete_start] + org_message[delete_end:]
+            return html2text.html2text(org_message)
 
     def get_codes_gap(self, text=None):
         if text is None:
