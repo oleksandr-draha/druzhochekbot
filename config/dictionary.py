@@ -30,7 +30,7 @@ LETS_GO_MESSAGES = [u"Воо-оо-оойтии-ии-и в игруу-уу-уу"]
 DISAPPROVE_MESSAGES = [u"Если ты им не доверяешь - значит и я."]
 NO_CODE_FOUND_MESSAGE = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c long code или /cc code 1 code2_'
 
-NEW_TOKEN_MESSAGE = u"""Введи новый токен бота или *NO* для отмены операции"""
+NEW_TOKEN_MESSAGE = u"""Текущий токен: *{token}*\r\n Введи новый токен или *NO* для отмены операции"""
 CODE_LIMIT_MESSAGE = u"""Введи новое ограничение на перебор кодов или *NO* для отмены операции"""
 TOKEN_CHANGED = u"""Токен был изменен"""
 CODE_LIMIT_CHANGED = u"""Ограничение на перебор кодов было изменено"""
@@ -55,7 +55,7 @@ NO_MESSAGE = u"""Нет user id для сообщения. Пример:
 NO_TASK_ID = u"""Нет id уровня. Пример:
 /codes 123456"""
 NEED_SAVE = u"""
-Для сохранения измений после перезапуска - сохраните настройки в базу.""" \
+Для сохранения измений после перезапуска - сохрани настройки в базу.""" \
     if not config.autosave else ''
 NEW_ADMIN_WAS_ADDED = u"""Новый админ добавлен: {user_id} : {nickname}.""" + NEED_SAVE
 NEW_FIELD_WAS_ADDED = u"""Новый полевой игрок добавлен: {user_id} : {nickname}.""" + NEED_SAVE
@@ -74,16 +74,21 @@ FIELD_TRIED_CODE = u"""{nickname}:
 
 ENTER_NEW_PASS = u"""Текущий инвайт-код: {code}.
 Введите новый:"""
-PASS_WAS_CHANGED = u"""Пароль был изменён с {code1} на {code2}"""
-DUPLICATE_PASS = u"""Данный пароль уже используется, придумайте другой."""
+PASS_WAS_CHANGED = u"""Пароль был изменён с *{code1}* на *{code2}*"""
+DUPLICATE_PASS = u"""Данный пароль уже используется, придумай другой."""
 
 GIVE_ME_LOGIN = [u"Давай мне свой *логин* для игры."]
 GIVE_ME_PASSWORD = [u"Давай мне свой *пароль*."]
 GIVE_ME_HOST = [u"На каком *домене* игра?"]
 GIVE_ME_GAME = [u"Какой *номер игры*?"]
+GIVE_ME_NEW_LOGIN = u"Текущий логин: *{login}*\r\nВведи новый:"
+GIVE_ME_NEW_PASSWORD = u"Текущий пароль: *{password}*\r\nВведи новый:"
+GIVE_ME_NEW_HOST = u"Текущий хост игры: *{host}*\r\nВведи новый:"
+GIVE_ME_NEW_GAME = u"Текущий номер игры: *{game}*\r\nВведи новый:"
 SETTINGS_WERE_CHANGED_MESSAGES = [u"---*Настройки бота были изменены!*---"]
 SETTINGS_WERE_SAVED_MESSAGES = [u"Настройки были сохранены"]
 SETTINGS_WERE_NOT_SAVED_MESSAGES = [u"Проблема при записи настроек. Проверьте права доступа."]
+SETTINGS_WERE_NOT_CHANGED_MESSAGES = u"Настройки не были изменены."
 CONNECTION_PROBLEM_MESSAGES = [u"---*Проблемы с авторизацией на сайте!*---"]
 CHECK_SETTINGS_MESSAGES = [u"---*Проверьте настройки!*---"]
 CONNECTION_OK_MESSAGES = [u"---*Авторизация на сайте успешна!*---"]
@@ -193,6 +198,11 @@ ADMIN_HELP_MESSAGE = u"""
 {save} : Перезаписать настройки бота по-умолчанию
 {reset} : Обнулить список полученных заданий/подсказок
 {token}: Изменить токен бота
+{codes_limit}: Изменить максимальное количество кодов для вбития одной пачкой
+{login}: Изменить логин в игре
+{password}: Изменить пароль в игре
+{host}: Изменить хост игры (без http://)
+{game}: Изменить номер игры
 
 {pause} : Прекратить отслеживание заданий и вбитие кодов
 {resume} : Возобновить отслеживание заданий и вбитие кодов
@@ -256,4 +266,9 @@ ADMIN_HELP_MESSAGE = u"""
     source=config.send_source_command,
     errors=config.send_errors_command,
     unknown=config.send_unknown_command,
+    codes_limit=config.codes_limit_command,
+    login=config.login_command,
+    game=config.game_command,
+    password=config.pass_command,
+    host=config.host_command,
     regular=REGULAR_HELP_MESSAGE)

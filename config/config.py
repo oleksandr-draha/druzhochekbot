@@ -328,6 +328,22 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("codes_limit")
 
     @property
+    def login_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("login")
+
+    @property
+    def pass_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("pass")
+
+    @property
+    def host_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("host")
+
+    @property
+    def game_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("game")
+
+    @property
     def passphrases(self):
         return [self.admin_passphrase, self.field_passphrase, self.kc_passphrase]
 

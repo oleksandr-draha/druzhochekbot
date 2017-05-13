@@ -18,7 +18,8 @@ from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGE
     NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID, \
     CONFIM_DELETEION, \
     NO_DATA_TO_DISPLAY, NEW_TOKEN_MESSAGE, TOKEN_CHANGED, TOKEN_CANCELLED, CODE_LIMIT_CANCELLED, CODE_LIMIT_CHANGED, \
-    CODE_LIMIT_MESSAGE, CODE_LIMIT, GAME_NOT_PAYED_MESSAGE, GAME_NOT_STARTED_MESSAGE
+    CODE_LIMIT_MESSAGE, CODE_LIMIT, GAME_NOT_PAYED_MESSAGE, GAME_NOT_STARTED_MESSAGE, GIVE_ME_NEW_LOGIN, \
+    SETTINGS_WERE_NOT_CHANGED_MESSAGES, GIVE_ME_NEW_PASSWORD, GIVE_ME_NEW_HOST, GIVE_ME_NEW_GAME
 from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.driver import TelegramDriver
@@ -95,9 +96,15 @@ class TelegramProcessor(object):
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
 
-    def get_new_value(self, prompt_message, value_type):
-        # TODO: write a common function to set new values
-        pass
+    def get_new_value(self, message, prompt_message):
+        from_id = message["from_id"]
+        if len(message["text"].split()) > 1:
+            return message["text"].split()[1]
+        else:
+            self.telegram_driver.answer_message(
+                message,
+                prompt_message)
+            return self.telegram_driver.wait_for_answer(from_id)["text"]
 
     def check_codes(self, message):
         command = self.telegram_driver.get_command(message)
@@ -216,7 +223,6 @@ class TelegramProcessor(object):
                                                 NO_USER_ID_MESSAGE)
 
     def do_add_field(self, message):
-        # from_id = message["from_id"]
         if len(message["text"].split()) > 1:
             field_to_add = message["text"].split()[1]
             if not field_to_add.isdigit():
@@ -238,7 +244,6 @@ class TelegramProcessor(object):
                                                 NO_USER_ID_MESSAGE)
 
     def do_add_kc(self, message):
-        # from_id = message["from_id"]
         if len(message["text"].split()) > 1:
             kc_to_add = message["text"].split()[1]
             if not kc_to_add.isdigit():
@@ -260,18 +265,13 @@ class TelegramProcessor(object):
                                                 NO_USER_ID_MESSAGE)
 
     def do_delete_admin(self, message):
-        from_id = message["from_id"]
         if len(config.admin_ids) == 1:
             self.telegram_driver.answer_message(message, CANNOT_DELETE_ADMIN_MESSAGE)
         else:
-            if len(message["text"].split()) > 1:
-                admin_to_delete = message["text"].split()[1]
-            else:
-                self.telegram_driver.answer_message(
-                    message,
-                    DELETE_USER_ID_MESSAGE.format(
-                        current_ids=self.telegram_driver.get_usernames(config.admin_ids)))
-                admin_to_delete = self.telegram_driver.wait_for_answer(from_id)["text"]
+            admin_to_delete = self.get_new_value(
+                message,
+                DELETE_USER_ID_MESSAGE.format(
+                    current_ids=self.telegram_driver.get_usernames(config.admin_ids)))
             if not admin_to_delete.isdigit() or int(admin_to_delete) not in config.admin_ids:
                 self.telegram_driver.answer_message(message, WRONG_USER_ID_MESSAGE)
             else:
@@ -279,15 +279,10 @@ class TelegramProcessor(object):
                 self.telegram_driver.answer_message(message, USER_DELETED_MESSAGE)
 
     def do_delete_field(self, message):
-        from_id = message["from_id"]
-        if len(message["text"].split()) > 1:
-            field_to_delete = message["text"].split()[1]
-        else:
-            self.telegram_driver.answer_message(
-                message,
-                DELETE_USER_ID_MESSAGE.format(
-                    current_ids=self.telegram_driver.get_usernames(config.field_ids)))
-            field_to_delete = self.telegram_driver.wait_for_answer(from_id)["text"]
+        field_to_delete = self.get_new_value(
+            message,
+            DELETE_USER_ID_MESSAGE.format(
+                current_ids=self.telegram_driver.get_usernames(config.field_ids)))
         if not field_to_delete.isdigit() or int(field_to_delete) not in config.field_ids:
             self.telegram_driver.answer_message(message, WRONG_USER_ID_MESSAGE)
         else:
@@ -295,15 +290,10 @@ class TelegramProcessor(object):
             self.telegram_driver.answer_message(message, USER_DELETED_MESSAGE)
 
     def do_delete_kc(self, message):
-        from_id = message["from_id"]
-        if len(message["text"].split()) > 1:
-            kc_to_delete = message["text"].split()[1]
-        else:
-            self.telegram_driver.answer_message(
-                message,
-                DELETE_USER_ID_MESSAGE.format(
-                    current_ids=self.telegram_driver.get_usernames(config.kc_ids)))
-            kc_to_delete = self.telegram_driver.wait_for_answer(from_id)["text"]
+        kc_to_delete = self.get_new_value(
+            message,
+            DELETE_USER_ID_MESSAGE.format(
+                current_ids=self.telegram_driver.get_usernames(config.kc_ids)))
         if not kc_to_delete.isdigit() or int(kc_to_delete) not in config.kc_ids:
             self.telegram_driver.answer_message(message, WRONG_USER_ID_MESSAGE)
         else:
@@ -311,100 +301,52 @@ class TelegramProcessor(object):
             self.telegram_driver.answer_message(message, USER_DELETED_MESSAGE)
 
     def do_edit_admin_pass(self, message):
-        from_id = message["from_id"]
-        if len(message["text"].split()) > 1:
-            old = config.admin_passphrase
-            new = message["text"].split()[1]
-            if new not in config.passphrases:
-                config.admin_passphrase = message["text"].split()[1]
-                self.telegram_driver.answer_message(
-                    message,
-                    PASS_WAS_CHANGED.format(code1=old,
-                                            code2=config.admin_passphrase))
-            else:
-                self.telegram_driver.answer_message(
-                    message,
-                    DUPLICATE_PASS)
+        new = self.get_new_value(
+            message,
+            ENTER_NEW_PASS.format(code=config.admin_passphrase))
+        old = config.admin_passphrase
+        if new not in config.passphrases:
+            config.admin_passphrase = new
+            self.telegram_driver.answer_message(
+                message,
+                PASS_WAS_CHANGED.format(code1=old,
+                                        code2=new))
         else:
             self.telegram_driver.answer_message(
                 message,
-                ENTER_NEW_PASS.format(code=config.admin_passphrase))
-            old = config.admin_passphrase
-            new = self.telegram_driver.wait_for_answer(from_id)["text"]
-            if new not in config.passphrases:
-                config.admin_passphrase = new
-                self.telegram_driver.answer_message(
-                    message,
-                    PASS_WAS_CHANGED.format(code1=old,
-                                            code2=new))
-            else:
-                self.telegram_driver.answer_message(
-                    message,
-                    DUPLICATE_PASS)
+                DUPLICATE_PASS)
 
     def do_edit_field_pass(self, message):
-        from_id = message["from_id"]
-        if len(message["text"].split()) > 1:
-            old = config.field_passphrase
-            new = message["text"].split()[1]
-            if new not in config.passphrases:
-                config.field_passphrase = message["text"].split()[1]
-                self.telegram_driver.answer_message(
-                    message,
-                    PASS_WAS_CHANGED.format(code1=old,
-                                            code2=config.field_passphrase))
-            else:
-                self.telegram_driver.answer_message(
-                    message,
-                    DUPLICATE_PASS)
+        new = self.get_new_value(
+            message,
+            ENTER_NEW_PASS.format(code=config.field_passphrase))
+        old = config.field_passphrase
+        if new not in config.passphrases:
+            config.field_passphrase = new
+            self.telegram_driver.answer_message(
+                message,
+                PASS_WAS_CHANGED.format(code1=old,
+                                        code2=new))
         else:
             self.telegram_driver.answer_message(
                 message,
-                ENTER_NEW_PASS.format(code=config.field_passphrase))
-            old = config.field_passphrase
-            new = self.telegram_driver.wait_for_answer(from_id)["text"]
-            if new not in config.passphrases:
-                config.field_passphrase = new
-                self.telegram_driver.answer_message(
-                    message,
-                    PASS_WAS_CHANGED.format(code1=old,
-                                            code2=new))
-            else:
-                self.telegram_driver.answer_message(
-                    message,
-                    DUPLICATE_PASS)
+                DUPLICATE_PASS)
 
     def do_edit_kc_pass(self, message):
-        from_id = message["from_id"]
-        if len(message["text"].split()) > 1:
-            old = config.kc_passphrase
-            new = message["text"].split()[1]
-            if new not in config.passphrases:
-                config.kc_passphrase = message["text"].split()[1]
-                self.telegram_driver.answer_message(
-                    message,
-                    PASS_WAS_CHANGED.format(code1=old,
-                                            code2=config.kc_passphrase))
-            else:
-                self.telegram_driver.answer_message(
-                    message,
-                    DUPLICATE_PASS)
+        new = self.get_new_value(
+            message,
+            ENTER_NEW_PASS.format(code=config.kc_passphrase))
+        old = config.kc_passphrase
+        if new not in config.passphrases:
+            config.kc_passphrase = new
+            self.telegram_driver.answer_message(
+                message,
+                PASS_WAS_CHANGED.format(code1=old,
+                                        code2=new))
         else:
             self.telegram_driver.answer_message(
                 message,
-                ENTER_NEW_PASS.format(code=config.kc_passphrase))
-            old = config.kc_passphrase
-            new = self.telegram_driver.wait_for_answer(from_id)["text"]
-            if new not in config.passphrases:
-                config.kc_passphrase = new
-                self.telegram_driver.answer_message(
-                    message,
-                    PASS_WAS_CHANGED.format(code1=old,
-                                            code2=new))
-            else:
-                self.telegram_driver.answer_message(
-                    message,
-                    DUPLICATE_PASS)
+                DUPLICATE_PASS)
 
     def do_clearadmin(self, message):
         self.telegram_driver.answer_message(message, CONFIM_DELETEION)
@@ -502,11 +444,11 @@ class TelegramProcessor(object):
                                                 NO_DATA_TO_DISPLAY)
 
     def do_token(self, message):
-        self.telegram_driver.answer_message(message, NEW_TOKEN_MESSAGE)
-        answer = self.telegram_driver.wait_for_answer(message["from_id"])
-        if answer["text"] != "NO":
-            if config.bot_token != answer["text"]:
-                config.bot_token = answer["text"]
+        new_token = self.get_new_value(message,
+                                       NEW_TOKEN_MESSAGE.format(token=config.bot_token))
+        if new_token != "NO":
+            if config.bot_token != new_token:
+                config.bot_token = new_token
                 self.reset()
             from_id = message["from_id"]
             self.telegram_driver.send_message(from_id, TOKEN_CHANGED)
@@ -514,16 +456,58 @@ class TelegramProcessor(object):
             self.telegram_driver.answer_message(message, TOKEN_CANCELLED)
 
     def do_codes_limit(self, message):
-        self.telegram_driver.answer_message(message, CODE_LIMIT_MESSAGE)
-        answer = self.telegram_driver.wait_for_answer(message["from_id"])
-        if answer["text"] != "NO":
-            if answer["text"].isdigit():
-                config.code_limit = int(answer["text"])
+        codes_limit = self.get_new_value(message, CODE_LIMIT_MESSAGE)
+        if codes_limit != "NO":
+            if codes_limit.isdigit():
+                config.code_limit = int(codes_limit)
                 self.telegram_driver.answer_message(message, CODE_LIMIT_CHANGED)
             else:
                 self.telegram_driver.answer_message(message, CODE_LIMIT_CANCELLED)
         else:
             self.telegram_driver.answer_message(message, CODE_LIMIT_CANCELLED)
+
+    def do_change_login(self, message):
+        new_login = self.get_new_value(message,
+                                       GIVE_ME_NEW_LOGIN.format(login=config.game_login))
+        if new_login != "NO":
+            config.game_login = new_login
+            GameDriver.login = config.game_login
+            self.apply_new_settings(message)
+        else:
+            self.telegram_driver.answer_message(message, SETTINGS_WERE_NOT_CHANGED_MESSAGES)
+
+    def do_change_pass(self, message):
+        new_pass = self.get_new_value(message,
+                                      GIVE_ME_NEW_PASSWORD.format(password=config.game_password))
+        if new_pass != "NO":
+            config.game_password = new_pass
+            GameDriver.password = config.game_password
+            self.apply_new_settings(message)
+        else:
+            self.telegram_driver.answer_message(message, SETTINGS_WERE_NOT_CHANGED_MESSAGES)
+
+    def do_change_host(self, message):
+        new_host = self.get_new_value(message,
+                                      GIVE_ME_NEW_HOST.format(host=config.game_host))
+        if new_host != "NO":
+            config.game_host = new_host
+            GameDriver.host = config.game_host
+            self.apply_new_settings(message)
+        else:
+            self.telegram_driver.answer_message(message, SETTINGS_WERE_NOT_CHANGED_MESSAGES)
+
+    def do_change_game(self, message):
+        new_game = self.get_new_value(message,
+                                      GIVE_ME_NEW_GAME.format(game=config.game_id))
+        if new_game != "NO":
+            if new_game.isdigit():
+                config.game_id = int(new_game)
+                GameDriver.game_id = config.game_id
+                self.apply_new_settings(message)
+            else:
+                self.telegram_driver.answer_message(message, SETTINGS_WERE_NOT_CHANGED_MESSAGES)
+        else:
+            self.telegram_driver.answer_message(message, SETTINGS_WERE_NOT_CHANGED_MESSAGES)
 
     def do_send_unknown(self, message):
         from_id = message["from_id"]
@@ -604,8 +588,13 @@ class TelegramProcessor(object):
     def do_task(self, message):
         if len(message["text"].split()) > 1:
             level_to_show = int(message["text"].split()[1])
-            task_text = self.game_worker.tasks_received.get(level_to_show,
-                                                            WRONG_LEVEL_ID_MESSAGE)
+            task_text = self.game_worker.tasks_received.get(level_to_show)
+            if task_text is not None:
+                task_text = TASK_MESSAGE.format(
+                    level_number=level_to_show,
+                    task=task_text)
+            else:
+                task_text = WRONG_LEVEL_ID_MESSAGE
         else:
             task_text = TASK_MESSAGE.format(
                 level_number=self.game_worker.last_level_shown,
@@ -648,6 +637,23 @@ class TelegramProcessor(object):
         self.telegram_driver.answer_message(message,
                                             codes_gap)
 
+    def apply_new_settings(self, message):
+        self.game_worker = GameWorker()
+        self.paused = True
+        config.paused = self.paused
+        self.telegram_driver.admin_message(SETTINGS_WERE_CHANGED_MESSAGES)
+        if self.game_worker.connected:
+            self.telegram_driver.admin_message(CONNECTION_OK_MESSAGES)
+            self.telegram_driver.admin_message(PLEASE_APPROVE_MESSAGES)
+            self.do_reset(message)
+            self.paused = False
+            config.paused = self.paused
+            return True
+        else:
+            self.telegram_driver.admin_message(CONNECTION_PROBLEM_MESSAGES)
+            self.telegram_driver.admin_message(CHECK_SETTINGS_MESSAGES)
+            return False
+
     def do_edit_settings(self, message):
         from_id = message["from_id"]
 
@@ -672,21 +678,7 @@ class TelegramProcessor(object):
         GameDriver.game_id = self.telegram_driver.wait_for_answer(from_id)["text"]
         config.game_id = GameDriver.game_id
 
-        self.game_worker = GameWorker()
-        self.paused = True
-        config.paused = self.paused
-        self.telegram_driver.admin_message(SETTINGS_WERE_CHANGED_MESSAGES)
-        if self.game_worker.connected:
-            self.telegram_driver.admin_message(CONNECTION_OK_MESSAGES)
-            self.telegram_driver.admin_message(PLEASE_APPROVE_MESSAGES)
-            self.do_reset(message)
-            self.paused = False
-            config.paused = self.paused
-            return True
-        else:
-            self.telegram_driver.admin_message(CONNECTION_PROBLEM_MESSAGES)
-            self.telegram_driver.admin_message(CHECK_SETTINGS_MESSAGES)
-            return False
+        self.apply_new_settings(message)
 
     def do_save_settings(self, message):
         result = config.save_config()

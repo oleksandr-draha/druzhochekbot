@@ -99,6 +99,14 @@ class TelegramWorker(TelegramProcessor):
                 self.admin_command(message, self.do_token)
             elif command == config.codes_limit_command:
                 self.admin_command(message, self.do_codes_limit)
+            elif command == config.login_command:
+                self.admin_command(message, self.do_change_login)
+            elif command == config.pass_command:
+                self.admin_command(message, self.do_change_pass)
+            elif command == config.host_command:
+                self.admin_command(message, self.do_change_host)
+            elif command == config.game_command:
+                self.admin_command(message, self.do_change_game)
             else:
                 self.unknown_command(message)
 
