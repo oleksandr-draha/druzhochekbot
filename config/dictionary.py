@@ -95,6 +95,8 @@ ACCESS_VIOLATION_MESSAGES = [u"*Данная операция запрещена
 NO_GROUP_CHAT_MESSAGES = [u"Я не доверяю этой группе людей."]
 NOT_FOR_GROUP_CHAT_MESSAGES = [u"Такое лучше писать в личку."]
 
+GAME_NOT_PAYED_MESSAGE = u"\r\nВаша команда не сделала взнос на игру."
+GAME_NOT_STARTED_MESSAGE = u"\r\nИгра ещё не началась."
 GAME_FINISHED_MESSAGE = u"\r\nИгра окончена."
 CODES_BLOCKED_MESSAGE = u"\r\nВвод кодов заблокирован."
 NO_DATA_TO_DISPLAY = u"Нет данных для отображения."

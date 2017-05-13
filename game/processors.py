@@ -3,7 +3,7 @@ from time import sleep
 
 from config import config
 from config.dictionary import CODES_LEFT_TEXT, NEW_TASK_MESSAGE, AP_MESSAGE_APPEND, NEW_HINT_MESSAGE, \
-    HINTS_APPEND, LIMIT_APPEND, ORG_MESSAGE_APPEND, TASK_EDITED_MESSAGE
+    HINTS_APPEND, LIMIT_APPEND, ORG_MESSAGE_APPEND, TASK_EDITED_MESSAGE, GAME_NOT_PAYED_MESSAGE
 from game.driver import GameDriver
 
 
@@ -19,7 +19,7 @@ class GameProcessor:
     hints_shown = []
     finished_shown = False
     not_started_shown = False
-    not_payed = False
+    not_payed_shown = False
     codes_limit_shown = False
     _request_task_text = False
     last_org_message_shown = None
@@ -38,7 +38,7 @@ class GameProcessor:
         self.codes_left_shown = []
         self.hints_shown = []
         self.finished_shown = False
-        self.not_payed = False
+        self.not_payed_shown = False
         self.not_started_shown = False
         self.codes_limit_shown = False
 
@@ -56,9 +56,9 @@ class GameProcessor:
     def process_game_not_payed(self):
         updates = []
         if self.game_driver.not_payed(self.game_page):
-            if not self.not_payed:
-                self.not_payed = True
-                updates.append(self.game_driver.get_not_payed_message(self.game_page))
+            if not self.not_payed_shown:
+                self.not_payed_shown = True
+                updates.append(GAME_NOT_PAYED_MESSAGE)
         return updates
 
     def process_game_not_started(self):

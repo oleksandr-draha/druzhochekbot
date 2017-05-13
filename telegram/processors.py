@@ -18,7 +18,7 @@ from config.dictionary import NOT_FOR_GROUP_CHAT_MESSAGES, NO_GROUP_CHAT_MESSAGE
     NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID, \
     CONFIM_DELETEION, \
     NO_DATA_TO_DISPLAY, NEW_TOKEN_MESSAGE, TOKEN_CHANGED, TOKEN_CANCELLED, CODE_LIMIT_CANCELLED, CODE_LIMIT_CHANGED, \
-    CODE_LIMIT_MESSAGE, CODE_LIMIT
+    CODE_LIMIT_MESSAGE, CODE_LIMIT, GAME_NOT_PAYED_MESSAGE, GAME_NOT_STARTED_MESSAGE
 from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.driver import TelegramDriver
@@ -108,7 +108,10 @@ class TelegramProcessor(object):
             results = ''
             for code in codes:
                 result = self.game_worker.game_driver.try_code(code)
-                if result in [CODES_BLOCKED_MESSAGE, GAME_FINISHED_MESSAGE]:
+                if result in [CODES_BLOCKED_MESSAGE,
+                              GAME_FINISHED_MESSAGE,
+                              GAME_NOT_PAYED_MESSAGE,
+                              GAME_NOT_STARTED_MESSAGE]:
                     return result
                 if result is None:
                     return
@@ -480,7 +483,7 @@ class TelegramProcessor(object):
     def do_send_source(self, message):
         from_id = message["from_id"]
         source = self.game_worker.game_page
-        if len(source):
+        if source is not None:
             self.telegram_driver.send_file(from_id,
                                            source,
                                            'source.htm')

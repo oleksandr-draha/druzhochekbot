@@ -15,7 +15,7 @@ bot:
     message: /message, message_admin: /ma, message_field: /mf, message_kc: /mk, pause: /pause,
     reset: /reset, resume: /resume, save: /save, send_source: /source, status: /status,
     stop: /stop, task: /task, token: /token, unknown: /unknown}
-  field_ids: 'kA==
+  field_ids: 'kc4KJpqv
 
     '
   field_passphrase: 'aWxvdmVkcmFnYQ==
