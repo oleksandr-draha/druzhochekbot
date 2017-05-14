@@ -1,36 +1,48 @@
 # -*- coding: utf-8 -*-
 import json
 from random import choice
-
 import time
+
 from requests import ConnectionError, session
 
 from config.config import config
 
 
-class TelegramDriver:
+class TelegramDriver(object):
     def __init__(self):
         self.start_offset = 0
         self.session = session()
 
     def get_updates(self):
+        """
+        Perform request to Telegram server in order to receive new messages,
+        addressed to bot.
+        :return: list of messages
+        :rtype: list
+        """
         try:
             r = self.session.get(
                 config.updates_path.format(key=config.bot_token,
                                            offset=self.start_offset))
             messages = json.loads(r.content)['result']
-            income_message_count = len(messages)
             # Use in order to get smile code
             # send /c_+ smile
             # ord(messages[0]["message"]["text"][3])
+            if len(messages):
+                self.start_offset = messages[-1]['update_id'] + 1
             # ord(messages[0]["message"]["text"][4])
-            self.start_offset = messages[income_message_count - 1]['update_id'] + 1 \
-                if income_message_count else 0
             return messages
         except ConnectionError:
             return {}
 
     def get_username(self, user_id):
+        """
+        Perform request to Telegram API and extract username by given user_id if possible
+        :param user_id: 
+        :type user_id: int
+        :return: username
+        :rtype: str or None
+        """
         try:
             r = self.session.get(
                 config.users_path.format(key=config.bot_token,
@@ -39,7 +51,27 @@ class TelegramDriver:
         except ConnectionError:
             return {}
 
-    def send_message(self, chat_id, text, parse_mode="Markdown", reply_to=None):
+    def get_usernames(self, users):
+        """
+        Return list of usernames for specified user ids
+        :type users: list of int 
+        :rtype: dict
+        """
+        usernames = {}
+        for user in users:
+            usernames.setdefault(user, self.get_username(user))
+        return usernames
+
+    def send_message(self, chat_id, text, reply_to=None, parse_mode="Markdown"):
+        """
+        Send message to specified chat_id. If reply_to is specified - it will be an answer
+        for message_id
+        :type chat_id: int
+        :type text: str or unicode
+        :type reply_to: int
+        :type parse_mode: str
+        :rtype: None
+        """
         if isinstance(text, list):
             text_message = choice(text)
         else:
@@ -56,11 +88,20 @@ class TelegramDriver:
         except ConnectionError:
             return
 
-    def send_file(self, chat_id, document, name):
+    def send_file(self, chat_id, document, name, caption="Requested data"):
+        """
+        Send file to specified chat_id. File is made from document string.
+        :type chat_id: int 
+        :type document: str or unicode 
+        :param name: File name 
+        :type name: str 
+        :param caption: Caption will be shown in chat message 
+        :rtype: None 
+        """
         files = {'document': (name, document)}
         response = {"chat_id": chat_id,
                     "document": None,
-                    "caption": "Requested data"}
+                    "caption": caption}
         try:
             self.session.post(
                 config.send_document_path.format(key=config.bot_token),
@@ -70,24 +111,32 @@ class TelegramDriver:
             return
 
     def answer_message(self, message, text, parse_mode="Markdown"):
+        """
+        Send message as an answer to the specified message
+        :param message: original message
+        :type message: dict
+        :type text: str or unicode 
+        :type parse_mode: str 
+        :rtype: None 
+        """
         self.send_message(message["chat_id"],
                           text,
                           reply_to=message["id"],
                           parse_mode=parse_mode)
 
     def admin_message(self, text):
+        """
+        Send messages to all admins
+        :param text: message text
+        :type text: str or unicode
+        :rtype: None 
+        """
         for admin_id in config.admin_ids:
             self.send_message(admin_id, text)
 
-    def get_usernames(self, users):
-        usernames = {}
-        for user in users:
-            usernames.setdefault(user, self.get_username(user))
-        return usernames
-
     def check_new_messages(self):
         """
-        Checks whether new text messages present in the channel
+        Checks whether new text messages present
         :return:
         :rtype: list of dict
         """
@@ -103,43 +152,37 @@ class TelegramDriver:
         return messages
 
     @staticmethod
-    def is_user(from_id):
-        return from_id in config.admin_ids + config.field_ids + config.field_ids
-
-    @staticmethod
-    def is_admin(from_id):
-        return from_id in config.admin_ids
-
-    @staticmethod
-    def is_field(from_id):
-        return from_id in config.field_ids
-
-    @staticmethod
-    def is_kc(from_id):
-        return from_id in config.kc_ids
-
-    @staticmethod
-    def get_command(message):
+    def extract_command(message):
+        """
+        Return command written to bot
+        :type message: dict 
+        :rtype: str or unicode 
+        """
         if message["text"].startswith('/'):
             return message["text"].split()[0].split('@')[0]
         else:
             return ''
 
     @staticmethod
-    def get_message_text(message):
-        if TelegramDriver.get_command(message) is not None:
-            return message["text"].replace(TelegramDriver.get_command(message), '').lstrip()
+    def extract_text(message):
+        """
+        Return the rest of message addressed to the bot, without command.
+        :type message: dict 
+        :rtype: str or unicode 
+        """
+        if TelegramDriver.extract_command(message) is not None:
+            return message["text"].replace(TelegramDriver.extract_command(message), '').lstrip()
         else:
             return message["text"]
 
     def check_answer_from_chat_id(self, chat_id):
+        """
+        Return first answer to the specified chat_id or None
+        :type chat_id: int 
+        :rtype: dict or None 
+        """
         for message in self.check_new_messages():
             if message["from_id"] == chat_id:
-                return message
-
-    def check_answer_with_passphrase(self, passphrase):
-        for message in self.check_new_messages():
-            if message["text"] == passphrase or message["text"] == config.cancel_command:
                 return message
 
     def wait_for_answer(self, from_id):
@@ -151,20 +194,6 @@ class TelegramDriver:
         """
         while True:
             answer = self.check_answer_from_chat_id(from_id)
-            if answer is None:
-                time.sleep(config.answer_check_interval)
-                continue
-            return answer
-
-    def wait_for_message_from_new_user(self, passphrase):
-        """
-        Wait for message from new user (it could be anyone)
-        :param passphrase: str
-        :return:
-        :rtype: dict
-        """
-        while True:
-            answer = self.check_answer_with_passphrase(passphrase)
             if answer is None:
                 time.sleep(config.answer_check_interval)
                 continue

@@ -8,9 +8,7 @@ class TelegramWorker(TelegramProcessor):
 
     def process_messages(self):
         for message in self.telegram_driver.check_new_messages():
-            if self.initial_message is None:
-                self.initial_message = message
-            command = self.telegram_driver.get_command(message).lower()
+            command = self.telegram_driver.extract_command(message).lower()
             if self.process_new_user(message):
                 continue
             if self.process_unknown_user(message):

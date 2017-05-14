@@ -26,29 +26,24 @@ from telegram.driver import TelegramDriver
 
 
 class TelegramProcessor(object):
-    telegram_driver = None
-    game_worker = None
-    group_chat_id = None
-    unknown_users = []
-
-    def reset(self):
-        self.telegram_driver = TelegramDriver()
-        self.telegram_driver.get_updates()
-        self.initial_message = None
-        self.paused = True
-        self.stopped = False
-        self.game_worker = None
-        self.group_chat_id = None
-        self.load_settings()
 
     def __init__(self):
         self.telegram_driver = TelegramDriver()
         self.telegram_driver.get_updates()
-        self.initial_message = None
-        self.paused = config.paused
+        self.paused = False
         self.stopped = False
         self.game_worker = None
-        self.group_chat_id = config.group_chat_id
+        self.group_chat_id = None
+        self.unknown_users = []
+        self.load_settings()
+
+    def reset(self):
+        self.telegram_driver = TelegramDriver()
+        self.telegram_driver.get_updates()
+        self.paused = True
+        self.stopped = False
+        self.game_worker = None
+        self.group_chat_id = None
         self.load_settings()
 
     def load_settings(self):
@@ -56,6 +51,9 @@ class TelegramProcessor(object):
         GameDriver.password = config.game_password
         GameDriver.game_id = config.game_id
         GameDriver.host = config.game_host
+
+        self.group_chat_id = config.group_chat_id
+        self.paused = config.paused
         self.game_worker = GameWorker()
         if self.game_worker.connected:
             if self.group_chat_id is None:
@@ -70,7 +68,7 @@ class TelegramProcessor(object):
     def admin_command(self, message, do_function):
         from_id = message["from_id"]
         chat_id = message["chat_id"]
-        if self.telegram_driver.is_admin(from_id):
+        if config.is_admin(from_id):
             if chat_id < 0:
                 if chat_id == self.group_chat_id:
                     self.telegram_driver.answer_message(message, NOT_FOR_GROUP_CHAT_MESSAGES)
@@ -87,11 +85,11 @@ class TelegramProcessor(object):
         if chat_id < 0:
             if chat_id == self.group_chat_id:
                 do_function(message)
-            elif self.telegram_driver.is_admin(from_id):
+            elif config.is_admin(from_id):
                 self.telegram_driver.answer_message(message, NO_GROUP_CHAT_MESSAGES)
             elif config.answer_forbidden:
                 self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
-        elif self.telegram_driver.is_user(from_id):
+        elif config.is_user(from_id):
             do_function(message)
         elif config.answer_forbidden:
             self.telegram_driver.answer_message(message, ACCESS_VIOLATION_MESSAGES)
@@ -107,7 +105,7 @@ class TelegramProcessor(object):
             return self.telegram_driver.wait_for_answer(from_id)["text"]
 
     def check_codes(self, message):
-        command = self.telegram_driver.get_command(message)
+        command = self.telegram_driver.extract_command(message)
         codes = message["text"].replace(command, '').rstrip().lstrip().split()
         codes = list(set(codes))
         results = ""
@@ -126,7 +124,7 @@ class TelegramProcessor(object):
         return results
 
     def check_code(self, message):
-        command = self.telegram_driver.get_command(message)
+        command = self.telegram_driver.extract_command(message)
         code = message["text"].replace(command, '').rstrip().lstrip()
         results = ""
         if len(code):
@@ -193,7 +191,7 @@ class TelegramProcessor(object):
     def approve_command(self, message):
         from_id = message["from_id"]
         chat_id = message["chat_id"]
-        if self.telegram_driver.is_admin(from_id):
+        if config.is_admin(from_id):
             if chat_id < 0:
                 self._do_approve(message)
             else:
@@ -207,7 +205,7 @@ class TelegramProcessor(object):
             if not admin_to_add.isdigit():
                 self.telegram_driver.answer_message(message, WRONG_USER_ID_MESSAGE)
             else:
-                if self.telegram_driver.is_admin(int(admin_to_add)):
+                if config.is_admin(int(admin_to_add)):
                     self.telegram_driver.answer_message(
                         message,
                         DUPLICATE_USER_ID)
@@ -228,7 +226,7 @@ class TelegramProcessor(object):
             if not field_to_add.isdigit():
                 self.telegram_driver.answer_message(message, WRONG_USER_ID_MESSAGE)
             else:
-                if self.telegram_driver.is_field(int(field_to_add)):
+                if config.is_field(int(field_to_add)):
                     self.telegram_driver.answer_message(
                         message,
                         DUPLICATE_USER_ID)
@@ -249,7 +247,7 @@ class TelegramProcessor(object):
             if not kc_to_add.isdigit():
                 self.telegram_driver.answer_message(message, WRONG_USER_ID_MESSAGE)
             else:
-                if self.telegram_driver.is_kc(int(kc_to_add)):
+                if config.is_kc(int(kc_to_add)):
                     self.telegram_driver.answer_message(
                         message,
                         DUPLICATE_USER_ID)
@@ -371,7 +369,7 @@ class TelegramProcessor(object):
 
     def do_chat_message(self, message):
         if self.group_chat_id is not None:
-            message_text = self.telegram_driver.get_message_text(message)
+            message_text = self.telegram_driver.extract_text(message)
             self.telegram_driver.send_message(
                 self.group_chat_id,
                 message_text)
@@ -383,13 +381,13 @@ class TelegramProcessor(object):
                               for username in usernames.values()
                               if username is not None]
             alert_caption = ''.join(alert_captions) + '\r\n'
-            message_text = self.telegram_driver.get_message_text(message)
+            message_text = self.telegram_driver.extract_text(message)
             self.telegram_driver.send_message(
                 self.group_chat_id,
                 alert_caption + message_text)
 
     def do_message(self, message):
-        message_text = self.telegram_driver.get_message_text(message)
+        message_text = self.telegram_driver.extract_text(message)
         if len(message_text.split()) > 1:
             if message_text.split()[0].isdigit():
                 user_id = int(message_text.split()[0])
@@ -405,19 +403,19 @@ class TelegramProcessor(object):
                                                 NO_MESSAGE)
 
     def do_message_admin(self, message):
-        message_text = self.telegram_driver.get_message_text(message)
+        message_text = self.telegram_driver.extract_text(message)
         for admin_id in config.admin_ids:
             self.telegram_driver.send_message(admin_id,
                                               message_text)
 
     def do_message_field(self, message):
-        message_text = self.telegram_driver.get_message_text(message)
+        message_text = self.telegram_driver.extract_text(message)
         for field_id in config.field_ids:
             self.telegram_driver.send_message(field_id,
                                               message_text)
 
     def do_message_kc(self, message):
-        message_text = self.telegram_driver.get_message_text(message)
+        message_text = self.telegram_driver.extract_text(message)
         for kc_id in config.kc_ids:
             self.telegram_driver.send_message(kc_id,
                                               message_text)
@@ -536,7 +534,7 @@ class TelegramProcessor(object):
     def disapprove_command(self, message):
         from_id = message["from_id"]
         chat_id = message["chat_id"]
-        if self.telegram_driver.is_admin(from_id):
+        if config.is_admin(from_id):
             if chat_id < 0:
                 if chat_id == self.group_chat_id:
                     self._do_disapprove(message)
@@ -627,7 +625,7 @@ class TelegramProcessor(object):
 
     def do_help(self, message):
         from_id = message["from_id"]
-        if self.telegram_driver.is_admin(from_id):
+        if config.is_admin(from_id):
             self.telegram_driver.answer_message(message, ADMIN_HELP_MESSAGE)
         else:
             self.telegram_driver.answer_message(message, REGULAR_HELP_MESSAGE)
@@ -742,7 +740,7 @@ class TelegramProcessor(object):
 
     def dublicate_code_to_group_chat(self, message, result):
         from_id = message["from_id"]
-        if self.telegram_driver.is_field(from_id) \
+        if config.is_field(from_id) \
                 and self.group_chat_id is not None \
                 and message["chat_id"] != self.group_chat_id \
                 and result is not None:

@@ -533,7 +533,7 @@ class DruzhochekConfig(object):
         return self.config.get("game", {}).get("show_first_hint_time")
 
     def log_error(self, error):
-        if len(self.errors) > 100:
+        if len(self.errors) >= 100:
             self.errors.pop(0)
         self.errors.append([datetime.now(), error])
 
@@ -542,6 +542,22 @@ class DruzhochekConfig(object):
         for date_error, error in self.errors:
             errors += str(date_error) + '\r\n' + error.replace('\n', '\r\n') + '\r\n'
         return errors
+
+    @staticmethod
+    def is_user(from_id):
+        return from_id in config.admin_ids + config.field_ids + config.field_ids
+
+    @staticmethod
+    def is_admin(from_id):
+        return from_id in config.admin_ids
+
+    @staticmethod
+    def is_field(from_id):
+        return from_id in config.field_ids
+
+    @staticmethod
+    def is_kc(from_id):
+        return from_id in config.kc_ids
 
 
 config = DruzhochekConfig()
