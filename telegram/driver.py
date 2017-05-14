@@ -12,6 +12,7 @@ class TelegramDriver(object):
     def __init__(self):
         self.start_offset = 0
         self.session = session()
+        self.get_updates()
 
     def get_updates(self):
         """
@@ -198,3 +199,13 @@ class TelegramDriver(object):
                 time.sleep(config.answer_check_interval)
                 continue
             return answer
+
+    def get_new_value(self, message, prompt_message):
+        from_id = message["from_id"]
+        if len(message["text"].split()) > 1:
+            return message["text"].split()[1]
+        else:
+            self.answer_message(
+                message,
+                prompt_message)
+            return self.wait_for_answer(from_id)["text"]

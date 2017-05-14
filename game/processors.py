@@ -36,6 +36,7 @@ class GameProcessor:
         self.ap_time_shown = []
         self.hints_time_shown = []
         self.codes_left_shown = []
+        self.codes_left_text_shown = []
         self.hints_shown = []
         self.finished_shown = False
         self.not_payed_shown = False
