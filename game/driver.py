@@ -5,8 +5,7 @@ from requests import ConnectionError, session
 import html2text
 
 from config import config
-from config.dictionary import CORRECT_CODE_APPEND, GAME_FINISHED_MESSAGE, CODES_BLOCKED_MESSAGE, WRONG_CODE_APPEND, \
-    GAME_NOT_PAYED_MESSAGE, GAME_NOT_STARTED_MESSAGE
+from config.dictionary import Smiles, GameMessages
 from game.locators import logged_locator, blocked_locator, div_start_locator, div_end_locator, message_locator, \
     finish_locator, level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
     correct_code_locator, blocked_code_locator, hint_number_start_locator, hint_number_end_locator, \
@@ -137,13 +136,13 @@ class GameDriver:
         r = self.post_game_page(body=body)
         result = ''
         if self.not_payed(r.text):
-            return GAME_NOT_PAYED_MESSAGE
+            return GameMessages.GAME_NOT_PAYED
         if self.not_started(r.text):
-            return GAME_NOT_STARTED_MESSAGE
+            return GameMessages.GAME_NOT_STARTED
         elif self.is_finished(r.text):
-            return GAME_FINISHED_MESSAGE
+            return GameMessages.GAME_FINISHED
         elif r.text.find(blocked_code_locator) != -1:
-            return CODES_BLOCKED_MESSAGE
+            return GameMessages.CODES_BLOCKED
         if self.level_number != self.get_level_params(r.text)["LevelNumber"]:
             if r.text.find(incorrect_code_locator) == -1 and \
                     r.text.find(correct_code_locator) != -1:
@@ -151,14 +150,14 @@ class GameDriver:
             return
         if r.text.find(incorrect_code_locator) == -1 and \
                 r.text.find(correct_code_locator) != -1:
-            result = u'\r\n{smile}: {code}'.format(smile=CORRECT_CODE_APPEND,
+            result = u'\r\n{smile}: {code}'.format(smile=Smiles.CORRECT_CODE,
                                                    code=code)
             # Save entered codes
             self.codes_entered.setdefault(self.level_number, []).append(code)
         elif r.text.find(incorrect_code_locator) != -1:
             result = u'\r\n{smile}: {code}'.format(
                 code=code,
-                smile=WRONG_CODE_APPEND)
+                smile=Smiles.WRONG_CODE)
         return result
 
     def get_all_hints(self, text=None):

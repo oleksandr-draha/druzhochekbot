@@ -39,7 +39,7 @@ class TelegramDriver(object):
     def get_username(self, user_id):
         """
         Perform request to Telegram API and extract username by given user_id if possible
-        :param user_id: 
+        :param user_id:
         :type user_id: int
         :return: username
         :rtype: str or None
@@ -55,7 +55,7 @@ class TelegramDriver(object):
     def get_usernames(self, users):
         """
         Return list of usernames for specified user ids
-        :type users: list of int 
+        :type users: list of int
         :rtype: dict
         """
         usernames = {}
@@ -92,12 +92,12 @@ class TelegramDriver(object):
     def send_file(self, chat_id, document, name, caption="Requested data"):
         """
         Send file to specified chat_id. File is made from document string.
-        :type chat_id: int 
-        :type document: str or unicode 
-        :param name: File name 
-        :type name: str 
-        :param caption: Caption will be shown in chat message 
-        :rtype: None 
+        :type chat_id: int
+        :type document: str or unicode
+        :param name: File name
+        :type name: str
+        :param caption: Caption will be shown in chat message
+        :rtype: None
         """
         files = {'document': (name, document)}
         response = {"chat_id": chat_id,
@@ -116,9 +116,9 @@ class TelegramDriver(object):
         Send message as an answer to the specified message
         :param message: original message
         :type message: dict
-        :type text: str or unicode 
-        :type parse_mode: str 
-        :rtype: None 
+        :type text: str or unicode
+        :type parse_mode: str
+        :rtype: None
         """
         self.send_message(message["chat_id"],
                           text,
@@ -130,7 +130,7 @@ class TelegramDriver(object):
         Send messages to all admins
         :param text: message text
         :type text: str or unicode
-        :rtype: None 
+        :rtype: None
         """
         for admin_id in config.admin_ids:
             self.send_message(admin_id, text)
@@ -156,8 +156,8 @@ class TelegramDriver(object):
     def extract_command(message):
         """
         Return command written to bot
-        :type message: dict 
-        :rtype: str or unicode 
+        :type message: dict
+        :rtype: str or unicode
         """
         if message["text"].startswith('/'):
             return message["text"].split()[0].split('@')[0]
@@ -168,8 +168,8 @@ class TelegramDriver(object):
     def extract_text(message):
         """
         Return the rest of message addressed to the bot, without command.
-        :type message: dict 
-        :rtype: str or unicode 
+        :type message: dict
+        :rtype: str or unicode
         """
         if TelegramDriver.extract_command(message) is not None:
             return message["text"].replace(TelegramDriver.extract_command(message), '').lstrip()
@@ -179,8 +179,8 @@ class TelegramDriver(object):
     def check_answer_from_chat_id(self, chat_id):
         """
         Return first answer to the specified chat_id or None
-        :type chat_id: int 
-        :rtype: dict or None 
+        :type chat_id: int
+        :rtype: dict or None
         """
         for message in self.check_new_messages():
             if message["from_id"] == chat_id:

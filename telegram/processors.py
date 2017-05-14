@@ -4,22 +4,8 @@ import json
 import datetime
 
 from config import config
-from config.dictionary import NO_GROUP_CHAT_MESSAGES, ACCESS_VIOLATION_MESSAGES, \
-    NO_CODE_FOUND_MESSAGE, CODES_BLOCKED_MESSAGE, GAME_FINISHED_MESSAGE, BYE_MESSAGES, START_PAUSE_MESSAGES, \
-    ALREADY_PAUSED_MESSAGE, END_PAUSE_MESSAGES, RESUME_MESSAGE, PAUSED_MESSAGE, LETS_GO_MESSAGES, \
-    NOT_GROUP_CHAT_MESSAGES, WRONG_USER_ID_MESSAGE, DUPLICATE_USER_ID, CANNOT_DELETE_ADMIN_MESSAGE, \
-    DELETE_USER_ID_MESSAGE, USER_DELETED_MESSAGE, PASS_WAS_CHANGED, DUPLICATE_PASS, ENTER_NEW_PASS, \
-    DISAPPROVE_MESSAGES, STATUS_MESSAGE, PAUSED_STATUS_MESSAGES, GAME_CONNECTION_MESSAGES, \
-    INFO_MESSAGE, BOT_WAS_RESET_MESSAGE, TASK_MESSAGE, NEW_HINT_MESSAGE, HINTS_APPEND, ADMIN_HELP_MESSAGE, \
-    REGULAR_HELP_MESSAGE, GIVE_ME_LOGIN, GIVE_ME_PASSWORD, GIVE_ME_HOST, GIVE_ME_GAME, SETTINGS_WERE_CHANGED_MESSAGES, \
-    CONNECTION_OK_MESSAGES, PLEASE_APPROVE_MESSAGES, CONNECTION_PROBLEM_MESSAGES, CHECK_SETTINGS_MESSAGES, \
-    SETTINGS_WERE_SAVED_MESSAGES, SETTINGS_WERE_NOT_SAVED_MESSAGES, UNKNOWN_MESSAGES, NEW_ADMIN_WAS_ADDED, \
-    NEW_FIELD_WAS_ADDED, NEW_KC_WAS_ADDED, NO_USER_ID_MESSAGE, HELLO_NEW_USER, HELLO_NEW_ADMIN, FIELD_TRIED_CODE, \
-    NO_HINTS, ADMIN_CLEARED, FIELD_CLEARED, KC_CLEARED, NO_MESSAGE, WRONG_LEVEL_ID_MESSAGE, NO_TASK_ID, \
-    CONFIM_DELETEION, \
-    NO_DATA_TO_DISPLAY, NEW_TOKEN_MESSAGE, TOKEN_CHANGED, TOKEN_CANCELLED, CODE_LIMIT_CANCELLED, CODE_LIMIT_CHANGED, \
-    CODE_LIMIT_MESSAGE, CODE_LIMIT, GAME_NOT_PAYED_MESSAGE, GAME_NOT_STARTED_MESSAGE, GIVE_ME_NEW_LOGIN, \
-    SETTINGS_WERE_NOT_CHANGED_MESSAGES, GIVE_ME_NEW_PASSWORD, GIVE_ME_NEW_HOST, GIVE_ME_NEW_GAME
+from config.dictionary import Smiles, CommonMessages, BotSystemMessages, CommandMessages, SettingsMessages, \
+    UserMessages, GameMessages, FileMessages, HelpMessages
 from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.abstract_processors import AbstractProcessors
@@ -35,10 +21,10 @@ class TelegramProcessor(AbstractProcessors):
             results = ''
             for code in codes:
                 result = self.game_worker.game_driver.try_code(code)
-                if result in [CODES_BLOCKED_MESSAGE,
-                              GAME_FINISHED_MESSAGE,
-                              GAME_NOT_PAYED_MESSAGE,
-                              GAME_NOT_STARTED_MESSAGE]:
+                if result in [GameMessages.CODES_BLOCKED,
+                              GameMessages.GAME_FINISHED,
+                              GameMessages.GAME_NOT_PAYED,
+                              GameMessages.GAME_NOT_STARTED]:
                     return result
                 if result is None:
                     return
@@ -54,24 +40,24 @@ class TelegramProcessor(AbstractProcessors):
         return results
 
     def do_stop(self, message):
-        self.answer_message(message, BYE_MESSAGES)
+        self.answer_message(message, CommonMessages.BYE)
         self.stopped = True
 
     def do_pause(self, message):
         if not self.paused:
-            self.answer_message(message, START_PAUSE_MESSAGES)
+            self.answer_message(message, CommonMessages.DO_PAUSE)
             self.paused = True
             config.paused = self.paused
         else:
-            self.answer_message(message, ALREADY_PAUSED_MESSAGE)
+            self.answer_message(message, CommonMessages.ALREADY_PAUSED)
 
     def do_resume(self, message):
         if self.paused:
-            self.answer_message(message, END_PAUSE_MESSAGES)
+            self.answer_message(message, CommonMessages.DO_RESUME)
             self.paused = False
             config.paused = self.paused
         else:
-            self.answer_message(message, RESUME_MESSAGE)
+            self.answer_message(message, CommonMessages.ALREADY_WORKING)
 
     def do_codes(self, message):
         if not self.paused:
@@ -83,11 +69,11 @@ class TelegramProcessor(AbstractProcessors):
                 else:
                     self.answer_message(
                         message,
-                        CODE_LIMIT.format(codelimit=config.code_limit))
+                        CommandMessages.CODE_LIMIT.format(codelimit=config.code_limit))
             else:
-                self.answer_message(message, NO_CODE_FOUND_MESSAGE)
+                self.answer_message(message, CommandMessages.NO_CODE_FOUND)
         else:
-            self.answer_message(message, PAUSED_MESSAGE)
+            self.answer_message(message, CommonMessages.PAUSED)
 
     def do_code(self, message):
         if not self.paused:
@@ -96,13 +82,13 @@ class TelegramProcessor(AbstractProcessors):
                 self.answer_message(message, result)
                 self.dublicate_code_to_group_chat(message, result)
             else:
-                self.answer_message(message, NO_CODE_FOUND_MESSAGE)
+                self.answer_message(message, CommandMessages.NO_CODE_FOUND)
         else:
-            self.answer_message(message, PAUSED_MESSAGE)
+            self.answer_message(message, CommonMessages.PAUSED)
 
     def _do_approve(self, message):
         chat_id = message["chat_id"]
-        self.answer_message(message, LETS_GO_MESSAGES)
+        self.answer_message(message, CommonMessages.LETS_GO)
         self.group_chat_id = chat_id
         config.group_chat_id = self.group_chat_id
         self.paused = False
@@ -115,177 +101,177 @@ class TelegramProcessor(AbstractProcessors):
             if chat_id < 0:
                 self._do_approve(message)
             else:
-                self.answer_message(message, NOT_GROUP_CHAT_MESSAGES)
+                self.answer_message(message, CommonMessages.NOT_GROUP_CHAT)
         elif config.answer_forbidden:
-            self.answer_message(message, ACCESS_VIOLATION_MESSAGES)
+            self.answer_message(message, CommonMessages.ACCESS_VIOLATION_MESSAGES)
 
     def do_add_admin(self, message):
         if len(message["text"].split()) > 1:
             admin_to_add = message["text"].split()[1]
             if not admin_to_add.isdigit():
-                self.answer_message(message, WRONG_USER_ID_MESSAGE)
+                self.answer_message(message, UserMessages.WRONG_USER_ID)
             else:
                 if config.is_admin(int(admin_to_add)):
                     self.answer_message(
                         message,
-                        DUPLICATE_USER_ID)
+                        UserMessages.DUPLICATE_USER_ID)
                 else:
                     config.add_admin_id(int(admin_to_add))
                     self.admin_message(
-                        NEW_ADMIN_WAS_ADDED.format(
+                        UserMessages.NEW_ADMIN_WAS_ADDED.format(
                             user_id=admin_to_add,
                             nickname=self.get_username(admin_to_add)))
-                    self.send_message(admin_to_add, HELLO_NEW_ADMIN)
+                    self.send_message(admin_to_add, UserMessages.HELLO_NEW_ADMIN)
         else:
             self.answer_message(message,
-                                NO_USER_ID_MESSAGE)
+                                CommandMessages.NO_USER_ID)
 
     def do_add_field(self, message):
         if len(message["text"].split()) > 1:
             field_to_add = message["text"].split()[1]
             if not field_to_add.isdigit():
-                self.answer_message(message, WRONG_USER_ID_MESSAGE)
+                self.answer_message(message, UserMessages.WRONG_USER_ID)
             else:
                 if config.is_field(int(field_to_add)):
                     self.answer_message(
                         message,
-                        DUPLICATE_USER_ID)
+                        UserMessages.DUPLICATE_USER_ID)
                 else:
                     config.add_field_id(int(field_to_add))
                     self.admin_message(
-                        NEW_FIELD_WAS_ADDED.format(
+                        UserMessages.NEW_FIELD_WAS_ADDED.format(
                             user_id=field_to_add,
                             nickname=self.get_username(field_to_add)))
-                    self.send_message(field_to_add, HELLO_NEW_USER)
+                    self.send_message(field_to_add, UserMessages.HELLO_NEW_USER)
         else:
             self.answer_message(message,
-                                NO_USER_ID_MESSAGE)
+                                CommandMessages.NO_USER_ID)
 
     def do_add_kc(self, message):
         if len(message["text"].split()) > 1:
             kc_to_add = message["text"].split()[1]
             if not kc_to_add.isdigit():
-                self.answer_message(message, WRONG_USER_ID_MESSAGE)
+                self.answer_message(message, UserMessages.WRONG_USER_ID)
             else:
                 if config.is_kc(int(kc_to_add)):
                     self.answer_message(
                         message,
-                        DUPLICATE_USER_ID)
+                        UserMessages.DUPLICATE_USER_ID)
                 else:
                     config.add_kc_id(int(kc_to_add))
                     self.admin_message(
-                        NEW_KC_WAS_ADDED.format(
+                        UserMessages.NEW_KC_WAS_ADDED.format(
                             user_id=kc_to_add,
                             nickname=self.get_username(kc_to_add)))
-                    self.send_message(kc_to_add, HELLO_NEW_USER)
+                    self.send_message(kc_to_add, UserMessages.HELLO_NEW_USER)
         else:
             self.answer_message(message,
-                                NO_USER_ID_MESSAGE)
+                                CommandMessages.NO_USER_ID)
 
     def do_delete_admin(self, message):
         if len(config.admin_ids) == 1:
-            self.answer_message(message, CANNOT_DELETE_ADMIN_MESSAGE)
+            self.answer_message(message, UserMessages.CANNOT_DELETE_ADMIN)
         else:
             admin_to_delete = self.get_new_value(
                 message,
-                DELETE_USER_ID_MESSAGE.format(
+                UserMessages.DELETE_USER_ID.format(
                     current_ids=self.get_usernames(config.admin_ids)))
             if not admin_to_delete.isdigit() or int(admin_to_delete) not in config.admin_ids:
-                self.answer_message(message, WRONG_USER_ID_MESSAGE)
+                self.answer_message(message, UserMessages.WRONG_USER_ID)
             else:
                 config.delete_admin_id(int(admin_to_delete))
-                self.answer_message(message, USER_DELETED_MESSAGE)
+                self.answer_message(message, UserMessages.USER_DELETED)
 
     def do_delete_field(self, message):
         field_to_delete = self.get_new_value(
             message,
-            DELETE_USER_ID_MESSAGE.format(
+            UserMessages.DELETE_USER_ID.format(
                 current_ids=self.get_usernames(config.field_ids)))
         if not field_to_delete.isdigit() or int(field_to_delete) not in config.field_ids:
-            self.answer_message(message, WRONG_USER_ID_MESSAGE)
+            self.answer_message(message, UserMessages.WRONG_USER_ID)
         else:
             config.delete_field_id(int(field_to_delete))
-            self.answer_message(message, USER_DELETED_MESSAGE)
+            self.answer_message(message, UserMessages.USER_DELETED)
 
     def do_delete_kc(self, message):
         kc_to_delete = self.get_new_value(
             message,
-            DELETE_USER_ID_MESSAGE.format(
+            UserMessages.DELETE_USER_ID.format(
                 current_ids=self.get_usernames(config.kc_ids)))
         if not kc_to_delete.isdigit() or int(kc_to_delete) not in config.kc_ids:
-            self.answer_message(message, WRONG_USER_ID_MESSAGE)
+            self.answer_message(message, UserMessages.WRONG_USER_ID)
         else:
             config.delete_kc_id(int(kc_to_delete))
-            self.answer_message(message, USER_DELETED_MESSAGE)
+            self.answer_message(message, UserMessages.USER_DELETED)
 
     def do_edit_admin_pass(self, message):
         new = self.get_new_value(
             message,
-            ENTER_NEW_PASS.format(code=config.admin_passphrase))
+            SettingsMessages.ENTER_NEW_PASS.format(code=config.admin_passphrase))
         old = config.admin_passphrase
         if new not in config.passphrases:
             config.admin_passphrase = new
             self.answer_message(
                 message,
-                PASS_WAS_CHANGED.format(code1=old,
-                                        code2=new))
+                SettingsMessages.PASS_WAS_CHANGED.format(code1=old,
+                                                         code2=new))
         else:
             self.answer_message(
                 message,
-                DUPLICATE_PASS)
+                SettingsMessages.DUPLICATE_PASS)
 
     def do_edit_field_pass(self, message):
         new = self.get_new_value(
             message,
-            ENTER_NEW_PASS.format(code=config.field_passphrase))
+            SettingsMessages.ENTER_NEW_PASS.format(code=config.field_passphrase))
         old = config.field_passphrase
         if new not in config.passphrases:
             config.field_passphrase = new
             self.answer_message(
                 message,
-                PASS_WAS_CHANGED.format(code1=old,
-                                        code2=new))
+                SettingsMessages.PASS_WAS_CHANGED.format(code1=old,
+                                                         code2=new))
         else:
             self.answer_message(
                 message,
-                DUPLICATE_PASS)
+                SettingsMessages.DUPLICATE_PASS)
 
     def do_edit_kc_pass(self, message):
         new = self.get_new_value(
             message,
-            ENTER_NEW_PASS.format(code=config.kc_passphrase))
+            SettingsMessages.ENTER_NEW_PASS.format(code=config.kc_passphrase))
         old = config.kc_passphrase
         if new not in config.passphrases:
             config.kc_passphrase = new
             self.answer_message(
                 message,
-                PASS_WAS_CHANGED.format(code1=old,
-                                        code2=new))
+                SettingsMessages.PASS_WAS_CHANGED.format(code1=old,
+                                                         code2=new))
         else:
             self.answer_message(
                 message,
-                DUPLICATE_PASS)
+                SettingsMessages.DUPLICATE_PASS)
 
     def do_clearadmin(self, message):
-        self.answer_message(message, CONFIM_DELETEION)
+        self.answer_message(message, BotSystemMessages.CONFIM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
             config.clear_admins()
-            self.answer_message(message, ADMIN_CLEARED)
+            self.answer_message(message, BotSystemMessages.ADMIN_CLEARED)
 
     def do_clearfield(self, message):
-        self.answer_message(message, CONFIM_DELETEION)
+        self.answer_message(message, BotSystemMessages.CONFIM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
             config.clear_fields()
-            self.answer_message(message, FIELD_CLEARED)
+            self.answer_message(message, BotSystemMessages.FIELD_CLEARED)
 
     def do_clearkc(self, message):
-        self.answer_message(message, CONFIM_DELETEION)
+        self.answer_message(message, BotSystemMessages.CONFIM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
             config.clear_kcs()
-            self.answer_message(message, KC_CLEARED)
+            self.answer_message(message, BotSystemMessages.KC_CLEARED)
 
     def do_chat_message(self, message):
         if self.group_chat_id is not None:
@@ -317,10 +303,10 @@ class TelegramProcessor(AbstractProcessors):
                     message_text)
             else:
                 self.answer_message(message,
-                                    WRONG_USER_ID_MESSAGE)
+                                    UserMessages.WRONG_USER_ID)
         else:
             self.answer_message(message,
-                                NO_MESSAGE)
+                                CommandMessages.NO_MESSAGE)
 
     def do_message_admin(self, message):
         message_text = self.extract_text(message)
@@ -349,7 +335,7 @@ class TelegramProcessor(AbstractProcessors):
                            'source.htm')
         else:
             self.answer_message(message,
-                                NO_DATA_TO_DISPLAY)
+                                FileMessages.NO_DATA_TO_DISPLAY)
 
     def do_send_errors(self, message):
         from_id = message["from_id"]
@@ -359,73 +345,73 @@ class TelegramProcessor(AbstractProcessors):
                            'errors.txt')
         else:
             self.answer_message(message,
-                                NO_DATA_TO_DISPLAY)
+                                FileMessages.NO_DATA_TO_DISPLAY)
 
     def do_token(self, message):
         new_token = self.get_new_value(message,
-                                       NEW_TOKEN_MESSAGE.format(token=config.bot_token))
+                                       BotSystemMessages.NEW_TOKEN.format(token=config.bot_token))
         if new_token != "NO":
             if config.bot_token != new_token:
                 config.bot_token = new_token
                 self._reset()
             from_id = message["from_id"]
-            self.send_message(from_id, TOKEN_CHANGED)
+            self.send_message(from_id, BotSystemMessages.TOKEN_CHANGED)
         else:
-            self.answer_message(message, TOKEN_CANCELLED)
+            self.answer_message(message, BotSystemMessages.TOKEN_CANCELLED)
 
     def do_codes_limit(self, message):
-        codes_limit = self.get_new_value(message, CODE_LIMIT_MESSAGE)
+        codes_limit = self.get_new_value(message, BotSystemMessages.CODE_LIMIT)
         if codes_limit != "NO":
             if codes_limit.isdigit():
                 config.code_limit = int(codes_limit)
-                self.answer_message(message, CODE_LIMIT_CHANGED)
+                self.answer_message(message, BotSystemMessages.CODE_LIMIT_CHANGED)
             else:
-                self.answer_message(message, CODE_LIMIT_CANCELLED)
+                self.answer_message(message, BotSystemMessages.CODE_LIMIT_CANCELLED)
         else:
-            self.answer_message(message, CODE_LIMIT_CANCELLED)
+            self.answer_message(message, BotSystemMessages.CODE_LIMIT_CANCELLED)
 
     def do_change_login(self, message):
         new_login = self.get_new_value(message,
-                                       GIVE_ME_NEW_LOGIN.format(login=config.game_login))
+                                       SettingsMessages.GIVE_ME_NEW_LOGIN.format(login=config.game_login))
         if new_login != "NO":
             config.game_login = new_login
             GameDriver.login = config.game_login
             self.apply_new_settings(message)
         else:
-            self.answer_message(message, SETTINGS_WERE_NOT_CHANGED_MESSAGES)
+            self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
 
     def do_change_pass(self, message):
         new_pass = self.get_new_value(message,
-                                      GIVE_ME_NEW_PASSWORD.format(password=config.game_password))
+                                      SettingsMessages.GIVE_ME_NEW_PASSWORD.format(password=config.game_password))
         if new_pass != "NO":
             config.game_password = new_pass
             GameDriver.password = config.game_password
             self.apply_new_settings(message)
         else:
-            self.answer_message(message, SETTINGS_WERE_NOT_CHANGED_MESSAGES)
+            self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
 
     def do_change_host(self, message):
         new_host = self.get_new_value(message,
-                                      GIVE_ME_NEW_HOST.format(host=config.game_host))
+                                      SettingsMessages.GIVE_ME_NEW_HOST.format(host=config.game_host))
         if new_host != "NO":
             config.game_host = new_host
             GameDriver.host = config.game_host
             self.apply_new_settings(message)
         else:
-            self.answer_message(message, SETTINGS_WERE_NOT_CHANGED_MESSAGES)
+            self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
 
     def do_change_game(self, message):
         new_game = self.get_new_value(message,
-                                      GIVE_ME_NEW_GAME.format(game=config.game_id))
+                                      SettingsMessages.GIVE_ME_NEW_GAME.format(game=config.game_id))
         if new_game != "NO":
             if new_game.isdigit():
                 config.game_id = int(new_game)
                 GameDriver.game_id = config.game_id
                 self.apply_new_settings(message)
             else:
-                self.answer_message(message, SETTINGS_WERE_NOT_CHANGED_MESSAGES)
+                self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
         else:
-            self.answer_message(message, SETTINGS_WERE_NOT_CHANGED_MESSAGES)
+            self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
 
     def do_send_unknown(self, message):
         from_id = message["from_id"]
@@ -442,14 +428,14 @@ class TelegramProcessor(AbstractProcessors):
                            'unknown.txt')
         else:
             self.answer_message(message,
-                                NO_DATA_TO_DISPLAY)
+                                FileMessages.NO_DATA_TO_DISPLAY)
 
     def _do_disapprove(self, message):
         self.group_chat_id = None
         config.group_chat_id = self.group_chat_id
         self.paused = True
         config.paused = self.paused
-        self.answer_message(message, DISAPPROVE_MESSAGES)
+        self.answer_message(message, CommonMessages.DISAPPROVE)
 
     def disapprove_command(self, message):
         from_id = message["from_id"]
@@ -459,27 +445,27 @@ class TelegramProcessor(AbstractProcessors):
                 if chat_id == self.group_chat_id:
                     self._do_disapprove(message)
                 else:
-                    self.answer_message(message, NO_GROUP_CHAT_MESSAGES)
+                    self.answer_message(message, CommonMessages.NO_GROUP_CHAT_MESSAGES)
             else:
-                self.answer_message(message, NOT_GROUP_CHAT_MESSAGES)
+                self.answer_message(message, CommonMessages.NOT_GROUP_CHAT)
         elif config.answer_forbidden:
-            self.answer_message(message, ACCESS_VIOLATION_MESSAGES)
+            self.answer_message(message, CommonMessages.ACCESS_VIOLATION_MESSAGES)
 
     def do_status(self, message):
         hints_shown = ''
         for i in self.game_worker.hints_shown:
             hints_shown += str(i) + ' '
-        status_message = STATUS_MESSAGE.format(
-            paused=PAUSED_STATUS_MESSAGES[self.paused],
+        status_message = HelpMessages.STATUS.format(
+            paused=HelpMessages.PAUSED[self.paused],
             chat_id=self.group_chat_id,
-            game_connection=GAME_CONNECTION_MESSAGES[self.game_worker.game_driver.is_logged()],
+            game_connection=HelpMessages.GAME_CONNECTION[self.game_worker.game_driver.is_logged()],
             game_level_id=self.game_worker.last_level_shown,
             game_hint_id=hints_shown
         )
         self.answer_message(message, status_message)
 
     def do_info(self, message):
-        info_message = INFO_MESSAGE.format(
+        info_message = HelpMessages.INFO.format(
             chat_id=self.group_chat_id,
             login=self.game_worker.game_driver.login,
             password=self.game_worker.game_driver.password,
@@ -501,20 +487,20 @@ class TelegramProcessor(AbstractProcessors):
 
     def do_reset(self, message):
         self.game_worker.reset_level()
-        self.answer_message(message, BOT_WAS_RESET_MESSAGE)
+        self.answer_message(message, BotSystemMessages.BOT_WAS_RESET)
 
     def do_task(self, message):
         if len(message["text"].split()) > 1:
             level_to_show = int(message["text"].split()[1])
             task_text = self.game_worker.tasks_received.get(level_to_show)
             if task_text is not None:
-                task_text = TASK_MESSAGE.format(
+                task_text = GameMessages.TASK_MESSAGE.format(
                     level_number=level_to_show,
                     task=task_text)
             else:
-                task_text = WRONG_LEVEL_ID_MESSAGE
+                task_text = CommandMessages.WRONG_LEVEL_ID
         else:
-            task_text = TASK_MESSAGE.format(
+            task_text = GameMessages.TASK_MESSAGE.format(
                 level_number=self.game_worker.last_level_shown,
                 task=self.game_worker.last_task_text)
         self.answer_message(message, task_text, parse_mode="HTML")
@@ -526,29 +512,29 @@ class TelegramProcessor(AbstractProcessors):
             if task_text is not None:
                 codes = '\r\n'.join(task_text)
             else:
-                codes = WRONG_LEVEL_ID_MESSAGE
+                codes = CommandMessages.WRONG_LEVEL_ID
             self.answer_message(message, codes)
         else:
-            self.answer_message(message, NO_TASK_ID)
+            self.answer_message(message, CommandMessages.NO_TASK_ID)
 
     def do_hints(self, message):
         hints = []
         for hint_id in sorted(self.game_worker.all_hints.keys()):
-            hints.append(NEW_HINT_MESSAGE.format(
-                smile=HINTS_APPEND,
+            hints.append(GameMessages.NEW_HINT.format(
+                smile=Smiles.HINTS,
                 hint_number=hint_id,
                 hint=self.game_worker.all_hints[hint_id]))
         for hint in hints:
             self.answer_message(message, hint, parse_mode="HTML")
         else:
-            self.answer_message(message, NO_HINTS, parse_mode="HTML")
+            self.answer_message(message, GameMessages.NO_HINTS, parse_mode="HTML")
 
     def do_help(self, message):
         from_id = message["from_id"]
         if config.is_admin(from_id):
-            self.answer_message(message, ADMIN_HELP_MESSAGE)
+            self.answer_message(message, HelpMessages.ADMIN_HELP)
         else:
-            self.answer_message(message, REGULAR_HELP_MESSAGE)
+            self.answer_message(message, HelpMessages.REGULAR_HELP)
 
     def do_gap(self, message):
         codes_gap = self.game_worker.game_driver.get_codes_gap()
@@ -559,17 +545,17 @@ class TelegramProcessor(AbstractProcessors):
         self.game_worker = GameWorker()
         self.paused = True
         config.paused = self.paused
-        self.admin_message(SETTINGS_WERE_CHANGED_MESSAGES)
+        self.admin_message(SettingsMessages.SETTINGS_WERE_CHANGED)
         if self.game_worker.connected:
-            self.admin_message(CONNECTION_OK_MESSAGES)
-            self.admin_message(PLEASE_APPROVE_MESSAGES)
+            self.admin_message(CommonMessages.CONNECTION_OK_MESSAGES)
+            self.admin_message(CommonMessages.PLEASE_APPROVE_MESSAGES)
             self.do_reset(message)
             self.paused = False
             config.paused = self.paused
             return True
         else:
-            self.admin_message(CONNECTION_PROBLEM_MESSAGES)
-            self.admin_message(CHECK_SETTINGS_MESSAGES)
+            self.admin_message(SettingsMessages.CONNECTION_PROBLEM)
+            self.admin_message(SettingsMessages.CHECK_SETTINGS)
             return False
 
     def do_edit_settings(self, message):
@@ -577,22 +563,22 @@ class TelegramProcessor(AbstractProcessors):
 
         self.send_message(
             from_id,
-            GIVE_ME_LOGIN)
+            SettingsMessages.GIVE_ME_LOGIN)
         GameDriver.login = self.wait_for_answer(from_id)["text"]
         config.game_login = GameDriver.login
         self.send_message(
             from_id,
-            GIVE_ME_PASSWORD)
+            SettingsMessages.GIVE_ME_PASSWORD)
         GameDriver.password = self.wait_for_answer(from_id)["text"]
         config.game_password = GameDriver.password
         self.send_message(
             from_id,
-            GIVE_ME_HOST)
+            SettingsMessages.GIVE_ME_HOST)
         GameDriver.host = self.wait_for_answer(from_id)["text"]
         config.game_host = GameDriver.host
         self.send_message(
             from_id,
-            GIVE_ME_GAME)
+            SettingsMessages.GIVE_ME_GAME)
         GameDriver.game_id = self.wait_for_answer(from_id)["text"]
         config.game_id = GameDriver.game_id
 
@@ -601,13 +587,13 @@ class TelegramProcessor(AbstractProcessors):
     def do_save_settings(self, message):
         result = config.save_config()
         if result:
-            self.answer_message(message, SETTINGS_WERE_SAVED_MESSAGES)
+            self.answer_message(message, SettingsMessages.SETTINGS_WERE_SAVED)
         else:
-            self.answer_message(message, SETTINGS_WERE_NOT_SAVED_MESSAGES)
+            self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_SAVED)
 
     def unknown_command(self, message):
         if config.answer_unknown:
-            self.answer_message(message, UNKNOWN_MESSAGES)
+            self.answer_message(message, CommonMessages.UNKNOWN)
 
     def process_unknown_user(self, message):
         from_id = message["from_id"]
@@ -627,33 +613,33 @@ class TelegramProcessor(AbstractProcessors):
         from_id = message["from_id"]
         if passphrase == config.admin_passphrase:
             if from_id in config.admin_ids:
-                self.answer_message(message, DUPLICATE_USER_ID)
+                self.answer_message(message, UserMessages.DUPLICATE_USER_ID)
             else:
                 config.add_admin_id(int(from_id))
-                self.answer_message(message, HELLO_NEW_ADMIN)
+                self.answer_message(message, UserMessages.HELLO_NEW_ADMIN)
                 self.admin_message(
-                    NEW_ADMIN_WAS_ADDED.format(user_id=from_id,
-                                               nickname=self.get_username(from_id)))
+                    UserMessages.NEW_ADMIN_WAS_ADDED.format(user_id=from_id,
+                                                            nickname=self.get_username(from_id)))
                 return True
         elif passphrase == config.field_passphrase:
             if from_id in config.field_ids:
-                self.answer_message(message, DUPLICATE_USER_ID)
+                self.answer_message(message, UserMessages.DUPLICATE_USER_ID)
             else:
                 config.add_field_id(int(from_id))
-                self.answer_message(message, HELLO_NEW_USER)
+                self.answer_message(message, UserMessages.HELLO_NEW_USER)
                 self.admin_message(
-                    NEW_FIELD_WAS_ADDED.format(user_id=from_id,
-                                               nickname=self.get_username(from_id)))
+                    UserMessages.NEW_FIELD_WAS_ADDED.format(user_id=from_id,
+                                                            nickname=self.get_username(from_id)))
                 return True
         elif passphrase == config.kc_passphrase:
             if from_id in config.kc_ids:
-                self.answer_message(message, DUPLICATE_USER_ID)
+                self.answer_message(message, UserMessages.DUPLICATE_USER_ID)
             else:
                 config.add_kc_id(int(from_id))
-                self.answer_message(message, HELLO_NEW_USER)
+                self.answer_message(message, UserMessages.HELLO_NEW_USER)
                 self.admin_message(
-                    NEW_KC_WAS_ADDED.format(user_id=from_id,
-                                            nickname=self.get_username(from_id)))
+                    UserMessages.NEW_KC_WAS_ADDED.format(user_id=from_id,
+                                                         nickname=self.get_username(from_id)))
                 return True
         else:
             return False
@@ -666,7 +652,7 @@ class TelegramProcessor(AbstractProcessors):
                 and result is not None:
             self.send_message(
                 self.group_chat_id,
-                FIELD_TRIED_CODE.format(
+                CommandMessages.FIELD_TRIED_CODE.format(
                     nickname=self.get_username(from_id),
                     codes=result))
 

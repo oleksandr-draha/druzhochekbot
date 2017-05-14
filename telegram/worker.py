@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from config.config import config
-from config.dictionary import CONNECTION_PROBLEM_MESSAGES
+from config.dictionary import SettingsMessages
 from telegram.processors import TelegramProcessor
 
 
@@ -18,7 +18,7 @@ class TelegramWorker(TelegramProcessor):
             self.process_code_simple_message(message)
 
             command = self.extract_command(message).lower()
-            # User commands:
+            # region User commands:
             if command in config.code_command:
                 self._user_command(message, self.do_code)
             elif command in config.codes_command:
@@ -35,8 +35,9 @@ class TelegramWorker(TelegramProcessor):
                 self._user_command(message, self.do_help)
             elif command == config.gap_command:
                 self._user_command(message, self.do_gap)
+            # endregion
 
-            # Admin in chat commands:
+            # region Admin in chat commands:
             elif command == config.stop_command:
                 self._admin_in_group_chat_command(message, self.do_stop)
             elif command == config.resume_command:
@@ -61,8 +62,9 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_in_group_chat_command(message, self.do_send_errors)
             elif command == config.send_unknown_command:
                 self._admin_in_group_chat_command(message, self.do_send_unknown)
+            # endregion
 
-            # Admin commands:
+            # region Admin commands:
             elif command == config.approve_command:
                 self.approve_command(message)
             elif command == config.disapprove_command:
@@ -113,12 +115,13 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_change_game)
             else:
                 self.unknown_command(message)
+            # endregion
 
     def process_game_updates(self):
         if not self.paused and self.group_chat_id is not None:
             updates = self.game_worker.check_updates()
             if updates is None:
-                self.admin_message(CONNECTION_PROBLEM_MESSAGES)
+                self.admin_message(SettingsMessages.CONNECTION_PROBLEM)
             else:
                 for update in updates:
                     self.send_message(self.group_chat_id,
