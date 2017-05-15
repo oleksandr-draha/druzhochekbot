@@ -56,12 +56,6 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_in_group_chat_command(message, self.do_message_field)
             elif command == config.message_kc_command:
                 self._admin_in_group_chat_command(message, self.do_message_kc)
-            elif command == config.send_source_command:
-                self._admin_in_group_chat_command(message, self.do_send_source)
-            elif command == config.send_errors_command:
-                self._admin_in_group_chat_command(message, self.do_send_errors)
-            elif command == config.send_unknown_command:
-                self._admin_in_group_chat_command(message, self.do_send_unknown)
             # endregion
 
             # region Admin commands:
@@ -113,6 +107,12 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_change_host)
             elif command == config.game_command:
                 self._admin_command(message, self.do_change_game)
+            elif command == config.send_source_command:
+                self._admin_command(message, self.do_send_source)
+            elif command == config.send_errors_command:
+                self._admin_command(message, self.do_send_errors)
+            elif command == config.send_unknown_command:
+                self._admin_command(message, self.do_send_unknown)
             else:
                 self.unknown_command(message)
             # endregion

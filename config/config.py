@@ -345,25 +345,25 @@ class DruzhochekConfig(object):
         if self.autosave:
             config.save_config()
 
-        @property
-        def show_codes_left(self):
-            return [int(i) for i in self.config.get("game", {}).get("show_codes_left").split()]
+    @property
+    def show_codes_left(self):
+        return [int(i) for i in self.config.get("game", {}).get("show_codes_left").split()]
 
-        @property
-        def show_time_to_hint(self):
-            return self.config.get("game", {}).get("show_time_to_hint")
+    @property
+    def show_time_to_hint(self):
+        return self.config.get("game", {}).get("show_time_to_hint")
 
-        @property
-        def show_time_left_minutes(self):
-            return self.config.get("game", {}).get("show_time_left_minutes").split()
+    @property
+    def show_time_left_minutes(self):
+        return self.config.get("game", {}).get("show_time_left_minutes").split()
 
-        @property
-        def show_first_ap_time(self):
-            return self.config.get("game", {}).get("show_first_ap_time")
+    @property
+    def show_first_ap_time(self):
+        return self.config.get("game", {}).get("show_first_ap_time")
 
-        @property
-        def show_first_hint_time(self):
-            return self.config.get("game", {}).get("show_first_hint_time")
+    @property
+    def show_first_hint_time(self):
+        return self.config.get("game", {}).get("show_first_hint_time")
 
     # endregion
 
