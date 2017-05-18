@@ -38,6 +38,9 @@ class DruzhochekConfig(object):
             self.errors.pop(0)
         self.errors.append([datetime.now(), error])
 
+    def clean_errors(self):
+        self.errors = []
+
     def repr_errors(self):
         errors = ""
         for date_error, error in self.errors:
@@ -179,19 +182,19 @@ class DruzhochekConfig(object):
         if self.autosave:
             config.save_config()
 
-    def clear_admins(self):
+    def clean_admins(self):
         encoded = msgpack.dumps([])
         self.admin_ids = base64.encodestring(encoded)
         if self.autosave:
             config.save_config()
 
-    def clear_fields(self):
+    def clean_fields(self):
         encoded = msgpack.dumps([])
         self.field_ids = base64.encodestring(encoded)
         if self.autosave:
             config.save_config()
 
-    def clear_kcs(self):
+    def clean_kcs(self):
         encoded = msgpack.dumps([])
         self.kc_ids = base64.encodestring(encoded)
         if self.autosave:
@@ -478,16 +481,24 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("edit_kc_pass")
 
     @property
-    def clearadmin_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("clearadmin")
+    def cleanadmin_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("cleanadmin")
 
     @property
-    def clearfield_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("clearfield")
+    def cleanfield_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("cleanfield")
 
     @property
-    def clearkc_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("clearkc")
+    def cleankc_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("cleankc")
+
+    @property
+    def cleanerrors_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("clean_errors")
+
+    @property
+    def cleanunknown_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("clean_unknown")
 
     @property
     def alert_command(self):

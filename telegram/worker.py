@@ -87,12 +87,12 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_edit_field_pass)
             elif command == config.edit_kc_pass:
                 self._admin_command(message, self.do_edit_kc_pass)
-            elif command == config.clearadmin_command:
-                self._admin_command(message, self.do_clearadmin)
-            elif command == config.clearfield_command:
-                self._admin_command(message, self.do_clearfield)
-            elif command == config.clearkc_command:
-                self._admin_command(message, self.do_clearkc)
+            elif command == config.cleanadmin_command:
+                self._admin_command(message, self.do_cleanadmin)
+            elif command == config.cleanfield_command:
+                self._admin_command(message, self.do_cleanfield)
+            elif command == config.cleankc_command:
+                self._admin_command(message, self.do_cleankc)
             elif command == config.message_command:
                 self._admin_command(message, self.do_message)
             elif command == config.token_command:
@@ -111,8 +111,12 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_send_source)
             elif command == config.send_errors_command:
                 self._admin_command(message, self.do_send_errors)
+            elif command == config.cleanerrors_command:
+                self._admin_command(message, self.do_clean_errors)
             elif command == config.send_unknown_command:
                 self._admin_command(message, self.do_send_unknown)
+            elif command == config.cleanunknown_command:
+                self._admin_command(message, self.do_clean_unknown)
             else:
                 self.unknown_command(message)
             # endregion

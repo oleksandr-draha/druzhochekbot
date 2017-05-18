@@ -252,25 +252,25 @@ class TelegramProcessor(AbstractProcessors):
                 message,
                 SettingsMessages.DUPLICATE_PASS)
 
-    def do_clearadmin(self, message):
+    def do_cleanadmin(self, message):
         self.answer_message(message, BotSystemMessages.CONFIM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
-            config.clear_admins()
+            config.clean_admins()
             self.answer_message(message, BotSystemMessages.ADMIN_CLEARED)
 
-    def do_clearfield(self, message):
+    def do_cleanfield(self, message):
         self.answer_message(message, BotSystemMessages.CONFIM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
-            config.clear_fields()
+            config.clean_fields()
             self.answer_message(message, BotSystemMessages.FIELD_CLEARED)
 
-    def do_clearkc(self, message):
+    def do_cleankc(self, message):
         self.answer_message(message, BotSystemMessages.CONFIM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
-            config.clear_kcs()
+            config.clean_kcs()
             self.answer_message(message, BotSystemMessages.KC_CLEARED)
 
     def do_chat_message(self, message):
@@ -346,6 +346,11 @@ class TelegramProcessor(AbstractProcessors):
         else:
             self.answer_message(message,
                                 FileMessages.NO_DATA_TO_DISPLAY)
+
+    def do_clean_errors(self, message):
+        config.clean_errors()
+        self.answer_message(message,
+                            BotSystemMessages.ERRORS_CLEARED)
 
     def do_token(self, message):
         new_token = self.get_new_value(message,
@@ -429,6 +434,11 @@ class TelegramProcessor(AbstractProcessors):
         else:
             self.answer_message(message,
                                 FileMessages.NO_DATA_TO_DISPLAY)
+
+    def do_clean_unknown(self, message):
+        self.unknown_users = []
+        self.answer_message(message,
+                            BotSystemMessages.UNKNOWN_CLEARED)
 
     def _do_disapprove(self, message):
         self.group_chat_id = None

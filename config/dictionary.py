@@ -50,6 +50,8 @@ class BotSystemMessages:
     ADMIN_CLEARED = u"""Все админы были удалены."""
     FIELD_CLEARED = u"""Все полевые игроки были удалены."""
     KC_CLEARED = u"""Все штабные игроки были удалены."""
+    ERRORS_CLEARED = u"""Лог ошибок очищен."""
+    UNKNOWN_CLEARED = u"""Лог неопознанных пользователей очищен."""
     BOT_WAS_RESET = u"Состояние бота было сброшено на начальное."
 
 
@@ -233,9 +235,9 @@ rnd: {rnd}
 {deleteadmin}: Удалить админа по его id
 {deletefield}: Удалить полевого игрока по его id
 {deletekc}: Удалить штабного игрока по его id
-{clearadmin}: Очистить список админов
-{clearfield}: Очистить список полевых игроков
-{clearkc}: Очистить список штабных игроков
+{cleanadmin}: Очистить список админов
+{cleanfield}: Очистить список полевых игроков
+{cleankc}: Очистить список штабных игроков
 
 {eap}: Изменить инвайт-код для админов
 {efp}: Изменить инвайт-код для полевых игроков
@@ -249,7 +251,9 @@ rnd: {rnd}
 
 {source}: Отправить текущую страницу
 {errors}: Отправить лог ошибок
+{clean_errors}: Очистить лог ошибок
 {unknown}: Отправить лог запросов от неизвестных пользователей
+{clean_unknown}: Очистить лог запросов от неизвестных
 
 *Пользовательские функции:*
 {regular}
@@ -271,9 +275,9 @@ rnd: {rnd}
         deleteadmin=config.delete_admin_command,
         deletefield=config.delete_field_command,
         deletekc=config.delete_kc_command,
-        clearadmin=config.clearadmin_command,
-        clearfield=config.clearfield_command,
-        clearkc=config.clearkc_command,
+        cleanadmin=config.cleanadmin_command,
+        cleanfield=config.cleanfield_command,
+        cleankc=config.cleankc_command,
         eap=config.edit_admin_pass,
         efp=config.edit_field_pass,
         ekp=config.edit_kc_pass,
@@ -290,4 +294,6 @@ rnd: {rnd}
         game=config.game_command,
         password=config.pass_command,
         host=config.host_command,
+        clean_errors=config.cleanerrors_command,
+        clean_unknown=config.cleanunknown_command,
         regular=REGULAR_HELP)
