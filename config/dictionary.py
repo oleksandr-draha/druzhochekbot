@@ -9,6 +9,7 @@ class Smiles:
     WRONG_CODE = unichr(10060)
     LIMIT = unichr(55357) + unichr(56489)
     ORG_MESSAGE = unichr(55357) + unichr(56596)
+    ALERT = unichr(9757) + unichr(65039)
     CODES_LEFT = unichr(9757) + unichr(65039)
     CODE_LEFT = unichr(10071) + unichr(65039)
     ONE_CODE_LEFT = unichr(8252) + unichr(65039)
@@ -83,6 +84,8 @@ class SettingsMessages:
     GIVE_ME_NEW_PASSWORD = u"Текущий пароль: *{password}*\r\nВведи новый:"
     GIVE_ME_NEW_HOST = u"Текущий хост игры: *{host}*\r\nВведи новый:"
     GIVE_ME_NEW_GAME = u"Текущий номер игры: *{game}*\r\nВведи новый:"
+    TAG_FIELD = u"""Отмечать ли полевых игроков при получении нового задания?
+*YES* - да, *NO* - нет, *CANCEL* - отменить"""
     SETTINGS_WERE_CHANGED = u"---*Настройки бота были изменены!*---"
     SETTINGS_WERE_SAVED = u"Настройки были сохранены"
     SETTINGS_WERE_NOT_SAVED = u"Проблема при записи настроек. Проверьте права доступа."
@@ -173,6 +176,7 @@ class HelpMessages:
 Токен: {token}
 rnd: {rnd}
 Лимит на вбитие кодов: {codelimit}
+Отмечать поле при новом задании: {tag_field}
 -------------------------------
 Инвайт-код для админов: {admin_passphrase}
 Инвайт-код для поля: {field_passphrase}
@@ -248,6 +252,7 @@ rnd: {rnd}
 {message_admin}: Сделать рассылку в личку всем админам
 {message_field}: Сделать рассылку в личку всему полю
 {message_kc}: Сделать рассылку в личку всему КЦ
+{tag_field}: Редактировать оповещение игроков при получении нового задания
 
 {source}: Отправить текущую страницу
 {errors}: Отправить лог ошибок
@@ -296,4 +301,5 @@ rnd: {rnd}
         host=config.host_command,
         clean_errors=config.cleanerrors_command,
         clean_unknown=config.cleanunknown_command,
+        tag_field=config.tag_field_command,
         regular=REGULAR_HELP)

@@ -92,6 +92,16 @@ class DruzhochekConfig(object):
             config.save_config()
 
     @property
+    def tag_field(self):
+        return self.config.get("bot", {}).get("tag_field")
+
+    @tag_field.setter
+    def tag_field(self, value):
+        self.config["bot"]["tag_field"] = value
+        if self.autosave:
+            config.save_config()
+
+    @property
     def updates_path(self):
         return self.config.get("bot", {}).get("updates-path")
 
@@ -559,6 +569,10 @@ class DruzhochekConfig(object):
     @property
     def game_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("game")
+
+    @property
+    def tag_field_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("tag_field")
 
     # endregion
 

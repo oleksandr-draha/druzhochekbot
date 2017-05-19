@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from config.config import config
-from config.dictionary import SettingsMessages
+from config.dictionary import SettingsMessages, Smiles
 from telegram.processors import TelegramProcessor
 
 
@@ -117,13 +117,17 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_send_unknown)
             elif command == config.cleanunknown_command:
                 self._admin_command(message, self.do_clean_unknown)
+            elif command == config.tag_field_command:
+                self._admin_command(message, self.do_set_tag_field)
             else:
                 self.unknown_command(message)
             # endregion
 
     def process_game_updates(self):
         if not self.paused and self.group_chat_id is not None:
+            last_level_shown = self.game_worker.last_level_shown
             updates = self.game_worker.check_updates()
+            current_level = self.game_worker.last_level_shown
             if updates is None:
                 self.admin_message(SettingsMessages.CONNECTION_PROBLEM)
             else:
@@ -131,3 +135,6 @@ class TelegramWorker(TelegramProcessor):
                     self.send_message(self.group_chat_id,
                                       update,
                                       parse_mode="HTML")
+                if last_level_shown != current_level:
+                    if config.tag_field:
+                        self._send_alert("")

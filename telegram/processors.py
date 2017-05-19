@@ -280,17 +280,21 @@ class TelegramProcessor(AbstractProcessors):
                 self.group_chat_id,
                 message_text)
 
-    def do_alert(self, message):
+    def _send_alert(self, message_text):
         if self.group_chat_id is not None:
             usernames = self.get_usernames(config.field_ids)
             alert_captions = ['@%s ' % username
                               for username in usernames.values()
                               if username is not None]
             alert_caption = ''.join(alert_captions) + '\r\n'
-            message_text = self.extract_text(message)
             self.send_message(
                 self.group_chat_id,
-                alert_caption + message_text)
+                alert_caption + message_text,
+                parse_mode="HTML")
+
+    def do_alert(self, message):
+        message_text = self.extract_text(message)
+        self._send_alert(message_text)
 
     def do_message(self, message):
         message_text = self.extract_text(message)
@@ -418,6 +422,18 @@ class TelegramProcessor(AbstractProcessors):
         else:
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
 
+    def do_set_tag_field(self, message):
+        tag_field = self.get_new_value(message,
+                                       SettingsMessages.TAG_FIELD)
+        if tag_field == "NO":
+            config.tag_field = False
+        elif tag_field == "YES":
+            config.tag_field = True
+        else:
+            self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
+            return
+        self.answer_message(message, SettingsMessages.SETTINGS_WERE_CHANGED)
+
     def do_send_unknown(self, message):
         from_id = message["from_id"]
         unknown_message = ""
@@ -492,7 +508,8 @@ class TelegramProcessor(AbstractProcessors):
             token=config.bot_token,
             rnd=self.game_worker.game_driver.rnd,
             codelimit=config.code_limit,
-            unknown_users=len(self.unknown_users))
+            unknown_users=len(self.unknown_users),
+            tag_field=str(config.tag_field))
         self.answer_message(message, info_message, parse_mode="html")
 
     def do_reset(self, message):
