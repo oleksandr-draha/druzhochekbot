@@ -5,7 +5,7 @@ from requests import ConnectionError, session
 import html2text
 
 from config import config
-from config.dictionary import Smiles, GameMessages
+from config.dictionary import Smiles, GameMessages, CommandMessages
 from game.locators import logged_locator, blocked_locator, div_start_locator, div_end_locator, message_locator, \
     finish_locator, level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
     correct_code_locator, blocked_code_locator, hint_number_start_locator, hint_number_end_locator, \
@@ -159,14 +159,20 @@ class GameDriver:
             return
         if r.find(incorrect_code_locator) == -1 and \
                 r.find(correct_code_locator) != -1:
-            result = u'\r\n{smile}: {code}'.format(smile=Smiles.CORRECT_CODE,
-                                                   code=code)
             # Save entered codes
             if code.lower() not in self.codes_entered.get(self.level_number, {}).get('__all__', []):
+                result = u'\r\n{smile}: {code}'.format(smile=Smiles.CORRECT_CODE,
+                                                       code=code)
                 self.codes_entered.setdefault(self.level_number, {}).\
                     setdefault(username, []).append(code.lower())
                 self.codes_entered.setdefault(self.level_number, {}).\
                     setdefault('__all__', []).append(code.lower())
+            else:
+                username_found = None
+                for username_found, codes in self.codes_entered.get(self.level_number, {}).iteritems():
+                    if code in codes:
+                        break
+                result = CommandMessages.DUPLICATE_CODE.format(code=code, username=username_found)
         elif r.find(incorrect_code_locator) != -1:
             result = u'\r\n{smile}: {code}'.format(
                 code=code,

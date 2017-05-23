@@ -60,6 +60,7 @@ class BotSystemMessages:
 
 class CommandMessages:
     NO_CODE_FOUND = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c long code или /cc code 1 code2_'
+    DUPLICATE_CODE = u'\r\n{code}: уже вбил *{username}*'
     CODE_LIMIT = u"""Перебор такого количества кодов запрещён! Текущий лимит: {codelimit}"""
     NO_USER_ID = u"""Нет user id для добавления. Пример:
 /addadmin 123456"""
