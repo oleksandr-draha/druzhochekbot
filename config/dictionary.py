@@ -46,13 +46,15 @@ class BotSystemMessages:
     CODE_LIMIT = u"""Введи новое ограничение на перебор кодов или *NO* для отмены операции"""
     CODE_LIMIT_CHANGED = u"""Ограничение на перебор кодов было изменено"""
     TOKEN_CANCELLED = u"""Изменение токена отменено"""
+    OPERATION_CANCELLED = u"""Операция отменена"""
     CODE_LIMIT_CANCELLED = u"""Ограничение на перебор кодов не было изменено"""
-    CONFIM_DELETEION = u"""Эту операцию нельзя отменить. Для подтверждения напиши *"YES"* """
+    CONFIRM_DELETEION = u"""Эту операцию нельзя отменить. Для подтверждения напиши *"YES"* """
     ADMIN_CLEARED = u"""Все админы были удалены."""
     FIELD_CLEARED = u"""Все полевые игроки были удалены."""
     KC_CLEARED = u"""Все штабные игроки были удалены."""
     ERRORS_CLEARED = u"""Лог ошибок очищен."""
     UNKNOWN_CLEARED = u"""Лог неопознанных пользователей очищен."""
+    MEMORY_CLEARED = u"""Лог заданий и введённых кодов удалён."""
     BOT_WAS_RESET = u"Состояние бота было сброшено на начальное."
 
 
@@ -248,6 +250,7 @@ rnd: {rnd}
 {ekp}: Изменить инвайт код для штабных игроков
 
 {alert}: Вывести объявление в групповой чат с тегом всего поля
+{chat_message}: Вывести объявление в групповой чат
 {message}: Написать от имени бота указанному id
 {message_admin}: Сделать рассылку в личку всем админам
 {message_field}: Сделать рассылку в личку всему полю
@@ -259,6 +262,7 @@ rnd: {rnd}
 {clean_errors}: Очистить лог ошибок
 {unknown}: Отправить лог запросов от неизвестных пользователей
 {clean_unknown}: Очистить лог запросов от неизвестных
+{clean_memory}: Очистить лог заданий и введённых кодов
 
 *Пользовательские функции:*
 {regular}
@@ -288,6 +292,7 @@ rnd: {rnd}
         ekp=config.edit_kc_pass,
         message=config.message_command,
         alert=config.alert_command,
+        chat_message=config.chat_message_command,
         message_admin=config.message_admin_command,
         message_field=config.message_field_command,
         message_kc=config.message_kc_command,
@@ -302,4 +307,5 @@ rnd: {rnd}
         clean_errors=config.cleanerrors_command,
         clean_unknown=config.cleanunknown_command,
         tag_field=config.tag_field_command,
+        clean_memory=config.clean_memory_command,
         regular=REGULAR_HELP)

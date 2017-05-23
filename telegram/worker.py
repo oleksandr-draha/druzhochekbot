@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from config.config import config
-from config.dictionary import SettingsMessages, Smiles
+from config.dictionary import SettingsMessages
 from telegram.processors import TelegramProcessor
 
 
@@ -117,6 +117,8 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_send_unknown)
             elif command == config.cleanunknown_command:
                 self._admin_command(message, self.do_clean_unknown)
+            elif command == config.clean_memory_command:
+                self._admin_command(message, self.do_clean_memory)
             elif command == config.tag_field_command:
                 self._admin_command(message, self.do_set_tag_field)
             else:

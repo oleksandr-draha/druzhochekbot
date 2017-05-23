@@ -256,25 +256,31 @@ class TelegramProcessor(AbstractProcessors):
                 SettingsMessages.DUPLICATE_PASS)
 
     def do_cleanadmin(self, message):
-        self.answer_message(message, BotSystemMessages.CONFIM_DELETEION)
+        self.answer_message(message, BotSystemMessages.CONFIRM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
             config.clean_admins()
             self.answer_message(message, BotSystemMessages.ADMIN_CLEARED)
+        else:
+            self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
 
     def do_cleanfield(self, message):
-        self.answer_message(message, BotSystemMessages.CONFIM_DELETEION)
+        self.answer_message(message, BotSystemMessages.CONFIRM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
             config.clean_fields()
             self.answer_message(message, BotSystemMessages.FIELD_CLEARED)
+        else:
+            self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
 
     def do_cleankc(self, message):
-        self.answer_message(message, BotSystemMessages.CONFIM_DELETEION)
+        self.answer_message(message, BotSystemMessages.CONFIRM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
             config.clean_kcs()
             self.answer_message(message, BotSystemMessages.KC_CLEARED)
+        else:
+            self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
 
     def do_chat_message(self, message):
         if self.group_chat_id is not None:
@@ -458,6 +464,16 @@ class TelegramProcessor(AbstractProcessors):
         self.unknown_users = []
         self.answer_message(message,
                             BotSystemMessages.UNKNOWN_CLEARED)
+
+    def do_clean_memory(self, message):
+        self.answer_message(message, BotSystemMessages.CONFIRM_DELETEION)
+        answer = self.wait_for_answer(message["from_id"])
+        if answer["text"] == "YES":
+            self.game_worker.game_driver.codes_entered = {}
+            self.game_worker.tasks_received = {}
+            self.answer_message(message, BotSystemMessages.MEMORY_CLEARED)
+        else:
+            self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
 
     def _do_disapprove(self, message):
         self.group_chat_id = None
@@ -697,10 +713,16 @@ class TelegramProcessor(AbstractProcessors):
         from_id = message["from_id"]
         if from_id in config.field_ids:
             if not message['text'].startswith('/'):
-                result = self.check_code(message)
-                self.answer_message(message, result)
-                self.dublicate_code_to_group_chat(message, result)
+                if not self.paused:
+                    result = self.check_code(message)
+                    self.answer_message(message, result)
+                    self.dublicate_code_to_group_chat(message, result)
+                else:
+                    self.answer_message(message, CommonMessages.PAUSED)
         elif from_id in config.kc_ids:
             if not message['text'].startswith('/'):
-                result = self.check_code(message)
-                self.answer_message(message, result)
+                if not self.paused:
+                    result = self.check_code(message)
+                    self.answer_message(message, result)
+                else:
+                    self.answer_message(message, CommonMessages.PAUSED)

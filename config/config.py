@@ -511,6 +511,10 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("clean_unknown")
 
     @property
+    def clean_memory_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("clean_memory")
+
+    @property
     def alert_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("alert")
 
