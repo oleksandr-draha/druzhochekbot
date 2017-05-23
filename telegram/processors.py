@@ -559,7 +559,7 @@ class TelegramProcessor(AbstractProcessors):
                 all_codes = ""
                 for username, user_codes in codes_entered.iteritems():
                     if username != "__all__":
-                        codes_template = "<b>{username}</b>: {codes}\r\n"
+                        codes_template = u"<b>{username}</b>: {codes}\r\n"
                         user_codes_formatted = ' '.join(user_codes)
                         all_codes += codes_template.format(username=username,
                                                            codes=user_codes_formatted)
