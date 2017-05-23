@@ -14,13 +14,15 @@ from telegram.abstract_processors import AbstractProcessors
 class TelegramProcessor(AbstractProcessors):
     def check_codes(self, message):
         command = self.extract_command(message)
+        username = message["username"]
         codes = message["text"].replace(command, '').rstrip().lstrip().split()
+        codes = [code.lower() for code in codes]
         codes = list(set(codes))
         results = ""
         if len(codes):
             results = ''
             for code in codes:
-                result = self.game_worker.game_driver.try_code(code)
+                result = self.game_worker.game_driver.try_code(code, username)
                 if result in [GameMessages.CODES_BLOCKED,
                               GameMessages.GAME_FINISHED,
                               GameMessages.GAME_NOT_PAYED,
@@ -33,10 +35,11 @@ class TelegramProcessor(AbstractProcessors):
 
     def check_code(self, message):
         command = self.extract_command(message)
-        code = message["text"].replace(command, '').rstrip().lstrip()
+        username = message["username"]
+        code = message["text"].replace(command, '').rstrip().lstrip().lower()
         results = ""
         if len(code):
-            results = self.game_worker.game_driver.try_code(code)
+            results = self.game_worker.game_driver.try_code(code, username)
         return results
 
     def do_stop(self, message):
@@ -510,7 +513,7 @@ class TelegramProcessor(AbstractProcessors):
             codelimit=config.code_limit,
             unknown_users=len(self.unknown_users),
             tag_field=str(config.tag_field))
-        self.answer_message(message, info_message, parse_mode="html")
+        self.answer_message(message, info_message, parse_mode="HTML")
 
     def do_reset(self, message):
         self.game_worker.reset_level()
@@ -535,12 +538,18 @@ class TelegramProcessor(AbstractProcessors):
     def do_codes_history(self, message):
         if len(message["text"].split()) > 1:
             level_to_show = int(message["text"].split()[1])
-            task_text = self.game_worker.game_driver.codes_entered.get(level_to_show)
-            if task_text is not None:
-                codes = '\r\n'.join(task_text)
+            codes_entered = self.game_worker.game_driver.codes_entered.get(level_to_show)
+            if codes_entered is not None:
+                all_codes = ""
+                for username, user_codes in codes_entered.iteritems():
+                    if username != "__all__":
+                        codes_template = "<b>{username}</b>: {codes}\r\n"
+                        user_codes_formatted = ' '.join(user_codes)
+                        all_codes += codes_template.format(username=username,
+                                                           codes=user_codes_formatted)
             else:
-                codes = CommandMessages.WRONG_LEVEL_ID
-            self.answer_message(message, codes)
+                all_codes = CommandMessages.WRONG_LEVEL_ID
+            self.answer_message(message, all_codes, parse_mode="HTML")
         else:
             self.answer_message(message, CommandMessages.NO_TASK_ID)
 
@@ -629,7 +638,7 @@ class TelegramProcessor(AbstractProcessors):
                                        "user_id": from_id,
                                        "username": message["username"],
                                        "message_text": message["text"]})
-            if len(self.unknown_users) > 100:
+            if len(self.unknown_users) >= 100:
                 self.unknown_users[from_id].pop(0)
             return True
         else:
@@ -681,7 +690,8 @@ class TelegramProcessor(AbstractProcessors):
                 self.group_chat_id,
                 CommandMessages.FIELD_TRIED_CODE.format(
                     nickname=self.get_username(from_id),
-                    codes=result))
+                    codes=result),
+                parse_mode="HTML")
 
     def process_code_simple_message(self, message):
         from_id = message["from_id"]

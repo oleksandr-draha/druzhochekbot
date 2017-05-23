@@ -66,7 +66,7 @@ class CommandMessages:
     NO_TASK_ID = u"""Нет id уровня. Пример:
 /codes 123456"""
     WRONG_LEVEL_ID = u"""Нет сохраненного уровня с указанным id"""
-    FIELD_TRIED_CODE = u"""{nickname}:
+    FIELD_TRIED_CODE = u"""<b>{nickname}</b>:
 {codes}"""
 
 

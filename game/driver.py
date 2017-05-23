@@ -86,7 +86,7 @@ class GameDriver:
 
     def get_game_page(self):
         try:
-            # Use to emulate game page
+            # # Use to emulate game page
             # f = codecs.open("list_codes.htm", encoding='utf-8')
             # game_page = f.read()
             # return game_page
@@ -98,10 +98,14 @@ class GameDriver:
 
     def post_game_page(self, body):
         try:
+            # # Use to emulate game page
+            # f = codecs.open("list_codes.htm", encoding='utf-8')
+            # game_page = f.read()
+            # return game_page
             return self.session.post(
                 config.quest_url.format(host=self.host,
                                         path=config.quest_game_url.format(game_id=self.game_id)),
-                params=body)
+                params=body).text
         except ConnectionError:
             return ""
 
@@ -128,33 +132,42 @@ class GameDriver:
         self.level_number = level_params["LevelNumber"]
         return level_params
 
-    def try_code(self, code=""):
+    def try_code(self, code="", username=None):
         body = {"rnd": self.rnd,
                 "LevelId": self.level_id,
                 "LevelNumber": self.level_number,
                 "LevelAction.Answer": code}
         r = self.post_game_page(body=body)
         result = ''
-        if self.not_payed(r.text):
+        if self.not_payed(r):
             return GameMessages.GAME_NOT_PAYED
-        if self.not_started(r.text):
+        if self.not_started(r):
             return GameMessages.GAME_NOT_STARTED
-        elif self.is_finished(r.text):
+        elif self.is_finished(r):
             return GameMessages.GAME_FINISHED
-        elif r.text.find(blocked_code_locator) != -1:
+        elif r.find(blocked_code_locator) != -1:
             return GameMessages.CODES_BLOCKED
-        if self.level_number != self.get_level_params(r.text)["LevelNumber"]:
-            if r.text.find(incorrect_code_locator) == -1 and \
-                    r.text.find(correct_code_locator) != -1:
-                self.codes_entered.setdefault(self.level_number, []).append(u'? ' + code)
+        if self.level_number != self.get_level_params(r)["LevelNumber"]:
+            if r.find(incorrect_code_locator) == -1 and \
+                    r.find(correct_code_locator) != -1:
+                # Collect code if was not entered already
+                if code.lower() not in self.codes_entered.get(self.level_number, {}).get('__all__', []):
+                    self.codes_entered.setdefault(self.level_number, {}).\
+                        setdefault(username, []).append(u'? ' + code.lower())
+                    self.codes_entered.setdefault(self.level_number, {}).\
+                        setdefault('__all__', []).append(u'? ' + code.lower())
             return
-        if r.text.find(incorrect_code_locator) == -1 and \
-                r.text.find(correct_code_locator) != -1:
+        if r.find(incorrect_code_locator) == -1 and \
+                r.find(correct_code_locator) != -1:
             result = u'\r\n{smile}: {code}'.format(smile=Smiles.CORRECT_CODE,
                                                    code=code)
             # Save entered codes
-            self.codes_entered.setdefault(self.level_number, []).append(code)
-        elif r.text.find(incorrect_code_locator) != -1:
+            if code.lower() not in self.codes_entered.get(self.level_number, {}).get('__all__', []):
+                self.codes_entered.setdefault(self.level_number, {}).\
+                    setdefault(username, []).append(code.lower())
+                self.codes_entered.setdefault(self.level_number, {}).\
+                    setdefault('__all__', []).append(code.lower())
+        elif r.find(incorrect_code_locator) != -1:
             result = u'\r\n{smile}: {code}'.format(
                 code=code,
                 smile=Smiles.WRONG_CODE)
