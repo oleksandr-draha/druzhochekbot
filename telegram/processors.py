@@ -130,6 +130,18 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message,
                                 CommandMessages.NO_USER_ID)
 
+    def do_set_group_chat(self, message):
+        if len(message["text"].split()) > 1:
+            group_chat_id = message["text"].split()[1]
+            if group_chat_id.startswith("-") and group_chat_id[1:].isdigit():
+                self.group_chat_id = int(group_chat_id)
+                config.group_chat_id = self.group_chat_id
+            else:
+                self.answer_message(message, UserMessages.WRONG_USER_ID)
+        else:
+            self.answer_message(message,
+                                CommandMessages.NO_USER_ID)
+
     def do_add_field(self, message):
         if len(message["text"].split()) > 1:
             field_to_add = message["text"].split()[1]

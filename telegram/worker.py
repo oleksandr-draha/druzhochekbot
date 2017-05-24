@@ -69,6 +69,8 @@ class TelegramWorker(TelegramProcessor):
             # endregion
 
             # region Admin commands:
+            elif command == config.set_group_chat_command:
+                self._admin_command(message, self.do_set_group_chat)
             elif command == config.info_command:
                 self._admin_command(message, self.do_info)
             elif command == config.edit_command:

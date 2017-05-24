@@ -231,6 +231,7 @@ rnd: {rnd}
 *Админ-секция:*
 {approve} : Добавить чат в список доверенных
 {disapprove} : Удалить чат из списка доверенных
+{set_group_chat} : Добавить чат по его id
 
 {info} : Вывести детальную информацию о боте
 {edit} : Изменить текущие настройки бота
@@ -283,6 +284,7 @@ rnd: {rnd}
 """.format(
         approve=config.approve_command,
         disapprove=config.disapprove_command,
+        set_group_chat=config.set_group_chat_command,
         token=config.token_command,
         edit=config.edit_command,
         save=config.save_command,

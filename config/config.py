@@ -596,6 +596,10 @@ class DruzhochekConfig(object):
     def handbrake_set_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("handbrake_set")
 
+    @property
+    def set_group_chat_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("set_group_chat")
+
     # endregion
 
     # region Timeouts

@@ -4,7 +4,7 @@ bot:
     '
   answer-forbidden: false
   answer-unknown: false
-  approved_chat: -1001050462991
+  approved_chat: -249757756
   autohandbrake: true
   autosave: true
   commands: {add_admin: /aa, add_field: /af, add_kc: /ak, alert: /alert, approve: /approve,
@@ -17,8 +17,8 @@ bot:
     handbrake_set: /handbrake, help: /help, hints: /hints, host: /host, info: /info,
     login: /login, message: /message, message_admin: /ma, message_field: /mf, message_kc: /mk,
     pass: /pass, pause: /pause, reset: /reset, resume: /resume, save: /save, send_source: /source,
-    status: /status, stop: /stop, tag_field: /tagfield, task: /task, token: /token,
-    unknown: /unknown}
+    set_group_chat: /sgc, status: /status, stop: /stop, tag_field: /tagfield, task: /task,
+    token: /token, unknown: /unknown}
   field_ids: 'kc4KJpqv
 
     '
