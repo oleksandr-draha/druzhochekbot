@@ -102,6 +102,16 @@ class DruzhochekConfig(object):
             config.save_config()
 
     @property
+    def autohandbrake(self):
+        return self.config.get("bot", {}).get("autohandbrake")
+
+    @autohandbrake.setter
+    def autohandbrake(self, value):
+        self.config["bot"]["autohandbrake"] = value
+        if self.autosave:
+            config.save_config()
+
+    @property
     def updates_path(self):
         return self.config.get("bot", {}).get("updates-path")
 
@@ -577,6 +587,14 @@ class DruzhochekConfig(object):
     @property
     def tag_field_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("tag_field")
+
+    @property
+    def autohandbrake_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("autohandbrake")
+
+    @property
+    def handbrake_set_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("handbrake_set")
 
     # endregion
 

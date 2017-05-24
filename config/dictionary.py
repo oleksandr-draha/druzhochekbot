@@ -78,6 +78,7 @@ class SettingsMessages:
 Введите новый:"""
     PASS_WAS_CHANGED = u"""Пароль был изменён с *{code1}* на *{code2}*"""
     DUPLICATE_PASS = u"""Данный пароль уже используется, придумай другой."""
+    GIVE_VALUE_NOW = u"""Для изменения параметра в групповом чате необходимо сразу передавать новое значение."""
 
     GIVE_ME_LOGIN = u"Давай мне свой *логин* для игры."
     GIVE_ME_PASSWORD = u"Давай мне свой *пароль*."
@@ -89,6 +90,10 @@ class SettingsMessages:
     GIVE_ME_NEW_GAME = u"Текущий номер игры: *{game}*\r\nВведи новый:"
     TAG_FIELD = u"""Отмечать ли полевых игроков при получении нового задания?
 *YES* - да, *NO* - нет, *CANCEL* - отменить"""
+    AUTOHANDBRAKE = u"""Блокировать ли ввод кодов при получении задания с ограничением на ввод?
+*ON* - да, *OFF* - нет, *CANCEL* - отменить"""
+    HANDBRAKE = u"""Снять блокировку на ввод кодов или оставить?
+*ON* - блокировка включена, *OFF* - блокировка выключена, *CANCEL* - отменить"""
     SETTINGS_WERE_CHANGED = u"---*Настройки бота были изменены!*---"
     SETTINGS_WERE_SAVED = u"Настройки были сохранены"
     SETTINGS_WERE_NOT_SAVED = u"Проблема при записи настроек. Проверьте права доступа."
@@ -126,6 +131,9 @@ class GameMessages:
     GAME_NOT_STARTED = u"\r\nИгра ещё не началась."
     GAME_FINISHED = u"\r\nИгра окончена."
     CODES_BLOCKED = u"\r\nВвод кодов заблокирован."
+    HANDBRAKE = u"\r\nВвод кодов заблокирован автоматически. " \
+                u"Для снятия блокировки " \
+                u"воспользуйтесь командой {handbrake_off}".format(handbrake_off=config.handbrake_set_command)
 
     TASK_MESSAGE = u"""
 <b>---------------------------</b>
@@ -165,6 +173,8 @@ class FileMessages:
 class HelpMessages:
     STATUS = u"""
 Статус дружочка: {paused}
+Блокировка кодов: {handbrake}
+Максимум кодов за раз: {codes_limit}
 Активная группа: {chat_id}
 Соединение к игровому серверу: {game_connection}
 Текущий номер задания: {game_level_id}
@@ -180,6 +190,7 @@ class HelpMessages:
 rnd: {rnd}
 Лимит на вбитие кодов: {codelimit}
 Отмечать поле при новом задании: {tag_field}
+Автоматическая блокировка вбития кодов: {autohandbrake}
 -------------------------------
 Инвайт-код для админов: {admin_passphrase}
 Инвайт-код для поля: {field_passphrase}
@@ -227,6 +238,8 @@ rnd: {rnd}
 {reset} : Обнулить список полученных заданий/подсказок
 {token}: Изменить токен бота
 {codes_limit}: Изменить максимальное количество кодов для вбития одной пачкой
+{autohandbrake}: Автоматически блокировать ввод кодов при ограничении на ввод
+{handbrake}: Заблокировать/снять с блокировки ввод кодов вручную
 {login}: Изменить логин в игре
 {password}: Изменить пароль в игре
 {host}: Изменить хост игры (без http://)
@@ -301,6 +314,8 @@ rnd: {rnd}
         errors=config.send_errors_command,
         unknown=config.send_unknown_command,
         codes_limit=config.codes_limit_command,
+        autohandbrake=config.autohandbrake_command,
+        handbrake=config.handbrake_set_command,
         login=config.login_command,
         game=config.game_command,
         password=config.pass_command,

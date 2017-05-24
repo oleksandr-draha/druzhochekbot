@@ -176,9 +176,14 @@ class GameProcessor:
 
     def process_tries_limit(self):
         updates = []
-        if self.game_driver.answer_limit(self.game_page) is not None and not self.codes_limit_shown:
-            updates.append(Smiles.LIMIT + self.game_driver.answer_limit(self.game_page))
-            self.codes_limit_shown = True
+        if self.game_driver.answer_limit(self.game_page) is not None:
+            if not self.codes_limit_shown:
+                updates.append(Smiles.LIMIT + self.game_driver.answer_limit(self.game_page))
+                self.codes_limit_shown = True
+                if config.autohandbrake:
+                    self.game_driver.auto_handbrake = True
+        else:
+            self.game_driver.auto_handbrake = False
         return updates
 
     def process_org_message(self):

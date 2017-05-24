@@ -26,7 +26,8 @@ class TelegramProcessor(AbstractProcessors):
                 if result in [GameMessages.CODES_BLOCKED,
                               GameMessages.GAME_FINISHED,
                               GameMessages.GAME_NOT_PAYED,
-                              GameMessages.GAME_NOT_STARTED]:
+                              GameMessages.GAME_NOT_STARTED,
+                              GameMessages.HANDBRAKE]:
                     return result
                 if result is None:
                     return
@@ -443,6 +444,32 @@ class TelegramProcessor(AbstractProcessors):
             return
         self.answer_message(message, SettingsMessages.SETTINGS_WERE_CHANGED)
 
+    def do_set_autohandbrake(self, message):
+        autohandbrake = self.get_new_value(message,
+                                           SettingsMessages.AUTOHANDBRAKE)
+        if autohandbrake == "ON":
+            config.autohandbrake = True
+        elif autohandbrake == "OFF":
+            config.autohandbrake = False
+        else:
+            self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
+            return
+        self.answer_message(message, SettingsMessages.SETTINGS_WERE_CHANGED)
+
+    def do_set_handbrake(self, message):
+        handbrake = self.get_new_value(message,
+                                       SettingsMessages.HANDBRAKE)
+        if handbrake == "ON":
+            self.game_worker.game_driver.handbrake = True
+            self.game_worker.game_driver.auto_handbrake = True
+        elif handbrake == "OFF":
+            self.game_worker.game_driver.handbrake = False
+            self.game_worker.game_driver.auto_handbrake = False
+        else:
+            self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
+            return
+        self.answer_message(message, SettingsMessages.SETTINGS_WERE_CHANGED)
+
     def do_send_unknown(self, message):
         from_id = message["from_id"]
         unknown_message = ""
@@ -505,7 +532,9 @@ class TelegramProcessor(AbstractProcessors):
             chat_id=self.group_chat_id,
             game_connection=HelpMessages.GAME_CONNECTION[self.game_worker.game_driver.is_logged()],
             game_level_id=self.game_worker.last_level_shown,
-            game_hint_id=hints_shown
+            game_hint_id=hints_shown,
+            handbrake=str(self.game_worker.game_driver.handbrake or self.game_worker.game_driver.auto_handbrake),
+            codes_limit=config.code_limit
         )
         self.answer_message(message, status_message)
 
@@ -528,7 +557,8 @@ class TelegramProcessor(AbstractProcessors):
             rnd=self.game_worker.game_driver.rnd,
             codelimit=config.code_limit,
             unknown_users=len(self.unknown_users),
-            tag_field=str(config.tag_field))
+            tag_field=str(config.tag_field),
+            autohandbrake=str(config.autohandbrake))
         self.answer_message(message, info_message, parse_mode="HTML")
 
     def do_reset(self, message):

@@ -28,6 +28,8 @@ class GameDriver:
     connected = False
     codes_entered = {}
     rnd = "0,%s" % randint(100000000000000, 999999999999999)
+    handbrake = False
+    auto_handbrake = False
 
     def __init__(self):
         self.session = session()
@@ -133,6 +135,8 @@ class GameDriver:
         return level_params
 
     def try_code(self, code="", username=None):
+        if self.handbrake or self.auto_handbrake:
+            return GameMessages.HANDBRAKE
         body = {"rnd": self.rnd,
                 "LevelId": self.level_id,
                 "LevelNumber": self.level_number,

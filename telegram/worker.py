@@ -38,6 +38,10 @@ class TelegramWorker(TelegramProcessor):
             # endregion
 
             # region Admin in chat commands:
+            elif command == config.approve_command:
+                self.approve_command(message)
+            elif command == config.disapprove_command:
+                self.disapprove_command(message)
             elif command == config.stop_command:
                 self._admin_in_group_chat_command(message, self.do_stop)
             elif command == config.resume_command:
@@ -56,13 +60,15 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_in_group_chat_command(message, self.do_message_field)
             elif command == config.message_kc_command:
                 self._admin_in_group_chat_command(message, self.do_message_kc)
+            elif command == config.autohandbrake_command:
+                self._admin_in_group_chat_command(message, self.do_set_autohandbrake)
+            elif command == config.handbrake_set_command:
+                self._admin_in_group_chat_command(message, self.do_set_handbrake)
+            elif command == config.codes_limit_command:
+                self._admin_in_group_chat_command(message, self.do_codes_limit)
             # endregion
 
             # region Admin commands:
-            elif command == config.approve_command:
-                self.approve_command(message)
-            elif command == config.disapprove_command:
-                self.disapprove_command(message)
             elif command == config.info_command:
                 self._admin_command(message, self.do_info)
             elif command == config.edit_command:
@@ -97,8 +103,6 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_message)
             elif command == config.token_command:
                 self._admin_command(message, self.do_token)
-            elif command == config.codes_limit_command:
-                self._admin_command(message, self.do_codes_limit)
             elif command == config.login_command:
                 self._admin_command(message, self.do_change_login)
             elif command == config.pass_command:

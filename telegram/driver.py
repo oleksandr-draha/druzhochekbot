@@ -6,6 +6,7 @@ import time
 from requests import ConnectionError, session
 
 from config.config import config
+from config.dictionary import SettingsMessages
 
 
 class TelegramDriver(object):
@@ -205,7 +206,8 @@ class TelegramDriver(object):
         if len(message["text"].split()) > 1:
             return message["text"].split()[1]
         else:
-            self.answer_message(
-                message,
-                prompt_message)
+            if message["chat_id"] < 0:
+                self.answer_message(message, SettingsMessages.GIVE_VALUE_NOW)
+                return
+            self.answer_message(message, prompt_message)
             return self.wait_for_answer(from_id)["text"]
