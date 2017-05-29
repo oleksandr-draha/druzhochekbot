@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from config import config
+from config.config import config
 from config.dictionary import SettingsMessages, CommonMessages
 from game.driver import GameDriver
 from game.worker import GameWorker

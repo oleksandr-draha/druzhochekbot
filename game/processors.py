@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from time import sleep
 
-from config import config
+from config.config import config
 from config.dictionary import Smiles, GameMessages
 from game.driver import GameDriver
 

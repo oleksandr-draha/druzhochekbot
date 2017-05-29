@@ -13,19 +13,18 @@ class DruzhochekConfig(object):
 
     # region System
 
-    def __init__(self):
+    def __init__(self, path="config.yaml"):
+        self.path = path
         self.config = self._load_config()
 
     def _load_config(self):
-        default_config_name = 'config.yaml'
-        config_path = path.join(path.dirname(__file__), default_config_name)
+        config_path = path.join(path.dirname(__file__), self.path)
         with open(config_path, 'r') as default_config:
             _config = yaml.load(default_config)
         return _config
 
     def save_config(self):
-        default_config_name = 'config.yaml'
-        config_path = path.join(path.dirname(__file__), default_config_name)
+        config_path = path.join(path.dirname(__file__), self.path)
         try:
             with open(config_path, 'w') as default_config:
                 yaml.dump(self.config, default_config)
@@ -390,229 +389,6 @@ class DruzhochekConfig(object):
 
     # endregion
 
-    # region Commands section
-
-    @property
-    def code_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("code").split()
-
-    @property
-    def codes_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("codes").split()
-
-    @property
-    def codes_all_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("codesall")
-
-    @property
-    def tasks_all_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("tasksall")
-
-    @property
-    def task_html_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("taskhtml")
-
-    @property
-    def approve_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("approve")
-
-    @property
-    def disapprove_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("disapprove")
-
-    @property
-    def reset_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("reset")
-
-    @property
-    def pause_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("pause")
-
-    @property
-    def resume_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("resume")
-
-    @property
-    def stop_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("stop")
-
-    @property
-    def edit_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("edit")
-
-    @property
-    def save_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("save")
-
-    @property
-    def status_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("status")
-
-    @property
-    def task_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("task")
-
-    @property
-    def codes_history_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("codes_history")
-
-    @property
-    def hints_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("hints")
-
-    @property
-    def info_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("info")
-
-    @property
-    def help_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("help")
-
-    @property
-    def gap_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("gap")
-
-    @property
-    def cancel_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("cancel")
-
-    @property
-    def add_admin_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("add_admin")
-
-    @property
-    def delete_admin_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("delete_admin")
-
-    @property
-    def add_field_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("add_field")
-
-    @property
-    def add_kc_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("add_kc")
-
-    @property
-    def delete_field_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("delete_field")
-
-    @property
-    def delete_kc_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("delete_kc")
-
-    @property
-    def edit_admin_pass(self):
-        return self.config.get("bot", {}).get("commands", {}).get("edit_admin_pass")
-
-    @property
-    def edit_field_pass(self):
-        return self.config.get("bot", {}).get("commands", {}).get("edit_field_pass")
-
-    @property
-    def edit_kc_pass(self):
-        return self.config.get("bot", {}).get("commands", {}).get("edit_kc_pass")
-
-    @property
-    def cleanadmin_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("cleanadmin")
-
-    @property
-    def cleanfield_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("cleanfield")
-
-    @property
-    def cleankc_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("cleankc")
-
-    @property
-    def cleanerrors_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("clean_errors")
-
-    @property
-    def cleanunknown_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("clean_unknown")
-
-    @property
-    def clean_memory_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("clean_memory")
-
-    @property
-    def alert_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("alert")
-
-    @property
-    def chat_message_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("chat_message")
-
-    @property
-    def token_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("token")
-
-    @property
-    def message_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("message")
-
-    @property
-    def message_admin_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("message_admin")
-
-    @property
-    def message_field_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("message_field")
-
-    @property
-    def message_kc_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("message_kc")
-
-    @property
-    def send_source_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("send_source")
-
-    @property
-    def send_errors_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("errors")
-
-    @property
-    def send_unknown_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("unknown")
-
-    @property
-    def codes_limit_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("codes_limit")
-
-    @property
-    def login_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("login")
-
-    @property
-    def pass_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("pass")
-
-    @property
-    def host_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("host")
-
-    @property
-    def game_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("game")
-
-    @property
-    def tag_field_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("tag_field")
-
-    @property
-    def autohandbrake_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("autohandbrake")
-
-    @property
-    def handbrake_set_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("handbrake_set")
-
-    @property
-    def set_group_chat_command(self):
-        return self.config.get("bot", {}).get("commands", {}).get("set_group_chat")
-
-    # endregion
 
     # region Timeouts
 

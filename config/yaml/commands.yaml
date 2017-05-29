@@ -1,0 +1,13 @@
+commands: {add_admin: /aa, add_field: /af, add_kc: /ak, alert: /alert, approve: /approve,
+  autohandbrake: /autohandbrake, cancel: /cancel, chat_message: /cm, clean_errors: /cleanerrors,
+  clean_memory: /cleanmemory, clean_unknown: /cleanunknown, cleanadmin: /cleanadmin,
+  cleanfield: /cleanfield, cleankc: /cleankc, code: "/c /\u0441", codes: "/cc /\u0441\
+    \u0441 /\u0441c /c\u0441", codes_history: /codes, codes_limit: /codelimit, codesall: /codesall,
+  delete_admin: /da, delete_field: /df, delete_kc: /dk, disapprove: /disapprove,
+  edit: /edit, edit_admin_pass: /eap, edit_field_pass: /efp, edit_kc_pass: /ekp,
+  errors: /errors, game: /game, gap: /gap, handbrake_set: /handbrake, help: /help,
+  hints: /hints, host: /host, info: /info, login: /login, message: /message, message_admin: /ma,
+  message_field: /mf, message_kc: /mk, pass: /pass, pause: /pause, reset: /reset,
+  resume: /resume, save: /save, send_source: /source, set_group_chat: /sgc, status: /status,
+  stop: /stop, tag_field: /tagfield, task: /task, taskhtml: /taskhtml, tasksall: /tasksall,
+  token: /token, unknown: /unknown}

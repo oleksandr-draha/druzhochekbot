@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from commands import commands
 from config import config
 
 
@@ -131,11 +132,12 @@ class UserMessages:
 class GameMessages:
     GAME_NOT_PAYED = u"\r\nВаша команда не сделала взнос на игру."
     GAME_NOT_STARTED = u"\r\nИгра ещё не началась."
+    BANNED = u"\r\nБот забанен со стороны игры. Залогиньтесь под ним в системе."
     GAME_FINISHED = u"\r\nИгра окончена."
     CODES_BLOCKED = u"\r\nВвод кодов заблокирован."
     HANDBRAKE = u"\r\nВвод кодов заблокирован автоматически. " \
                 u"Для снятия блокировки " \
-                u"воспользуйтесь командой {handbrake_off}".format(handbrake_off=config.handbrake_set_command)
+                u"воспользуйтесь командой {handbrake_off}".format(handbrake_off=commands.handbrake_set)
 
     TASK_MESSAGE = u"""
 <b>---------------------------</b>
@@ -224,16 +226,16 @@ rnd: {rnd}
 {status}: Показать текущий статус бота
 {help}: Вывести помощь
 """.format(
-        code=config.code_command[0],
-        codes=config.codes_command[0],
-        task=config.task_command,
-        tasksall=config.tasks_all_command,
-        taskhtml=config.task_html_command,
-        codes_all=config.codes_all_command,
-        hints=config.hints_command,
-        status=config.status_command,
-        codes_history=config.codes_history_command,
-        help=config.help_command)
+        code=commands.code[0],
+        codes=commands.codes_[0],
+        task=commands.task,
+        tasksall=commands.tasks_all,
+        taskhtml=commands.task_html,
+        codes_all=commands.codes_all,
+        hints=commands.hints,
+        status=commands.status,
+        codes_history=commands.codes_history,
+        help=commands.help)
 
     ADMIN_HELP = u"""
 *Админ-секция:*
@@ -290,48 +292,48 @@ rnd: {rnd}
 *Пользовательские функции:*
 {regular}
 """.format(
-        approve=config.approve_command,
-        disapprove=config.disapprove_command,
-        set_group_chat=config.set_group_chat_command,
-        token=config.token_command,
-        edit=config.edit_command,
-        save=config.save_command,
-        reset=config.reset_command,
-        pause=config.pause_command,
-        stop=config.stop_command,
-        resume=config.resume_command,
-        info=config.info_command,
-        help=config.help_command,
-        addadmin=config.add_admin_command,
-        addfield=config.add_field_command,
-        addkc=config.add_kc_command,
-        deleteadmin=config.delete_admin_command,
-        deletefield=config.delete_field_command,
-        deletekc=config.delete_kc_command,
-        cleanadmin=config.cleanadmin_command,
-        cleanfield=config.cleanfield_command,
-        cleankc=config.cleankc_command,
-        eap=config.edit_admin_pass,
-        efp=config.edit_field_pass,
-        ekp=config.edit_kc_pass,
-        message=config.message_command,
-        alert=config.alert_command,
-        chat_message=config.chat_message_command,
-        message_admin=config.message_admin_command,
-        message_field=config.message_field_command,
-        message_kc=config.message_kc_command,
-        source=config.send_source_command,
-        errors=config.send_errors_command,
-        unknown=config.send_unknown_command,
-        codes_limit=config.codes_limit_command,
-        autohandbrake=config.autohandbrake_command,
-        handbrake=config.handbrake_set_command,
-        login=config.login_command,
-        game=config.game_command,
-        password=config.pass_command,
-        host=config.host_command,
-        clean_errors=config.cleanerrors_command,
-        clean_unknown=config.cleanunknown_command,
-        tag_field=config.tag_field_command,
-        clean_memory=config.clean_memory_command,
+        approve=commands.approve,
+        disapprove=commands.disapprove,
+        set_group_chat=commands.set_group_chat,
+        token=commands.token,
+        edit=commands.edit,
+        save=commands.save,
+        reset=commands.reset,
+        pause=commands.pause,
+        stop=commands.stop,
+        resume=commands.resume,
+        info=commands.info,
+        help=commands.help,
+        addadmin=commands.add_admin,
+        addfield=commands.add_field,
+        addkc=commands.add_kc,
+        deleteadmin=commands.delete_admin,
+        deletefield=commands.delete_field,
+        deletekc=commands.delete_kc,
+        cleanadmin=commands.clean_admin,
+        cleanfield=commands.clean_field,
+        cleankc=commands.clean_kc,
+        eap=commands.edit_admin_pass,
+        efp=commands.edit_field_pass,
+        ekp=commands.edit_kc_pass,
+        message=commands.message,
+        alert=commands.alert,
+        chat_message=commands.chat_message,
+        message_admin=commands.message_admin,
+        message_field=commands.message_field,
+        message_kc=commands.message_kc,
+        source=commands.send_source,
+        errors=commands.send_errors,
+        unknown=commands.send_unknown,
+        codes_limit=commands.codes,
+        autohandbrake=commands.autohandbrake_,
+        handbrake=commands.handbrake_set,
+        login=commands.login,
+        game=commands.game,
+        password=commands.passwords,
+        host=commands.host,
+        clean_errors=commands.clean_errors_,
+        clean_unknown=commands.clean_unknown,
+        tag_field=commands.tag_field_,
+        clean_memory=commands.clean_memory,
         regular=REGULAR_HELP)

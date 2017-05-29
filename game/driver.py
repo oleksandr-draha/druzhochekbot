@@ -4,7 +4,7 @@ from random import randint
 from requests import ConnectionError, session
 import html2text
 
-from config import config
+from config.config import config
 from config.dictionary import Smiles, GameMessages, CommandMessages
 from game.locators import level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
     correct_code_locator, hint_number_start_locator, hint_number_end_locator, \
@@ -213,6 +213,8 @@ class GameDriver:
             return GameMessages.CODES_BLOCKED
         elif self.closed(r):
             return GameMessages.GAME_FINISHED
+        elif self.banned_as_bot(r):
+            return GameMessages.BANNED
         if self.level_number != self.get_level_params(r)["LevelNumber"]:
             if r.find(incorrect_code_locator) == -1 and \
                     r.find(correct_code_locator) != -1:

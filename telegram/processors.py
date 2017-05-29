@@ -3,7 +3,7 @@ import json
 
 import datetime
 
-from config import config
+from config.config import config
 from config.dictionary import Smiles, CommonMessages, BotSystemMessages, CommandMessages, SettingsMessages, \
     UserMessages, GameMessages, FileMessages, HelpMessages
 from game.driver import GameDriver
@@ -27,6 +27,7 @@ class TelegramProcessor(AbstractProcessors):
                               GameMessages.GAME_FINISHED,
                               GameMessages.GAME_NOT_PAYED,
                               GameMessages.GAME_NOT_STARTED,
+                              GameMessages.BANNED,
                               GameMessages.HANDBRAKE]:
                     return result
                 if result is None:

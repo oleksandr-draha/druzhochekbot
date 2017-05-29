@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from config.commands import commands
 from config.config import config
 from config.dictionary import SettingsMessages
 from telegram.processors import TelegramProcessor
@@ -19,119 +20,119 @@ class TelegramWorker(TelegramProcessor):
 
             command = self.extract_command(message).lower()
             # region User commands:
-            if command in config.code_command:
+            if command in commands.code:
                 self._user_command(message, self.do_code)
-            elif command in config.codes_command:
+            elif command in commands.codes_:
                 self._user_command(message, self.do_codes)
-            elif command == config.status_command:
+            elif command == commands.status:
                 self._user_command(message, self.do_status)
-            elif command == config.task_command:
+            elif command == commands.task:
                 self._user_command(message, self.do_task)
-            elif command == config.tasks_all_command:
+            elif command == commands.tasks_all:
                 self._user_command(message, self.do_tasks_all)
-            elif command == config.task_html_command:
+            elif command == commands.task_html:
                 self._user_command(message, self.do_task_html)
-            elif command == config.codes_history_command:
+            elif command == commands.codes_history:
                 self._user_command(message, self.do_codes_history)
-            elif command == config.codes_all_command:
+            elif command == commands.codes_all:
                 self._user_command(message, self.do_codes_all)
-            elif command == config.hints_command:
+            elif command == commands.hints:
                 self._user_command(message, self.do_hints)
-            elif command == config.help_command:
+            elif command == commands.help:
                 self._user_command(message, self.do_help)
-            elif command == config.gap_command:
+            elif command == commands.gap:
                 self._user_command(message, self.do_gap)
             # endregion
 
             # region Admin in chat commands:
-            elif command == config.approve_command:
+            elif command == commands.approve:
                 self.approve_command(message)
-            elif command == config.disapprove_command:
+            elif command == commands.disapprove:
                 self.disapprove_command(message)
-            elif command == config.stop_command:
+            elif command == commands.stop:
                 self._admin_in_group_chat_command(message, self.do_stop)
-            elif command == config.resume_command:
+            elif command == commands.resume:
                 self._admin_in_group_chat_command(message, self.do_resume)
-            elif command == config.pause_command:
+            elif command == commands.pause:
                 self._admin_in_group_chat_command(message, self.do_pause)
-            elif command == config.reset_command:
+            elif command == commands.reset:
                 self._admin_in_group_chat_command(message, self.do_reset)
-            elif command == config.chat_message_command:
+            elif command == commands.chat_message:
                 self._admin_in_group_chat_command(message, self.do_chat_message)
-            elif command == config.alert_command:
+            elif command == commands.alert:
                 self._admin_in_group_chat_command(message, self.do_alert)
-            elif command == config.message_admin_command:
+            elif command == commands.message_admin:
                 self._admin_in_group_chat_command(message, self.do_message_admin)
-            elif command == config.message_field_command:
+            elif command == commands.message_field:
                 self._admin_in_group_chat_command(message, self.do_message_field)
-            elif command == config.message_kc_command:
+            elif command == commands.message_kc:
                 self._admin_in_group_chat_command(message, self.do_message_kc)
-            elif command == config.autohandbrake_command:
+            elif command == commands.autohandbrake_:
                 self._admin_in_group_chat_command(message, self.do_set_autohandbrake)
-            elif command == config.handbrake_set_command:
+            elif command == commands.handbrake_set:
                 self._admin_in_group_chat_command(message, self.do_set_handbrake)
-            elif command == config.codes_limit_command:
+            elif command == commands.codes:
                 self._admin_in_group_chat_command(message, self.do_codes_limit)
             # endregion
 
             # region Admin commands:
-            elif command == config.set_group_chat_command:
+            elif command == commands.set_group_chat:
                 self._admin_command(message, self.do_set_group_chat)
-            elif command == config.info_command:
+            elif command == commands.info:
                 self._admin_command(message, self.do_info)
-            elif command == config.edit_command:
+            elif command == commands.edit:
                 self._admin_command(message, self.do_edit_settings)
-            elif command == config.save_command:
+            elif command == commands.save:
                 self._admin_command(message, self.do_save_settings)
-            elif command == config.add_admin_command:
+            elif command == commands.add_admin:
                 self._admin_command(message, self.do_add_admin)
-            elif command == config.delete_admin_command:
+            elif command == commands.delete_admin:
                 self._admin_command(message, self.do_delete_admin)
-            elif command == config.add_field_command:
+            elif command == commands.add_field:
                 self._admin_command(message, self.do_add_field)
-            elif command == config.delete_field_command:
+            elif command == commands.delete_field:
                 self._admin_command(message, self.do_delete_field)
-            elif command == config.add_kc_command:
+            elif command == commands.add_kc:
                 self._admin_command(message, self.do_add_kc)
-            elif command == config.delete_kc_command:
+            elif command == commands.delete_kc:
                 self._admin_command(message, self.do_delete_kc)
-            elif command == config.edit_admin_pass:
+            elif command == commands.edit_admin_pass:
                 self._admin_command(message, self.do_edit_admin_pass)
-            elif command == config.edit_field_pass:
+            elif command == commands.edit_field_pass:
                 self._admin_command(message, self.do_edit_field_pass)
-            elif command == config.edit_kc_pass:
+            elif command == commands.edit_kc_pass:
                 self._admin_command(message, self.do_edit_kc_pass)
-            elif command == config.cleanadmin_command:
+            elif command == commands.clean_admin:
                 self._admin_command(message, self.do_cleanadmin)
-            elif command == config.cleanfield_command:
+            elif command == commands.clean_field:
                 self._admin_command(message, self.do_cleanfield)
-            elif command == config.cleankc_command:
+            elif command == commands.clean_kc:
                 self._admin_command(message, self.do_cleankc)
-            elif command == config.message_command:
+            elif command == commands.message:
                 self._admin_command(message, self.do_message)
-            elif command == config.token_command:
+            elif command == commands.token:
                 self._admin_command(message, self.do_token)
-            elif command == config.login_command:
+            elif command == commands.login:
                 self._admin_command(message, self.do_change_login)
-            elif command == config.pass_command:
+            elif command == commands.passwords:
                 self._admin_command(message, self.do_change_pass)
-            elif command == config.host_command:
+            elif command == commands.host:
                 self._admin_command(message, self.do_change_host)
-            elif command == config.game_command:
+            elif command == commands.game:
                 self._admin_command(message, self.do_change_game)
-            elif command == config.send_source_command:
+            elif command == commands.send_source:
                 self._admin_command(message, self.do_send_source)
-            elif command == config.send_errors_command:
+            elif command == commands.send_errors:
                 self._admin_command(message, self.do_send_errors)
-            elif command == config.cleanerrors_command:
+            elif command == commands.clean_errors_:
                 self._admin_command(message, self.do_clean_errors)
-            elif command == config.send_unknown_command:
+            elif command == commands.send_unknown:
                 self._admin_command(message, self.do_send_unknown)
-            elif command == config.cleanunknown_command:
+            elif command == commands.clean_unknown:
                 self._admin_command(message, self.do_clean_unknown)
-            elif command == config.clean_memory_command:
+            elif command == commands.clean_memory:
                 self._admin_command(message, self.do_clean_memory)
-            elif command == config.tag_field_command:
+            elif command == commands.tag_field_:
                 self._admin_command(message, self.do_set_tag_field)
             else:
                 self.unknown_command(message)
