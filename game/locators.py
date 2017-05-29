@@ -1,15 +1,26 @@
 # -*- coding: utf-8 -*-
 
-logged_locator = u'<label for="Answer">'
-blocked_locator = u'<div class="blocked"><div>вы сможете ввести код через'
 
-not_payed_locator = u"""Ваша команда не сделала взнос на эту игру"""
+class GameState(object):
+    info_message_start = u'<div class="infomessage" style="display:block">'
+    info_message_end = u'</div>'
+    game_start_at = u'Игра начнется в'
+    game_about_to_start = u'Игра начнется через'
+    game_about_to_start_text = u'Скоро начнётся игра!'
 
-div_start_locator = u'<div class="infomessage" style="display:block">'
-div_end_locator = u'</div>'
-message_locator = u'Игра начнется в'
+    not_payed = u"""Ваша команда не сделала взнос на эту игру"""
 
-finish_locator = u'<font size="+2"><span id="animate">Поздравляем!!!</span></font>'
+    finished = u'<font size="+2"><span id="animate">Поздравляем!!!</span></font>'
+
+    message_start_locator = u'Игра начнется в'
+    message_end_locator = u'<span'
+
+    finish_start_locator = u'<div class="t_center">'
+    finish_end_locator = u'</div>'
+
+    logged_locator = u'<label for="Answer">'
+    blocked_locator = u'<div class="blocked"><div>вы сможете ввести код через'
+
 
 level_id_locator = u'<input type="hidden" name="LevelId" value="'
 level_number_locator = u'<input type="hidden" name="LevelNumber" value="'

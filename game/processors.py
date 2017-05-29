@@ -18,6 +18,7 @@ class GameProcessor:
     hints_shown = []
     finished_shown = False
     not_started_shown = False
+    about_to_start_shown = False
     not_payed_shown = False
     codes_limit_shown = False
     _request_task_text = False
@@ -40,6 +41,7 @@ class GameProcessor:
         self.finished_shown = False
         self.not_payed_shown = False
         self.not_started_shown = False
+        self.about_to_start_shown = False
         self.codes_limit_shown = False
 
     def process_user_was_not_logged(self):
@@ -58,7 +60,7 @@ class GameProcessor:
         if self.game_driver.not_payed(self.game_page):
             if not self.not_payed_shown:
                 self.not_payed_shown = True
-                updates.append(GameMessages.GAME_NOT_PAYED)
+                updates.append(self.game_driver.not_payed(self.game_page))
         return updates
 
     def process_game_not_started(self):
@@ -69,15 +71,20 @@ class GameProcessor:
                 updates.append(self.game_driver.get_not_started_message(self.game_page))
         return updates
 
+    def process_game_about_to_start(self):
+        updates = []
+        if self.game_driver.about_to_start(self.game_page):
+            if not self.about_to_start_shown:
+                self.about_to_start_shown = True
+                updates.append(self.game_driver.get_about_to_start_message(self.game_page))
+        return updates
+
     def process_game_finished(self):
         updates = []
         if self.game_driver.is_finished(self.game_page):
             # If game is finished - updates should not be checked
             if not self.finished_shown:
                 self.finished_shown = True
-                updates.append(self.game_driver.get_finish_message(self.game_page))
-            if self._request_task_text:
-                self._request_task_text = False
                 updates.append(self.game_driver.get_finish_message(self.game_page))
         return updates
 

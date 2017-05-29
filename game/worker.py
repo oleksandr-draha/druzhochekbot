@@ -31,14 +31,14 @@ class GameWorker(GameProcessor):
 
         # If games was not started
         updates += self.process_game_not_started()
+        # If game about to start
+        updates += self.process_game_about_to_start()
         # If game was finished
         updates += self.process_game_finished()
         # If game not payed
         updates += self.process_game_not_payed()
         # If game is started and not finished - should start process tasks
-        if not (self.game_driver.not_started(self.game_page) or
-                self.game_driver.is_finished(self.game_page) or
-                self.game_driver.not_payed(self.game_page)):
+        if not self.game_driver.game_inactive(self.game_page):
             # If can't get task text we should bypass one iteration
             task_text = self.game_driver.get_task(self.game_page)
             if task_text is None:

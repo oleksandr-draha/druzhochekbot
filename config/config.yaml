@@ -4,7 +4,7 @@ bot:
     '
   answer-forbidden: false
   answer-unknown: false
-  approved_chat: -249757756
+  approved_chat: -1001050462991
   autohandbrake: true
   autosave: true
   commands: {add_admin: /aa, add_field: /af, add_kc: /ak, alert: /alert, approve: /approve,

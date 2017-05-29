@@ -6,8 +6,7 @@ import html2text
 
 from config import config
 from config.dictionary import Smiles, GameMessages, CommandMessages
-from game.locators import logged_locator, blocked_locator, div_start_locator, div_end_locator, message_locator, \
-    finish_locator, level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
+from game.locators import level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
     correct_code_locator, blocked_code_locator, hint_number_start_locator, hint_number_end_locator, \
     hint_text_start_locator, hint_text_end_locator, task_header_locator, another_task_header_locator, \
     task_start_locator, task_end_locator, audio_start_locator, audio_end_locator, iframe_start_locator, \
@@ -15,7 +14,7 @@ from game.locators import logged_locator, blocked_locator, div_start_locator, di
     hint_end_locator, codes_left_locator, codes_left_end_locator, message_start_locator, message_end_locator, \
     finish_start_locator, finish_end_locator, answer_text_start_locator, answer_text_end_locator, limit_start_locator, \
     limit_end_locator, org_message_locator, org_message_end_locator, not_entered_code_locator, code_name_locator_start, \
-    code_name_locator_end, not_payed_locator
+    code_name_locator_end, GameState
 
 
 class GameDriver:
@@ -37,7 +36,7 @@ class GameDriver:
             self.login_user()
             game_page = self.get_game_page()
             if self.is_logged(game_page):
-                if not (self.is_finished(game_page) or self.not_payed(game_page) or self.not_started(game_page)):
+                if self.game_active(game_page):
                     self.set_level_params(game_page)
                 self.connected = True
             else:
@@ -60,36 +59,75 @@ class GameDriver:
     def is_logged(self, text=None):
         if text is None:
             text = self.get_game_page()
-        return text.find(logged_locator) != -1 or \
-            self.is_finished(text) or \
-            text.find(blocked_locator) != -1 or \
-            self.not_started(text) or \
-            self.not_payed(text)
+        return self.game_active(text) or self.game_inactive(text)
+
+    def game_active(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        return text.find(GameState.logged_locator) != -1 or self.codes_blocked(text)
+
+    def game_inactive(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        return (self.is_finished(text) or
+                self.not_started(text) or
+                self.about_to_start() or
+                self.not_payed(text))
+
+    def info_message(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        return text.find(GameState.info_message_start) != -1
 
     def not_payed(self, text=None):
         if text is None:
             text = self.get_game_page()
-        return text.find(not_payed_locator) != -1
+        if self.info_message(text):
+            start = text.find(GameState.info_message_start)
+            end = text[start:].find(GameState.info_message_end)
+            return text[start:start + end].find(GameState.not_payed) != -1
+        else:
+            return False
 
     def not_started(self, text=None):
         if text is None:
             text = self.get_game_page()
-        if text.find(div_start_locator) != -1:
-            div_start = text.find(div_start_locator)
-            div_end = text[div_start:].find(div_end_locator)
-            return text[div_start:div_start + div_end].find(message_locator) != -1
+        if self.info_message(text):
+            start = text.find(GameState.info_message_start)
+            end = text[start:].find(GameState.info_message_end)
+            return text[start:start + end].find(GameState.game_start_at) != -1
+        else:
+            return False
+
+    def about_to_start(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        if self.info_message(text):
+            start = text.find(GameState.info_message_start)
+            end = text[start:].find(GameState.info_message_end)
+            return text[start:start + end].find(GameState.game_about_to_start) != -1
         else:
             return False
 
     def is_finished(self, text=None):
         if text is None:
             text = self.get_game_page()
-        return text.find(finish_locator) != -1
+        if self.info_message(text):
+            start = text.find(GameState.info_message_start)
+            end = text[start:].find(GameState.info_message_end)
+            return text[start:start + end].find(GameState.finished) != -1
+        else:
+            return False
+
+    def codes_blocked(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        return text.find(GameState.blocked_locator) != -1
 
     def get_game_page(self):
         try:
             # # Use to emulate game page
-            # f = codecs.open("list_codes.htm", encoding='utf-8')
+            # f = codecs.open("about_to_start.htm", encoding='utf-8')
             # game_page = f.read()
             # return game_page
             return self.session.get(
@@ -156,9 +194,9 @@ class GameDriver:
                     r.find(correct_code_locator) != -1:
                 # Collect code if was not entered already
                 if code.lower() not in self.codes_entered.get(self.level_number, {}).get('__all__', []):
-                    self.codes_entered.setdefault(self.level_number, {}).\
+                    self.codes_entered.setdefault(self.level_number, {}). \
                         setdefault(username, []).append(u'? ' + code.lower())
-                    self.codes_entered.setdefault(self.level_number, {}).\
+                    self.codes_entered.setdefault(self.level_number, {}). \
                         setdefault('__all__', []).append(u'? ' + code.lower())
             return
         if r.find(incorrect_code_locator) == -1 and \
@@ -167,9 +205,9 @@ class GameDriver:
             if code.lower() not in self.codes_entered.get(self.level_number, {}).get('__all__', []):
                 result = u'\r\n{smile}: {code}'.format(smile=Smiles.CORRECT_CODE,
                                                        code=code)
-                self.codes_entered.setdefault(self.level_number, {}).\
+                self.codes_entered.setdefault(self.level_number, {}). \
                     setdefault(username, []).append(code.lower())
-                self.codes_entered.setdefault(self.level_number, {}).\
+                self.codes_entered.setdefault(self.level_number, {}). \
                     setdefault('__all__', []).append(code.lower())
             else:
                 username_found = None
@@ -307,6 +345,11 @@ class GameDriver:
             message_start = text.find(message_start_locator)
             message_end = text[message_start:].find(message_end_locator)
             return text[message_start:message_start + message_end]
+
+    def get_about_to_start_message(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        return GameState.game_about_to_start_text
 
     def get_finish_message(self, text=None):
         if text is None:
