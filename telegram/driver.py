@@ -8,6 +8,7 @@ from requests import ConnectionError, session
 from config.bot_settings import bot_settings
 from config.config import config
 from config.dictionary import SettingsMessages
+from config.timeouts import timeouts
 
 
 class TelegramDriver(object):
@@ -198,7 +199,7 @@ class TelegramDriver(object):
         while True:
             answer = self.check_answer_from_chat_id(from_id)
             if answer is None:
-                time.sleep(config.answer_check_interval)
+                time.sleep(timeouts.answer_check_interval)
                 continue
             return answer
 

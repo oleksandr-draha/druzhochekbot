@@ -5,6 +5,7 @@ from config.bot_settings import bot_settings
 from config.config import config
 from config.dictionary import Smiles, GameMessages
 from config.game_settings import game_settings
+from config.timeouts import timeouts
 from game.driver import GameDriver
 
 
@@ -52,13 +53,13 @@ class GameProcessor:
 
     def process_user_was_not_logged(self):
         attempt = 0
-        while not self.game_driver.is_logged(self.game_page) and attempt < config.max_game_attempts:
+        while not self.game_driver.is_logged(self.game_page) and attempt < timeouts.max_game_attempts:
             self.game_driver.login_user()
             self.game_page = self.game_driver.get_game_page()
             attempt += 1
-            if attempt >= config.max_game_attempts:
+            if attempt >= timeouts.max_game_attempts:
                 return True
-            sleep(config.relogin_interval)
+            sleep(timeouts.relogin_interval)
         return False
 
     def process_game_not_payed(self):
