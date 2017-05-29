@@ -33,10 +33,14 @@ class GameWorker(GameProcessor):
         updates += self.process_game_not_started()
         # If game about to start
         updates += self.process_game_about_to_start()
+        # If game was closed
+        updates += self.process_game_closed()
         # If game was finished
         updates += self.process_game_finished()
         # If game not payed
         updates += self.process_game_not_payed()
+        # If bot was banned
+        updates += self.process_banned_as_bot()
         # If game is started and not finished - should start process tasks
         if not self.game_driver.game_inactive(self.game_page):
             # If can't get task text we should bypass one iteration

@@ -7,6 +7,8 @@ class GameState(object):
     game_start_at = u'Игра начнется в'
     game_about_to_start = u'Игра начнется через'
     game_about_to_start_text = u'Скоро начнётся игра!'
+    game_closed = u'Игра уже закончилась'
+    game_closed_text = u'Игра уже закончилась'
 
     not_payed = u"""Ваша команда не сделала взнос на эту игру"""
 
@@ -20,6 +22,11 @@ class GameState(object):
 
     logged_locator = u'<label for="Answer">'
     blocked_locator = u'<div class="blocked"><div>вы сможете ввести код через'
+
+    banned_as_bot_start = u'<div id="Splash">'
+    banned_as_bot = u'Ваши запросы классифицированы как запросы робота.'
+    game_banned_as_bot_text = u'Ваши запросы классифицированы как запросы робота. ' \
+                              u'Попробуйте залогиниться в систему и запустите бота заново.'
 
 
 level_id_locator = u'<input type="hidden" name="LevelId" value="'

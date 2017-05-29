@@ -7,7 +7,7 @@ import html2text
 from config import config
 from config.dictionary import Smiles, GameMessages, CommandMessages
 from game.locators import level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
-    correct_code_locator, blocked_code_locator, hint_number_start_locator, hint_number_end_locator, \
+    correct_code_locator, hint_number_start_locator, hint_number_end_locator, \
     hint_text_start_locator, hint_text_end_locator, task_header_locator, another_task_header_locator, \
     task_start_locator, task_end_locator, audio_start_locator, audio_end_locator, iframe_start_locator, \
     iframe_end_locator, source_start_locator, source_end_locator, ap_locator, ap_end_locator, hint_locator, \
@@ -72,7 +72,9 @@ class GameDriver:
         return (self.is_finished(text) or
                 self.not_started(text) or
                 self.about_to_start() or
-                self.not_payed(text))
+                self.not_payed(text) or
+                self.closed(text) or
+                self.banned_as_bot(text))
 
     def info_message(self, text=None):
         if text is None:
@@ -106,6 +108,26 @@ class GameDriver:
             start = text.find(GameState.info_message_start)
             end = text[start:].find(GameState.info_message_end)
             return text[start:start + end].find(GameState.game_about_to_start) != -1
+        else:
+            return False
+
+    def closed(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        if self.info_message(text):
+            start = text.find(GameState.info_message_start)
+            end = text[start:].find(GameState.info_message_end)
+            return text[start:start + end].find(GameState.game_closed) != -1
+        else:
+            return False
+
+    def banned_as_bot(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        if text.find(GameState.banned_as_bot_start) != -1:
+            start = text.find(GameState.banned_as_bot_start)
+            end = text[start:].find(GameState.info_message_end)
+            return text[start:start + end].find(GameState.banned_as_bot) != -1
         else:
             return False
 
@@ -187,8 +209,10 @@ class GameDriver:
             return GameMessages.GAME_NOT_STARTED
         elif self.is_finished(r):
             return GameMessages.GAME_FINISHED
-        elif r.find(blocked_code_locator) != -1:
+        elif self.codes_blocked(r):
             return GameMessages.CODES_BLOCKED
+        elif self.closed(r):
+            return GameMessages.GAME_FINISHED
         if self.level_number != self.get_level_params(r)["LevelNumber"]:
             if r.find(incorrect_code_locator) == -1 and \
                     r.find(correct_code_locator) != -1:
@@ -350,6 +374,16 @@ class GameDriver:
         if text is None:
             text = self.get_game_page()
         return GameState.game_about_to_start_text
+
+    def get_closed_message(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        return GameState.game_closed_text
+
+    def get_banned_as_bot_message(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        return GameState.game_banned_as_bot_text
 
     def get_finish_message(self, text=None):
         if text is None:

@@ -138,7 +138,7 @@ class TelegramWorker(TelegramProcessor):
             # endregion
 
     def process_game_updates(self):
-        if not self.paused and self.group_chat_id is not None:
+        if not config.paused and self.group_chat_id is not None:
             last_level_shown = self.game_worker.last_level_shown
             updates = self.game_worker.check_updates()
             current_level = self.game_worker.last_level_shown

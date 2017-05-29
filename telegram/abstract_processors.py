@@ -9,7 +9,6 @@ from telegram.driver import TelegramDriver
 class AbstractProcessors(TelegramDriver):
     def __init__(self):
         super(AbstractProcessors, self).__init__()
-        self.paused = False
         self.stopped = False
         self.game_worker = None
         self.group_chat_id = None
@@ -18,7 +17,7 @@ class AbstractProcessors(TelegramDriver):
 
     def _reset(self):
         self.get_updates()
-        self.paused = True
+        config.paused = True
         self.stopped = False
         self.game_worker = None
         self.group_chat_id = None
@@ -31,7 +30,6 @@ class AbstractProcessors(TelegramDriver):
         GameDriver.host = config.game_host
 
         self.group_chat_id = config.group_chat_id
-        self.paused = config.paused
         self.game_worker = GameWorker()
         if self.game_worker.connected:
             if self.group_chat_id is None:

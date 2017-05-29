@@ -19,6 +19,8 @@ class GameProcessor:
     finished_shown = False
     not_started_shown = False
     about_to_start_shown = False
+    closed_shown = False
+    banned_as_bot_shown = False
     not_payed_shown = False
     codes_limit_shown = False
     _request_task_text = False
@@ -42,6 +44,8 @@ class GameProcessor:
         self.not_payed_shown = False
         self.not_started_shown = False
         self.about_to_start_shown = False
+        self.closed_shown = False
+        self.banned_as_bot_shown = False
         self.codes_limit_shown = False
 
     def process_user_was_not_logged(self):
@@ -79,6 +83,26 @@ class GameProcessor:
                 updates.append(self.game_driver.get_about_to_start_message(self.game_page))
         return updates
 
+    def process_game_closed(self):
+        updates = []
+        if self.game_driver.closed(self.game_page):
+            if not self.closed_shown:
+                self.closed_shown = True
+                updates.append(self.game_driver.get_closed_message(self.game_page))
+            config.paused = True
+        return updates
+
+    def process_banned_as_bot(self):
+        updates = []
+        if self.game_driver.banned_as_bot(self.game_page):
+            if not self.banned_as_bot_shown:
+                self.banned_as_bot_shown = True
+                updates.append(self.game_driver.get_banned_as_bot_message(self.game_page))
+            config.paused = True
+        else:
+            self.banned_as_bot_shown = False
+        return updates
+
     def process_game_finished(self):
         updates = []
         if self.game_driver.is_finished(self.game_page):
@@ -86,6 +110,7 @@ class GameProcessor:
             if not self.finished_shown:
                 self.finished_shown = True
                 updates.append(self.game_driver.get_finish_message(self.game_page))
+            config.paused = True
         return updates
 
     def process_new_task_received(self):

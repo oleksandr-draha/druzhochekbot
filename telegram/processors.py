@@ -48,23 +48,21 @@ class TelegramProcessor(AbstractProcessors):
         self.stopped = True
 
     def do_pause(self, message):
-        if not self.paused:
+        if not config.paused:
             self.answer_message(message, CommonMessages.DO_PAUSE)
-            self.paused = True
-            config.paused = self.paused
+            config.paused = True
         else:
             self.answer_message(message, CommonMessages.ALREADY_PAUSED)
 
     def do_resume(self, message):
-        if self.paused:
+        if config.paused:
             self.answer_message(message, CommonMessages.DO_RESUME)
-            self.paused = False
-            config.paused = self.paused
+            config.paused = False
         else:
             self.answer_message(message, CommonMessages.ALREADY_WORKING)
 
     def do_codes(self, message):
-        if not self.paused:
+        if not config.paused:
             if len(message["text"].split()) > 1:
                 if len(message["text"].split()) <= config.code_limit + 1:
                     result = self.check_codes(message)
@@ -80,7 +78,7 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message, CommonMessages.PAUSED)
 
     def do_code(self, message):
-        if not self.paused:
+        if not config.paused:
             if len(message["text"].split()) > 1:
                 result = self.check_code(message)
                 self.answer_message(message, result)
@@ -95,8 +93,7 @@ class TelegramProcessor(AbstractProcessors):
         self.answer_message(message, CommonMessages.LETS_GO)
         self.group_chat_id = chat_id
         config.group_chat_id = self.group_chat_id
-        self.paused = False
-        config.paused = self.paused
+        config.paused = False
 
     def approve_command(self, message):
         from_id = message["from_id"]
@@ -517,8 +514,7 @@ class TelegramProcessor(AbstractProcessors):
     def _do_disapprove(self, message):
         self.group_chat_id = None
         config.group_chat_id = self.group_chat_id
-        self.paused = True
-        config.paused = self.paused
+        config.paused = True
         self.answer_message(message, CommonMessages.DISAPPROVE)
 
     def disapprove_command(self, message):
@@ -540,7 +536,7 @@ class TelegramProcessor(AbstractProcessors):
         for i in self.game_worker.hints_shown:
             hints_shown += str(i) + ' '
         status_message = HelpMessages.STATUS.format(
-            paused=HelpMessages.PAUSED[self.paused],
+            paused=HelpMessages.PAUSED[config.paused],
             chat_id=self.group_chat_id,
             game_connection=HelpMessages.GAME_CONNECTION[self.game_worker.game_driver.is_logged()],
             game_level_id=self.game_worker.last_level_shown,
@@ -690,15 +686,13 @@ class TelegramProcessor(AbstractProcessors):
 
     def apply_new_settings(self, message):
         self.game_worker = GameWorker()
-        self.paused = True
-        config.paused = self.paused
+        config.paused = True
         self.admin_message(SettingsMessages.SETTINGS_WERE_CHANGED)
         if self.game_worker.connected:
             self.admin_message(CommonMessages.CONNECTION_OK_MESSAGES)
             self.admin_message(CommonMessages.PLEASE_APPROVE_MESSAGES)
             self.do_reset(message)
-            self.paused = False
-            config.paused = self.paused
+            config.paused = False
             return True
         else:
             self.admin_message(SettingsMessages.CONNECTION_PROBLEM)
@@ -808,7 +802,7 @@ class TelegramProcessor(AbstractProcessors):
         from_id = message["from_id"]
         if from_id in config.field_ids:
             if not message['text'].startswith('/'):
-                if not self.paused:
+                if not config.paused:
                     result = self.check_code(message)
                     self.answer_message(message, result)
                     self.dublicate_code_to_group_chat(message, result)
@@ -816,7 +810,7 @@ class TelegramProcessor(AbstractProcessors):
                     self.answer_message(message, CommonMessages.PAUSED)
         elif from_id in config.kc_ids:
             if not message['text'].startswith('/'):
-                if not self.paused:
+                if not config.paused:
                     result = self.check_code(message)
                     self.answer_message(message, result)
                 else:
