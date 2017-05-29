@@ -401,6 +401,18 @@ class DruzhochekConfig(object):
         return self.config.get("bot", {}).get("commands", {}).get("codes").split()
 
     @property
+    def codes_all_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("codesall")
+
+    @property
+    def tasks_all_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("tasksall")
+
+    @property
+    def task_html_command(self):
+        return self.config.get("bot", {}).get("commands", {}).get("taskhtml")
+
+    @property
     def approve_command(self):
         return self.config.get("bot", {}).get("commands", {}).get("approve")
 

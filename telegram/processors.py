@@ -580,8 +580,9 @@ class TelegramProcessor(AbstractProcessors):
     def do_task(self, message):
         if len(message["text"].split()) > 1:
             level_to_show = int(message["text"].split()[1])
-            task_text = self.game_worker.tasks_received.get(level_to_show)
-            if task_text is not None:
+            task_source = self.game_worker.tasks_received.get(level_to_show)
+            if task_source is not None:
+                task_text = self.game_worker.game_driver.get_task(task_source)
                 task_text = GameMessages.TASK_MESSAGE.format(
                     level_number=level_to_show,
                     task=task_text)
@@ -592,6 +593,39 @@ class TelegramProcessor(AbstractProcessors):
                 level_number=self.game_worker.last_level_shown,
                 task=self.game_worker.last_task_text)
         self.answer_message(message, task_text, parse_mode="HTML")
+
+    def do_tasks_all(self, message):
+        all_tasks = ""
+        if message["chat_id"] == self.group_chat_id:
+            from_id = message["chat_id"]
+        else:
+            from_id = message["from_id"]
+        for level_number, task in self.game_worker.tasks_received.iteritems():
+            task_text = self.game_worker.game_driver.get_task(task)
+            all_tasks += u"{level_number}:\r\n\r\n{task}\r\n".format(level_number=level_number, task=task_text)
+        if len(all_tasks):
+            self.send_file(from_id, all_tasks, "all_tasks.txt")
+        else:
+            self.answer_message(message, CommandMessages.NO_TASKS_RECEIVED)
+
+    def do_task_html(self, message):
+        if message["chat_id"] == self.group_chat_id:
+            from_id = message["chat_id"]
+        else:
+            from_id = message["from_id"]
+        if len(message["text"].split()) > 1:
+            level_to_show = int(message["text"].split()[1])
+            task_text = self.game_worker.tasks_received.get(level_to_show)
+            if task_text is not None:
+                self.send_file(from_id, task_text, "task_%s.html" % level_to_show)
+            else:
+                self.answer_message(message, CommandMessages.WRONG_LEVEL_ID)
+        else:
+            if self.game_worker.last_level_shown is not None:
+                task_text = self.game_worker.tasks_received.get(self.game_worker.last_level_shown)
+                self.send_file(from_id, task_text, "task_%s.html" % self.game_worker.last_level_shown)
+            else:
+                self.answer_message(message, CommandMessages.NO_TASKS_RECEIVED)
 
     def do_codes_history(self, message):
         if len(message["text"].split()) > 1:
@@ -610,6 +644,25 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message, all_codes, parse_mode="HTML")
         else:
             self.answer_message(message, CommandMessages.NO_TASK_ID)
+
+    def do_codes_all(self, message):
+        all_codes = ""
+        if message["chat_id"] == self.group_chat_id:
+            from_id = message["chat_id"]
+        else:
+            from_id = message["from_id"]
+        for level, codes in self.game_worker.game_driver.codes_entered.iteritems():
+            all_codes += "---------\r\n{level}:\r\n---------\r\n\r\n".format(level=level)
+            for username, user_codes in codes.iteritems():
+                if username != "__all__":
+                    codes_template = u"{username}: {codes}\r\n"
+                    user_codes_formatted = ' '.join(user_codes)
+                    all_codes += codes_template.format(username=username,
+                                                       codes=user_codes_formatted)
+        if len(all_codes):
+            self.send_file(from_id, all_codes, "all_codes.txt")
+        else:
+            self.answer_message(message, CommandMessages.NO_CODES_ENTERED)
 
     def do_hints(self, message):
         hints = []

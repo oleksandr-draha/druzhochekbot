@@ -69,6 +69,8 @@ class CommandMessages:
     NO_TASK_ID = u"""Нет id уровня. Пример:
 /codes 123456"""
     WRONG_LEVEL_ID = u"""Нет сохраненного уровня с указанным id"""
+    NO_CODES_ENTERED = u"""История введённых кодов отсутсвует."""
+    NO_TASKS_RECEIVED = u"""История полученных заданий отсутсвует."""
     FIELD_TRIED_CODE = u"""<b>{nickname}</b>:
 {codes}"""
 
@@ -213,8 +215,11 @@ rnd: {rnd}
     REGULAR_HELP = u"""
 {code}: Вбить один код целиком. Пример: {code} один длинный код
 {codes}: Вбить несколько кодов, разделённых пробелом. Пример: {codes} код1 код2 код3
-{task}: Повторно вывести задание. Пример: {task} 13
+{task}: Повторно вывести задание. Пример: {task} 13.
+{taskhtml}: Отправить файл с указанным заданием.
+{tasksall}: Отправить файл со всеми полученными заданиями.
 {codes_history}: Вывести введённые коды с указанного задания. Пример: {codes_history} 12
+{codes_all}: Отправить файл со всеми введёнными кодами за игру
 {hints}: Повторно вывести список всех подсказок
 {status}: Показать текущий статус бота
 {help}: Вывести помощь
@@ -222,6 +227,9 @@ rnd: {rnd}
         code=config.code_command[0],
         codes=config.codes_command[0],
         task=config.task_command,
+        tasksall=config.tasks_all_command,
+        taskhtml=config.taskhtml,
+        codes_all=config.codes_all,
         hints=config.hints_command,
         status=config.status_command,
         codes_history=config.codes_history_command,
@@ -274,10 +282,10 @@ rnd: {rnd}
 
 {source}: Отправить текущую страницу
 {errors}: Отправить лог ошибок
-{clean_errors}: Очистить лог ошибок
 {unknown}: Отправить лог запросов от неизвестных пользователей
-{clean_unknown}: Очистить лог запросов от неизвестных
 {clean_memory}: Очистить лог заданий и введённых кодов
+{clean_errors}: Очистить лог ошибок
+{clean_unknown}: Очистить лог запросов от неизвестных
 
 *Пользовательские функции:*
 {regular}

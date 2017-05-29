@@ -27,8 +27,14 @@ class TelegramWorker(TelegramProcessor):
                 self._user_command(message, self.do_status)
             elif command == config.task_command:
                 self._user_command(message, self.do_task)
+            elif command == config.tasks_all_command:
+                self._user_command(message, self.do_tasks_all)
+            elif command == config.task_html_command:
+                self._user_command(message, self.do_task_html)
             elif command == config.codes_history_command:
                 self._user_command(message, self.do_codes_history)
+            elif command == config.codes_all_command:
+                self._user_command(message, self.do_codes_all)
             elif command == config.hints_command:
                 self._user_command(message, self.do_hints)
             elif command == config.help_command:

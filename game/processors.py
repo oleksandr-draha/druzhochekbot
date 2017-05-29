@@ -99,7 +99,7 @@ class GameProcessor:
             updates.append(GameMessages.NEW_TASK.format(
                 level_number=current_level["LevelNumber"],
                 task=task_text))
-            self.tasks_received.setdefault(current_level["LevelNumber"], task_text)
+            self.tasks_received.setdefault(current_level["LevelNumber"], self.game_page)
         return updates
 
     def process_ap_time(self):
@@ -208,5 +208,5 @@ class GameProcessor:
         if self.last_task_text != task_text:
             self.last_task_text = task_text
             updates.append(GameMessages.TASK_EDITED.format(task=task_text))
-            self.tasks_received[level_number] = task_text
+            self.tasks_received[level_number] = self.game_page
         return updates
