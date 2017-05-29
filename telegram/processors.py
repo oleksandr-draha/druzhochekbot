@@ -7,6 +7,7 @@ from config.bot_settings import bot_settings
 from config.config import config
 from config.dictionary import Smiles, CommonMessages, BotSystemMessages, CommandMessages, SettingsMessages, \
     UserMessages, GameMessages, FileMessages, HelpMessages
+from config.game_settings import game_settings
 from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.abstract_processors import AbstractProcessors
@@ -66,14 +67,14 @@ class TelegramProcessor(AbstractProcessors):
     def do_codes(self, message):
         if not bot_settings.paused:
             if len(message["text"].split()) > 1:
-                if len(message["text"].split()) <= config.code_limit + 1:
+                if len(message["text"].split()) <= game_settings.code_limit + 1:
                     result = self.check_codes(message)
                     self.answer_message(message, result)
                     self.dublicate_code_to_group_chat(message, result)
                 else:
                     self.answer_message(
                         message,
-                        CommandMessages.CODE_LIMIT.format(codelimit=config.code_limit))
+                        CommandMessages.CODE_LIMIT.format(codelimit=game_settings.code_limit))
             else:
                 self.answer_message(message, CommandMessages.NO_CODE_FOUND)
         else:
@@ -393,7 +394,7 @@ class TelegramProcessor(AbstractProcessors):
         codes_limit = self.get_new_value(message, BotSystemMessages.CODE_LIMIT)
         if codes_limit != "NO":
             if codes_limit.isdigit():
-                config.code_limit = int(codes_limit)
+                game_settings.code_limit = int(codes_limit)
                 self.answer_message(message, BotSystemMessages.CODE_LIMIT_CHANGED)
             else:
                 self.answer_message(message, BotSystemMessages.CODE_LIMIT_CANCELLED)
@@ -402,41 +403,41 @@ class TelegramProcessor(AbstractProcessors):
 
     def do_change_login(self, message):
         new_login = self.get_new_value(message,
-                                       SettingsMessages.GIVE_ME_NEW_LOGIN.format(login=config.game_login))
+                                       SettingsMessages.GIVE_ME_NEW_LOGIN.format(login=game_settings.game_login))
         if new_login != "NO":
-            config.game_login = new_login
-            GameDriver.login = config.game_login
+            game_settings.game_login = new_login
+            GameDriver.login = game_settings.game_login
             self.apply_new_settings(message)
         else:
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
 
     def do_change_pass(self, message):
         new_pass = self.get_new_value(message,
-                                      SettingsMessages.GIVE_ME_NEW_PASSWORD.format(password=config.game_password))
+                                      SettingsMessages.GIVE_ME_NEW_PASSWORD.format(password=game_settings.game_password))
         if new_pass != "NO":
-            config.game_password = new_pass
-            GameDriver.password = config.game_password
+            game_settings.game_password = new_pass
+            GameDriver.password = game_settings.game_password
             self.apply_new_settings(message)
         else:
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
 
     def do_change_host(self, message):
         new_host = self.get_new_value(message,
-                                      SettingsMessages.GIVE_ME_NEW_HOST.format(host=config.game_host))
+                                      SettingsMessages.GIVE_ME_NEW_HOST.format(host=game_settings.game_host))
         if new_host != "NO":
-            config.game_host = new_host
-            GameDriver.host = config.game_host
+            game_settings.game_host = new_host
+            GameDriver.host = game_settings.game_host
             self.apply_new_settings(message)
         else:
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
 
     def do_change_game(self, message):
         new_game = self.get_new_value(message,
-                                      SettingsMessages.GIVE_ME_NEW_GAME.format(game=config.game_id))
+                                      SettingsMessages.GIVE_ME_NEW_GAME.format(game=game_settings.game_id))
         if new_game != "NO":
             if new_game.isdigit():
-                config.game_id = int(new_game)
-                GameDriver.game_id = config.game_id
+                game_settings.game_id = int(new_game)
+                GameDriver.game_id = game_settings.game_id
                 self.apply_new_settings(message)
             else:
                 self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
@@ -544,7 +545,7 @@ class TelegramProcessor(AbstractProcessors):
             game_level_id=self.game_worker.last_level_shown,
             game_hint_id=hints_shown,
             handbrake=str(self.game_worker.game_driver.handbrake or self.game_worker.game_driver.auto_handbrake),
-            codes_limit=config.code_limit
+            codes_limit=game_settings.code_limit
         )
         self.answer_message(message, status_message)
 
@@ -565,7 +566,7 @@ class TelegramProcessor(AbstractProcessors):
             bot_errors=len(config.errors),
             token=bot_settings.bot_token,
             rnd=self.game_worker.game_driver.rnd,
-            codelimit=config.code_limit,
+            codelimit=game_settings.code_limit,
             unknown_users=len(self.unknown_users),
             tag_field=str(bot_settings.tag_field),
             autohandbrake=str(bot_settings.autohandbrake))
@@ -713,17 +714,17 @@ class TelegramProcessor(AbstractProcessors):
             from_id,
             SettingsMessages.GIVE_ME_PASSWORD)
         GameDriver.password = self.wait_for_answer(from_id)["text"]
-        config.game_password = GameDriver.password
+        game_settings.game_password = GameDriver.password
         self.send_message(
             from_id,
             SettingsMessages.GIVE_ME_HOST)
         GameDriver.host = self.wait_for_answer(from_id)["text"]
-        config.game_host = GameDriver.host
+        game_settings.game_host = GameDriver.host
         self.send_message(
             from_id,
             SettingsMessages.GIVE_ME_GAME)
         GameDriver.game_id = self.wait_for_answer(from_id)["text"]
-        config.game_id = GameDriver.game_id
+        game_settings.game_id = GameDriver.game_id
 
         self.apply_new_settings(message)
 

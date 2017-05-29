@@ -11,7 +11,7 @@ bot: {admin_passphrase: 'dmVyeXN0cm9uZ2FkbWlucGFzc3dvcmQx
 
     ', obfuscation_id: 'kc4KJpqv
 
-    ', paused: false, send-document-path: 'https://api.telegram.org/bot{key}/sendDocument',
+    ', paused: true, send-document-path: 'https://api.telegram.org/bot{key}/sendDocument',
   send-message-path: 'https://api.telegram.org/bot{key}/sendMessage', tag_field: true,
   token: !!python/unicode '289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w', updates-path: 'https://api.telegram.org/bot{key}/getUpdates?offset={offset}',
   users-path: 'https://api.telegram.org/bot{key}/getChat?chat_id={user_id}'}

@@ -6,6 +6,7 @@ import html2text
 
 from config.config import config
 from config.dictionary import Smiles, GameMessages, CommandMessages
+from config.game_settings import game_settings
 from game.locators import level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
     correct_code_locator, hint_number_start_locator, hint_number_end_locator, \
     hint_text_start_locator, hint_text_end_locator, task_header_locator, another_task_header_locator, \
@@ -49,9 +50,9 @@ class GameDriver:
             body = {"Login": self.login,
                     "Password": self.password,
                     "SelectedNetworkId": 2}
-            return self.session.post(config.quest_url.format(
+            return self.session.post(game_settings.quest_url.format(
                 host=self.host,
-                path=config.quest_login_url),
+                path=game_settings.quest_login_url),
                 params=body).text
         except ConnectionError:
             return ''
@@ -153,8 +154,8 @@ class GameDriver:
             # game_page = f.read()
             # return game_page
             return self.session.get(
-                config.quest_url.format(host=self.host,
-                                        path=config.quest_game_url.format(game_id=self.game_id))).text
+                game_settings.quest_url.format(host=self.host,
+                                        path=game_settings.quest_game_url.format(game_id=self.game_id))).text
         except ConnectionError:
             return ""
 
@@ -165,8 +166,8 @@ class GameDriver:
             # game_page = f.read()
             # return game_page
             return self.session.post(
-                config.quest_url.format(host=self.host,
-                                        path=config.quest_game_url.format(game_id=self.game_id)),
+                game_settings.quest_url.format(host=self.host,
+                                        path=game_settings.quest_game_url.format(game_id=self.game_id)),
                 params=body).text
         except ConnectionError:
             return ""

@@ -2,6 +2,7 @@
 from config.bot_settings import bot_settings
 from config.config import config
 from config.dictionary import SettingsMessages, CommonMessages
+from config.game_settings import game_settings
 from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.driver import TelegramDriver
@@ -25,10 +26,10 @@ class AbstractProcessors(TelegramDriver):
         self._load_settings()
 
     def _load_settings(self):
-        GameDriver.login = config.game_login
-        GameDriver.password = config.game_password
-        GameDriver.game_id = config.game_id
-        GameDriver.host = config.game_host
+        GameDriver.login = game_settings.game_login
+        GameDriver.password = game_settings.game_password
+        GameDriver.game_id = game_settings.game_id
+        GameDriver.host = game_settings.game_host
 
         self.group_chat_id = bot_settings.group_chat_id
         self.game_worker = GameWorker()

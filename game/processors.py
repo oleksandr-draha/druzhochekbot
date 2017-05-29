@@ -4,6 +4,7 @@ from time import sleep
 from config.bot_settings import bot_settings
 from config.config import config
 from config.dictionary import Smiles, GameMessages
+from config.game_settings import game_settings
 from game.driver import GameDriver
 
 
@@ -132,10 +133,10 @@ class GameProcessor:
         updates = []
         time_to_ap_text = self.game_driver.get_time_to_ap(self.game_page)
         if time_to_ap_text is not None:
-            if config.show_first_ap_time and "first" not in self.ap_time_shown:
+            if game_settings.show_first_ap_time and "first" not in self.ap_time_shown:
                 updates.append(Smiles.AP + time_to_ap_text)
                 self.ap_time_shown.append("first")
-            for ap_time in config.show_time_left_minutes:
+            for ap_time in game_settings.show_time_left_minutes:
                 minute_locator = u" {minutes} минут".format(minutes=ap_time)
                 hour = u"час "
                 if minute_locator in time_to_ap_text and hour not in time_to_ap_text and ap_time not in self.ap_time_shown:
@@ -169,12 +170,12 @@ class GameProcessor:
         updates = []
         time_to_hints_text = self.game_driver.get_time_to_hints(self.game_page)
         if len(time_to_hints_text):
-            if config.show_first_hint_time and "first" not in self.hints_time_shown:
+            if game_settings.show_first_hint_time and "first" not in self.hints_time_shown:
                 updates.append(time_to_hints_text[0])
                 self.hints_time_shown.append("first")
             # Should we show how much time left before next hint?
-            if config.show_time_to_hint:
-                for hint_time in config.show_time_left_minutes:
+            if game_settings.show_time_to_hint:
+                for hint_time in game_settings.show_time_left_minutes:
                     minute_locator = u" {minutes} минут".format(minutes=hint_time)
                     hour = u"час "
                     time_to_hint_text = time_to_hints_text[0]
@@ -191,7 +192,7 @@ class GameProcessor:
         updates = []
         codes_left_text = self.game_driver.get_codes_left_text(self.game_page)
         if codes_left_text is not None:
-            for codes_left in config.show_codes_left:
+            for codes_left in game_settings.show_codes_left:
                 if codes_left_text <= codes_left \
                         and codes_left not in self.codes_left_shown \
                         and codes_left_text not in self.codes_left_text_shown:
@@ -201,7 +202,7 @@ class GameProcessor:
                     else:
                         updates.append(GameMessages.CODES_LEFT_TEXT['all'].format(codes=codes_left_text))
                     # Prevent from showing duplicate messages:
-                    for codes_number in config.show_codes_left:
+                    for codes_number in game_settings.show_codes_left:
                         if codes_number >= codes_left:
                             self.codes_left_shown.append(codes_number)
                     self.codes_left_text_shown.append(codes_left_text)

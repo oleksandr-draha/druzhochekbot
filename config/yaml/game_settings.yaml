@@ -1,0 +1,9 @@
+game: {code_limit: 200, host: !!python/unicode 'quest.ua', id: !!python/unicode '58166',
+  login: 'ZHJhZ2F0ZW1w
+
+    ', password: 'WW84OWthVDc=
+
+    ', quest_game_url: 'gameengines/encounter/play/{game_id}/', quest_images_url: 'http://d1.endata.cx/data/games/{game_id}{image_name}',
+  quest_login_url: 'login/signin/?return=%2f', quest_url: 'http://m.{host}/{path}',
+  show_codes_left: 1 2 3 10 20 50 100, show_first_ap_time: true, show_first_hint_time: true,
+  show_time_left_minutes: 1 4 9, show_time_to_hint: false}
