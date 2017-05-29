@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from commands import commands
-from config import config
+from bot_settings import bot_settings
 
 
 class Smiles:
@@ -105,7 +105,7 @@ class SettingsMessages:
     CHECK_SETTINGS = u"---*Проверьте настройки!*---"
     NEED_SAVE = u"""
 Для сохранения измений после перезапуска - сохрани настройки в базу.""" \
-        if not config.autosave else ''
+        if not bot_settings.autosave else ''
 
 
 class UserMessages:

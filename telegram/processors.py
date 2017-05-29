@@ -3,6 +3,7 @@ import json
 
 import datetime
 
+from config.bot_settings import bot_settings
 from config.config import config
 from config.dictionary import Smiles, CommonMessages, BotSystemMessages, CommandMessages, SettingsMessages, \
     UserMessages, GameMessages, FileMessages, HelpMessages
@@ -49,21 +50,21 @@ class TelegramProcessor(AbstractProcessors):
         self.stopped = True
 
     def do_pause(self, message):
-        if not config.paused:
+        if not bot_settings.paused:
             self.answer_message(message, CommonMessages.DO_PAUSE)
-            config.paused = True
+            bot_settings.paused = True
         else:
             self.answer_message(message, CommonMessages.ALREADY_PAUSED)
 
     def do_resume(self, message):
-        if config.paused:
+        if bot_settings.paused:
             self.answer_message(message, CommonMessages.DO_RESUME)
-            config.paused = False
+            bot_settings.paused = False
         else:
             self.answer_message(message, CommonMessages.ALREADY_WORKING)
 
     def do_codes(self, message):
-        if not config.paused:
+        if not bot_settings.paused:
             if len(message["text"].split()) > 1:
                 if len(message["text"].split()) <= config.code_limit + 1:
                     result = self.check_codes(message)
@@ -79,7 +80,7 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message, CommonMessages.PAUSED)
 
     def do_code(self, message):
-        if not config.paused:
+        if not bot_settings.paused:
             if len(message["text"].split()) > 1:
                 result = self.check_code(message)
                 self.answer_message(message, result)
@@ -93,18 +94,18 @@ class TelegramProcessor(AbstractProcessors):
         chat_id = message["chat_id"]
         self.answer_message(message, CommonMessages.LETS_GO)
         self.group_chat_id = chat_id
-        config.group_chat_id = self.group_chat_id
-        config.paused = False
+        bot_settings.group_chat_id = self.group_chat_id
+        bot_settings.paused = False
 
     def approve_command(self, message):
         from_id = message["from_id"]
         chat_id = message["chat_id"]
-        if config.is_admin(from_id):
+        if bot_settings.is_admin(from_id):
             if chat_id < 0:
                 self._do_approve(message)
             else:
                 self.answer_message(message, CommonMessages.NOT_GROUP_CHAT)
-        elif config.answer_forbidden:
+        elif bot_settings.answer_forbidden:
             self.answer_message(message, CommonMessages.ACCESS_VIOLATION_MESSAGES)
 
     def do_add_admin(self, message):
@@ -113,12 +114,12 @@ class TelegramProcessor(AbstractProcessors):
             if not admin_to_add.isdigit():
                 self.answer_message(message, UserMessages.WRONG_USER_ID)
             else:
-                if config.is_admin(int(admin_to_add)):
+                if bot_settings.is_admin(int(admin_to_add)):
                     self.answer_message(
                         message,
                         UserMessages.DUPLICATE_USER_ID)
                 else:
-                    config.add_admin_id(int(admin_to_add))
+                    bot_settings.add_admin_id(int(admin_to_add))
                     self.admin_message(
                         UserMessages.NEW_ADMIN_WAS_ADDED.format(
                             user_id=admin_to_add,
@@ -133,7 +134,7 @@ class TelegramProcessor(AbstractProcessors):
             group_chat_id = message["text"].split()[1]
             if group_chat_id.startswith("-") and group_chat_id[1:].isdigit():
                 self.group_chat_id = int(group_chat_id)
-                config.group_chat_id = self.group_chat_id
+                bot_settings.group_chat_id = self.group_chat_id
             else:
                 self.answer_message(message, UserMessages.WRONG_USER_ID)
         else:
@@ -146,12 +147,12 @@ class TelegramProcessor(AbstractProcessors):
             if not field_to_add.isdigit():
                 self.answer_message(message, UserMessages.WRONG_USER_ID)
             else:
-                if config.is_field(int(field_to_add)):
+                if bot_settings.is_field(int(field_to_add)):
                     self.answer_message(
                         message,
                         UserMessages.DUPLICATE_USER_ID)
                 else:
-                    config.add_field_id(int(field_to_add))
+                    bot_settings.add_field_id(int(field_to_add))
                     self.admin_message(
                         UserMessages.NEW_FIELD_WAS_ADDED.format(
                             user_id=field_to_add,
@@ -167,12 +168,12 @@ class TelegramProcessor(AbstractProcessors):
             if not kc_to_add.isdigit():
                 self.answer_message(message, UserMessages.WRONG_USER_ID)
             else:
-                if config.is_kc(int(kc_to_add)):
+                if bot_settings.is_kc(int(kc_to_add)):
                     self.answer_message(
                         message,
                         UserMessages.DUPLICATE_USER_ID)
                 else:
-                    config.add_kc_id(int(kc_to_add))
+                    bot_settings.add_kc_id(int(kc_to_add))
                     self.admin_message(
                         UserMessages.NEW_KC_WAS_ADDED.format(
                             user_id=kc_to_add,
@@ -183,48 +184,48 @@ class TelegramProcessor(AbstractProcessors):
                                 CommandMessages.NO_USER_ID)
 
     def do_delete_admin(self, message):
-        if len(config.admin_ids) == 1:
+        if len(bot_settings.admin_ids) == 1:
             self.answer_message(message, UserMessages.CANNOT_DELETE_ADMIN)
         else:
             admin_to_delete = self.get_new_value(
                 message,
                 UserMessages.DELETE_USER_ID.format(
-                    current_ids=self.get_usernames(config.admin_ids)))
-            if not admin_to_delete.isdigit() or int(admin_to_delete) not in config.admin_ids:
+                    current_ids=self.get_usernames(bot_settings.admin_ids)))
+            if not admin_to_delete.isdigit() or int(admin_to_delete) not in bot_settings.admin_ids:
                 self.answer_message(message, UserMessages.WRONG_USER_ID)
             else:
-                config.delete_admin_id(int(admin_to_delete))
+                bot_settings.delete_admin_id(int(admin_to_delete))
                 self.answer_message(message, UserMessages.USER_DELETED)
 
     def do_delete_field(self, message):
         field_to_delete = self.get_new_value(
             message,
             UserMessages.DELETE_USER_ID.format(
-                current_ids=self.get_usernames(config.field_ids)))
-        if not field_to_delete.isdigit() or int(field_to_delete) not in config.field_ids:
+                current_ids=self.get_usernames(bot_settings.field_ids)))
+        if not field_to_delete.isdigit() or int(field_to_delete) not in bot_settings.field_ids:
             self.answer_message(message, UserMessages.WRONG_USER_ID)
         else:
-            config.delete_field_id(int(field_to_delete))
+            bot_settings.delete_field_id(int(field_to_delete))
             self.answer_message(message, UserMessages.USER_DELETED)
 
     def do_delete_kc(self, message):
         kc_to_delete = self.get_new_value(
             message,
             UserMessages.DELETE_USER_ID.format(
-                current_ids=self.get_usernames(config.kc_ids)))
-        if not kc_to_delete.isdigit() or int(kc_to_delete) not in config.kc_ids:
+                current_ids=self.get_usernames(bot_settings.kc_ids)))
+        if not kc_to_delete.isdigit() or int(kc_to_delete) not in bot_settings.kc_ids:
             self.answer_message(message, UserMessages.WRONG_USER_ID)
         else:
-            config.delete_kc_id(int(kc_to_delete))
+            bot_settings.delete_kc_id(int(kc_to_delete))
             self.answer_message(message, UserMessages.USER_DELETED)
 
     def do_edit_admin_pass(self, message):
         new = self.get_new_value(
             message,
-            SettingsMessages.ENTER_NEW_PASS.format(code=config.admin_passphrase))
-        old = config.admin_passphrase
-        if new not in config.passphrases:
-            config.admin_passphrase = new
+            SettingsMessages.ENTER_NEW_PASS.format(code=bot_settings.admin_passphrase))
+        old = bot_settings.admin_passphrase
+        if new not in bot_settings.passphrases:
+            bot_settings.admin_passphrase = new
             self.answer_message(
                 message,
                 SettingsMessages.PASS_WAS_CHANGED.format(code1=old,
@@ -237,10 +238,10 @@ class TelegramProcessor(AbstractProcessors):
     def do_edit_field_pass(self, message):
         new = self.get_new_value(
             message,
-            SettingsMessages.ENTER_NEW_PASS.format(code=config.field_passphrase))
-        old = config.field_passphrase
-        if new not in config.passphrases:
-            config.field_passphrase = new
+            SettingsMessages.ENTER_NEW_PASS.format(code=bot_settings.field_passphrase))
+        old = bot_settings.field_passphrase
+        if new not in bot_settings.passphrases:
+            bot_settings.field_passphrase = new
             self.answer_message(
                 message,
                 SettingsMessages.PASS_WAS_CHANGED.format(code1=old,
@@ -253,10 +254,10 @@ class TelegramProcessor(AbstractProcessors):
     def do_edit_kc_pass(self, message):
         new = self.get_new_value(
             message,
-            SettingsMessages.ENTER_NEW_PASS.format(code=config.kc_passphrase))
-        old = config.kc_passphrase
-        if new not in config.passphrases:
-            config.kc_passphrase = new
+            SettingsMessages.ENTER_NEW_PASS.format(code=bot_settings.kc_passphrase))
+        old = bot_settings.kc_passphrase
+        if new not in bot_settings.passphrases:
+            bot_settings.kc_passphrase = new
             self.answer_message(
                 message,
                 SettingsMessages.PASS_WAS_CHANGED.format(code1=old,
@@ -270,7 +271,7 @@ class TelegramProcessor(AbstractProcessors):
         self.answer_message(message, BotSystemMessages.CONFIRM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
-            config.clean_admins()
+            bot_settings.clean_admins()
             self.answer_message(message, BotSystemMessages.ADMIN_CLEARED)
         else:
             self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
@@ -279,7 +280,7 @@ class TelegramProcessor(AbstractProcessors):
         self.answer_message(message, BotSystemMessages.CONFIRM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
-            config.clean_fields()
+            bot_settings.clean_fields()
             self.answer_message(message, BotSystemMessages.FIELD_CLEARED)
         else:
             self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
@@ -288,7 +289,7 @@ class TelegramProcessor(AbstractProcessors):
         self.answer_message(message, BotSystemMessages.CONFIRM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
-            config.clean_kcs()
+            bot_settings.clean_kcs()
             self.answer_message(message, BotSystemMessages.KC_CLEARED)
         else:
             self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
@@ -302,7 +303,7 @@ class TelegramProcessor(AbstractProcessors):
 
     def _send_alert(self, message_text):
         if self.group_chat_id is not None:
-            usernames = self.get_usernames(config.field_ids)
+            usernames = self.get_usernames(bot_settings.field_ids)
             alert_captions = ['@%s ' % username
                               for username in usernames.values()
                               if username is not None]
@@ -334,19 +335,19 @@ class TelegramProcessor(AbstractProcessors):
 
     def do_message_admin(self, message):
         message_text = self.extract_text(message)
-        for admin_id in config.admin_ids:
+        for admin_id in bot_settings.admin_ids:
             self.send_message(admin_id,
                               message_text)
 
     def do_message_field(self, message):
         message_text = self.extract_text(message)
-        for field_id in config.field_ids:
+        for field_id in bot_settings.field_ids:
             self.send_message(field_id,
                               message_text)
 
     def do_message_kc(self, message):
         message_text = self.extract_text(message)
-        for kc_id in config.kc_ids:
+        for kc_id in bot_settings.kc_ids:
             self.send_message(kc_id,
                               message_text)
 
@@ -378,10 +379,10 @@ class TelegramProcessor(AbstractProcessors):
 
     def do_token(self, message):
         new_token = self.get_new_value(message,
-                                       BotSystemMessages.NEW_TOKEN.format(token=config.bot_token))
+                                       BotSystemMessages.NEW_TOKEN.format(token=bot_settings.bot_token))
         if new_token != "NO":
-            if config.bot_token != new_token:
-                config.bot_token = new_token
+            if bot_settings.bot_token != new_token:
+                bot_settings.bot_token = new_token
                 self._reset()
             from_id = message["from_id"]
             self.send_message(from_id, BotSystemMessages.TOKEN_CHANGED)
@@ -446,9 +447,9 @@ class TelegramProcessor(AbstractProcessors):
         tag_field = self.get_new_value(message,
                                        SettingsMessages.TAG_FIELD)
         if tag_field == "NO":
-            config.tag_field = False
+            bot_settings.tag_field = False
         elif tag_field == "YES":
-            config.tag_field = True
+            bot_settings.tag_field = True
         else:
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
             return
@@ -458,9 +459,9 @@ class TelegramProcessor(AbstractProcessors):
         autohandbrake = self.get_new_value(message,
                                            SettingsMessages.AUTOHANDBRAKE)
         if autohandbrake == "ON":
-            config.autohandbrake = True
+            bot_settings.autohandbrake = True
         elif autohandbrake == "OFF":
-            config.autohandbrake = False
+            bot_settings.autohandbrake = False
         else:
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
             return
@@ -514,14 +515,14 @@ class TelegramProcessor(AbstractProcessors):
 
     def _do_disapprove(self, message):
         self.group_chat_id = None
-        config.group_chat_id = self.group_chat_id
-        config.paused = True
+        bot_settings.group_chat_id = self.group_chat_id
+        bot_settings.paused = True
         self.answer_message(message, CommonMessages.DISAPPROVE)
 
     def disapprove_command(self, message):
         from_id = message["from_id"]
         chat_id = message["chat_id"]
-        if config.is_admin(from_id):
+        if bot_settings.is_admin(from_id):
             if chat_id < 0:
                 if chat_id == self.group_chat_id:
                     self._do_disapprove(message)
@@ -529,7 +530,7 @@ class TelegramProcessor(AbstractProcessors):
                     self.answer_message(message, CommonMessages.NO_GROUP_CHAT_MESSAGES)
             else:
                 self.answer_message(message, CommonMessages.NOT_GROUP_CHAT)
-        elif config.answer_forbidden:
+        elif bot_settings.answer_forbidden:
             self.answer_message(message, CommonMessages.ACCESS_VIOLATION_MESSAGES)
 
     def do_status(self, message):
@@ -537,7 +538,7 @@ class TelegramProcessor(AbstractProcessors):
         for i in self.game_worker.hints_shown:
             hints_shown += str(i) + ' '
         status_message = HelpMessages.STATUS.format(
-            paused=HelpMessages.PAUSED[config.paused],
+            paused=HelpMessages.PAUSED[bot_settings.paused],
             chat_id=self.group_chat_id,
             game_connection=HelpMessages.GAME_CONNECTION[self.game_worker.game_driver.is_logged()],
             game_level_id=self.game_worker.last_level_shown,
@@ -554,20 +555,20 @@ class TelegramProcessor(AbstractProcessors):
             password=self.game_worker.game_driver.password,
             host=self.game_worker.game_driver.host,
             game_id=self.game_worker.game_driver.game_id,
-            admins=json.dumps(self.get_usernames(config.admin_ids)),
-            fields=json.dumps(self.get_usernames(config.field_ids)),
-            kcs=json.dumps(self.get_usernames(config.kc_ids)),
-            admin_passphrase=config.admin_passphrase,
-            field_passphrase=config.field_passphrase,
-            kc_passphrase=config.kc_passphrase,
+            admins=json.dumps(self.get_usernames(bot_settings.admin_ids)),
+            fields=json.dumps(self.get_usernames(bot_settings.field_ids)),
+            kcs=json.dumps(self.get_usernames(bot_settings.kc_ids)),
+            admin_passphrase=bot_settings.admin_passphrase,
+            field_passphrase=bot_settings.field_passphrase,
+            kc_passphrase=bot_settings.kc_passphrase,
             time_start=config.start_time,
             bot_errors=len(config.errors),
-            token=config.bot_token,
+            token=bot_settings.bot_token,
             rnd=self.game_worker.game_driver.rnd,
             codelimit=config.code_limit,
             unknown_users=len(self.unknown_users),
-            tag_field=str(config.tag_field),
-            autohandbrake=str(config.autohandbrake))
+            tag_field=str(bot_settings.tag_field),
+            autohandbrake=str(bot_settings.autohandbrake))
         self.answer_message(message, info_message, parse_mode="HTML")
 
     def do_reset(self, message):
@@ -675,7 +676,7 @@ class TelegramProcessor(AbstractProcessors):
 
     def do_help(self, message):
         from_id = message["from_id"]
-        if config.is_admin(from_id):
+        if bot_settings.is_admin(from_id):
             self.answer_message(message, HelpMessages.ADMIN_HELP)
         else:
             self.answer_message(message, HelpMessages.REGULAR_HELP)
@@ -687,13 +688,13 @@ class TelegramProcessor(AbstractProcessors):
 
     def apply_new_settings(self, message):
         self.game_worker = GameWorker()
-        config.paused = True
+        bot_settings.paused = True
         self.admin_message(SettingsMessages.SETTINGS_WERE_CHANGED)
         if self.game_worker.connected:
             self.admin_message(CommonMessages.CONNECTION_OK_MESSAGES)
             self.admin_message(CommonMessages.PLEASE_APPROVE_MESSAGES)
             self.do_reset(message)
-            config.paused = False
+            bot_settings.paused = False
             return True
         else:
             self.admin_message(SettingsMessages.CONNECTION_PROBLEM)
@@ -734,12 +735,12 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_SAVED)
 
     def unknown_command(self, message):
-        if config.answer_unknown:
+        if bot_settings.answer_unknown:
             self.answer_message(message, CommonMessages.UNKNOWN)
 
     def process_unknown_user(self, message):
         from_id = message["from_id"]
-        if from_id not in config.admin_ids + config.field_ids + config.kc_ids:
+        if from_id not in bot_settings.admin_ids + bot_settings.field_ids + bot_settings.kc_ids:
             self.unknown_users.append({"timestamp": datetime.datetime.now(),
                                        "user_id": from_id,
                                        "username": message["username"],
@@ -753,31 +754,31 @@ class TelegramProcessor(AbstractProcessors):
     def process_new_user(self, message):
         passphrase = message["text"]
         from_id = message["from_id"]
-        if passphrase == config.admin_passphrase:
-            if from_id in config.admin_ids:
+        if passphrase == bot_settings.admin_passphrase:
+            if from_id in bot_settings.admin_ids:
                 return False
             else:
-                config.add_admin_id(int(from_id))
+                bot_settings.add_admin_id(int(from_id))
                 self.answer_message(message, UserMessages.HELLO_NEW_ADMIN)
                 self.admin_message(
                     UserMessages.NEW_ADMIN_WAS_ADDED.format(user_id=from_id,
                                                             nickname=self.get_username(from_id)))
                 return True
-        elif passphrase == config.field_passphrase:
-            if from_id in config.field_ids:
+        elif passphrase == bot_settings.field_passphrase:
+            if from_id in bot_settings.field_ids:
                 return False
             else:
-                config.add_field_id(int(from_id))
+                bot_settings.add_field_id(int(from_id))
                 self.answer_message(message, UserMessages.HELLO_NEW_USER)
                 self.admin_message(
                     UserMessages.NEW_FIELD_WAS_ADDED.format(user_id=from_id,
                                                             nickname=self.get_username(from_id)))
                 return True
-        elif passphrase == config.kc_passphrase:
-            if from_id in config.kc_ids:
+        elif passphrase == bot_settings.kc_passphrase:
+            if from_id in bot_settings.kc_ids:
                 return False
             else:
-                config.add_kc_id(int(from_id))
+                bot_settings.add_kc_id(int(from_id))
                 self.answer_message(message, UserMessages.HELLO_NEW_USER)
                 self.admin_message(
                     UserMessages.NEW_KC_WAS_ADDED.format(user_id=from_id,
@@ -788,7 +789,7 @@ class TelegramProcessor(AbstractProcessors):
 
     def dublicate_code_to_group_chat(self, message, result):
         from_id = message["from_id"]
-        if config.is_field(from_id) \
+        if bot_settings.is_field(from_id) \
                 and self.group_chat_id is not None \
                 and message["chat_id"] != self.group_chat_id \
                 and result is not None:
@@ -801,17 +802,17 @@ class TelegramProcessor(AbstractProcessors):
 
     def process_code_simple_message(self, message):
         from_id = message["from_id"]
-        if from_id in config.field_ids:
+        if from_id in bot_settings.field_ids:
             if not message['text'].startswith('/'):
-                if not config.paused:
+                if not bot_settings.paused:
                     result = self.check_code(message)
                     self.answer_message(message, result)
                     self.dublicate_code_to_group_chat(message, result)
                 else:
                     self.answer_message(message, CommonMessages.PAUSED)
-        elif from_id in config.kc_ids:
+        elif from_id in bot_settings.kc_ids:
             if not message['text'].startswith('/'):
-                if not config.paused:
+                if not bot_settings.paused:
                     result = self.check_code(message)
                     self.answer_message(message, result)
                 else:

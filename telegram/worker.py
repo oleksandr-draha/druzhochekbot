@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from config.bot_settings import bot_settings
 from config.commands import commands
 from config.config import config
 from config.dictionary import SettingsMessages
@@ -139,7 +140,7 @@ class TelegramWorker(TelegramProcessor):
             # endregion
 
     def process_game_updates(self):
-        if not config.paused and self.group_chat_id is not None:
+        if not bot_settings.paused and self.group_chat_id is not None:
             last_level_shown = self.game_worker.last_level_shown
             updates = self.game_worker.check_updates()
             current_level = self.game_worker.last_level_shown
@@ -151,5 +152,5 @@ class TelegramWorker(TelegramProcessor):
                                       update,
                                       parse_mode="HTML")
                 if last_level_shown != current_level:
-                    if config.tag_field:
+                    if bot_settings.tag_field:
                         self._send_alert("")

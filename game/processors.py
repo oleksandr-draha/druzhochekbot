@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from time import sleep
 
+from config.bot_settings import bot_settings
 from config.config import config
 from config.dictionary import Smiles, GameMessages
 from game.driver import GameDriver
@@ -89,7 +90,7 @@ class GameProcessor:
             if not self.closed_shown:
                 self.closed_shown = True
                 updates.append(self.game_driver.get_closed_message(self.game_page))
-            config.paused = True
+            bot_settings.paused = True
         return updates
 
     def process_banned_as_bot(self):
@@ -98,7 +99,7 @@ class GameProcessor:
             if not self.banned_as_bot_shown:
                 self.banned_as_bot_shown = True
                 updates.append(self.game_driver.get_banned_as_bot_message(self.game_page))
-            config.paused = True
+            bot_settings.paused = True
         else:
             self.banned_as_bot_shown = False
         return updates
@@ -110,7 +111,7 @@ class GameProcessor:
             if not self.finished_shown:
                 self.finished_shown = True
                 updates.append(self.game_driver.get_finish_message(self.game_page))
-            config.paused = True
+            bot_settings.paused = True
         return updates
 
     def process_new_task_received(self):
@@ -212,7 +213,7 @@ class GameProcessor:
             if not self.codes_limit_shown:
                 updates.append(Smiles.LIMIT + self.game_driver.answer_limit(self.game_page))
                 self.codes_limit_shown = True
-                if config.autohandbrake:
+                if bot_settings.autohandbrake:
                     self.game_driver.auto_handbrake = True
         else:
             self.game_driver.auto_handbrake = False
