@@ -228,7 +228,7 @@ rnd: {rnd}
         codes=config.codes_command[0],
         task=config.task_command,
         tasksall=config.tasks_all_command,
-        taskhtml=config.taskhtml,
+        taskhtml=config.task_html_command,
         codes_all=config.codes_all,
         hints=config.hints_command,
         status=config.status_command,
