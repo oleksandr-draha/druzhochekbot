@@ -282,7 +282,7 @@ class DruzhochekConfig(object):
 
     @staticmethod
     def is_user(from_id):
-        return from_id in config.admin_ids + config.field_ids + config.field_ids
+        return from_id in config.admin_ids + config.field_ids + config.kc_ids
 
     @staticmethod
     def is_admin(from_id):

@@ -760,7 +760,7 @@ class TelegramProcessor(AbstractProcessors):
         from_id = message["from_id"]
         if passphrase == config.admin_passphrase:
             if from_id in config.admin_ids:
-                self.answer_message(message, UserMessages.DUPLICATE_USER_ID)
+                return False
             else:
                 config.add_admin_id(int(from_id))
                 self.answer_message(message, UserMessages.HELLO_NEW_ADMIN)
@@ -770,7 +770,7 @@ class TelegramProcessor(AbstractProcessors):
                 return True
         elif passphrase == config.field_passphrase:
             if from_id in config.field_ids:
-                self.answer_message(message, UserMessages.DUPLICATE_USER_ID)
+                return False
             else:
                 config.add_field_id(int(from_id))
                 self.answer_message(message, UserMessages.HELLO_NEW_USER)
@@ -780,7 +780,7 @@ class TelegramProcessor(AbstractProcessors):
                 return True
         elif passphrase == config.kc_passphrase:
             if from_id in config.kc_ids:
-                self.answer_message(message, UserMessages.DUPLICATE_USER_ID)
+                return False
             else:
                 config.add_kc_id(int(from_id))
                 self.answer_message(message, UserMessages.HELLO_NEW_USER)

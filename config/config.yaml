@@ -20,7 +20,7 @@ bot:
     resume: /resume, save: /save, send_source: /source, set_group_chat: /sgc, status: /status,
     stop: /stop, tag_field: /tagfield, task: /task, taskhtml: /taskhtml, tasksall: /tasksall,
     token: /token, unknown: /unknown}
-  field_ids: 'kc4KJpqv
+  field_ids: 'kA==
 
     '
   field_passphrase: 'aWxvdmVkcmFnYQ==
