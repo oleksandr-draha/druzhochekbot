@@ -1,1 +1,244 @@
-errors: []
+errors:
+- [!!timestamp '2017-05-30 21:36:29.912000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 37, in process_messages\n\
+    \    self._user_command(message, self.do_codes_all)\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\abstract_processors.py\", line 67, in _user_command\n    do_function(message)\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\processors.py\", line 635, in\
+    \ do_codes_all\n    for level, codes in codes_log.codes_raw:\nTypeError: 'int'\
+    \ object is not iterable\n"]
+- [!!timestamp '2017-05-30 22:16:08.849000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:08.990000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:09.146000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:09.287000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:09.490000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:09.646000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:09.803000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:09.959000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:10.115000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:10.313000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:10.509000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:10.681000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:10.865000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:11.042000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:11.214000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:11.402000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:11.589000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:11.780000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:12.013000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:12.249000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:12.449000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:12.637000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:12.848000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:13.058000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:13.315000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:13.518000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:13.730000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:16:13.927000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 9, in process_messages\n\
+    \    for message in self.check_new_messages():\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\driver.py\", line 146, in check_new_messages\n    for message in self.get_updates():\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\driver.py\", line 32, in get_updates\n\
+    \    ord(messages[0][\"message\"][\"text\"][3])\nIndexError: list index out of\
+    \ range\n"]
+- [!!timestamp '2017-05-30 22:24:41.865000', "Traceback (most recent call last):\n\
+    \  File \"E:/Work/python/druzhochekbot/main.py\", line 13, in <module>\n    bot.process_messages()\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\worker.py\", line 23, in process_messages\n\
+    \    self._user_command(message, self.do_code)\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\abstract_processors.py\", line 67, in _user_command\n    do_function(message)\n\
+    \  File \"E:/Work/python/druzhochekbot\\telegram\\processors.py\", line 81, in\
+    \ do_code\n    result = self.check_code(message)\n  File \"E:/Work/python/druzhochekbot\\\
+    telegram\\processors.py\", line 41, in check_code\n    results = self.game_worker.game_driver.try_code(code,\
+    \ username)\n  File \"E:/Work/python/druzhochekbot\\game\\driver.py\", line 234,\
+    \ in try_code\n    dublicate=CommandMessages.DUPLICATE_CODE(username=username_found))\n\
+    TypeError: 'unicode' object is not callable\n"]

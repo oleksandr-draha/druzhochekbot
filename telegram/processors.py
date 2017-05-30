@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from config import bot_settings, errors_log, game_settings, unknown_log
+from config import bot_settings, errors_log, game_settings, unknown_log, codes_log, tasks_log
 from config.dictionary import Smiles, CommonMessages, BotSystemMessages, CommandMessages, SettingsMessages, \
     UserMessages, GameMessages, FileMessages, HelpMessages
 from game.worker import GameWorker
@@ -295,13 +295,17 @@ class TelegramProcessor(AbstractProcessors):
                 bot_settings.group_chat_id,
                 message_text)
 
+    def get_alert_captions(self):
+        usernames = self.get_usernames(bot_settings.field_ids)
+        alert_captions = ['@%s ' % username
+                          for username in usernames.values()
+                          if username is not None]
+        alert_caption = '\r\n\r\n' + "".join(alert_captions) + '\r\n'
+        return alert_caption
+
     def _send_alert(self, message_text):
         if bot_settings.group_chat_id is not None:
-            usernames = self.get_usernames(bot_settings.field_ids)
-            alert_captions = ['@%s ' % username
-                              for username in usernames.values()
-                              if username is not None]
-            alert_caption = ''.join(alert_captions) + '\r\n'
+            alert_caption = self.get_alert_captions()
             self.send_message(
                 bot_settings.group_chat_id,
                 alert_caption + message_text,
@@ -491,8 +495,8 @@ class TelegramProcessor(AbstractProcessors):
         self.answer_message(message, BotSystemMessages.CONFIRM_DELETEION)
         answer = self.wait_for_answer(message["from_id"])
         if answer["text"] == "YES":
-            self.game_worker.game_driver.codes_entered = {}
-            self.game_worker.tasks_received = {}
+            codes_log.clean_codes()
+            tasks_log.clean_tasks()
             self.answer_message(message, BotSystemMessages.MEMORY_CLEARED)
         else:
             self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
@@ -561,7 +565,7 @@ class TelegramProcessor(AbstractProcessors):
     def do_task(self, message):
         if len(message["text"].split()) > 1:
             level_to_show = int(message["text"].split()[1])
-            task_source = self.game_worker.tasks_received.get(level_to_show)
+            task_source = tasks_log.task(level_to_show)
             if task_source is not None:
                 task_text = self.game_worker.game_driver.get_task(task_source)
                 task_text = GameMessages.TASK_MESSAGE.format(
@@ -581,7 +585,7 @@ class TelegramProcessor(AbstractProcessors):
             from_id = message["chat_id"]
         else:
             from_id = message["from_id"]
-        for level_number, task in self.game_worker.tasks_received.iteritems():
+        for level_number, task in tasks_log.tasks_raw.iteritems():
             task_text = self.game_worker.game_driver.get_task(task)
             all_tasks += u"{level_number}:\r\n\r\n{task}\r\n".format(level_number=level_number, task=task_text)
         if len(all_tasks):
@@ -596,7 +600,7 @@ class TelegramProcessor(AbstractProcessors):
             from_id = message["from_id"]
         if len(message["text"].split()) > 1:
             level_to_show = int(message["text"].split()[1])
-            task_text = self.game_worker.tasks_received.get(level_to_show)
+            task_text = tasks_log.task(level_to_show)
             if task_text is not None:
                 self.send_file(from_id, task_text, "task_%s.html" % level_to_show)
             else:
@@ -611,35 +615,19 @@ class TelegramProcessor(AbstractProcessors):
     def do_codes_history(self, message):
         if len(message["text"].split()) > 1:
             level_to_show = int(message["text"].split()[1])
-            codes_entered = self.game_worker.game_driver.codes_entered.get(level_to_show)
-            if codes_entered is not None:
-                all_codes = ""
-                for username, user_codes in codes_entered.iteritems():
-                    if username != "__all__":
-                        codes_template = u"<b>{username}</b>: {codes}\r\n"
-                        user_codes_formatted = ' '.join(user_codes)
-                        all_codes += codes_template.format(username=username,
-                                                           codes=user_codes_formatted)
-            else:
+            all_codes = codes_log.repr_codes_by_level(level_to_show)
+            if not len(all_codes):
                 all_codes = CommandMessages.WRONG_LEVEL_ID
             self.answer_message(message, all_codes, parse_mode="HTML")
         else:
             self.answer_message(message, CommandMessages.NO_TASK_ID)
 
     def do_codes_all(self, message):
-        all_codes = ""
         if message["chat_id"] == bot_settings.group_chat_id:
             from_id = message["chat_id"]
         else:
             from_id = message["from_id"]
-        for level, codes in self.game_worker.game_driver.codes_entered.iteritems():
-            all_codes += "---------\r\n{level}:\r\n---------\r\n\r\n".format(level=level)
-            for username, user_codes in codes.iteritems():
-                if username != "__all__":
-                    codes_template = u"{username}: {codes}\r\n"
-                    user_codes_formatted = ' '.join(user_codes)
-                    all_codes += codes_template.format(username=username,
-                                                       codes=user_codes_formatted)
+        all_codes = codes_log.repr_codes_all()
         if len(all_codes):
             self.send_file(from_id, all_codes, "all_codes.txt")
         else:
@@ -668,6 +656,21 @@ class TelegramProcessor(AbstractProcessors):
         codes_gap = self.game_worker.game_driver.get_codes_gap()
         self.answer_message(message,
                             codes_gap)
+
+    def do_codes_statistic(self, message):
+        all = 0
+        players = {}
+        for level, codes in codes_log.codes_raw.iteritems():
+            all += len(codes.get("__all__", 0))
+            for username, cods in codes.iteritems():
+                if username != "__all__":
+                    num = players.get(username, 0) + len(cods)
+                    players.update({username: num})
+        statistic = "*Total*: {all}\r\n".format(all=all)
+        for username, num in players.iteritems():
+            statistic += "*{username}*: {num}\r\n".format(username=username, num=num)
+        self.answer_message(message,
+                            statistic)
 
     def apply_new_settings(self, message):
         self.game_worker = GameWorker()

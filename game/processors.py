@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from time import sleep
 
-from config import bot_settings, game_settings, timeouts
+from config import bot_settings, game_settings, timeouts, tasks_log
 from config.dictionary import Smiles, GameMessages
 from game.driver import GameDriver
 
@@ -124,7 +124,7 @@ class GameProcessor:
             updates.append(GameMessages.NEW_TASK.format(
                 level_number=current_level["LevelNumber"],
                 task=task_text))
-            self.tasks_received.setdefault(current_level["LevelNumber"], self.game_page)
+            tasks_log.log_task(current_level["LevelNumber"], self.game_page)
         return updates
 
     def process_ap_time(self):
@@ -233,5 +233,5 @@ class GameProcessor:
         if self.last_task_text != task_text:
             self.last_task_text = task_text
             updates.append(GameMessages.TASK_EDITED.format(task=task_text))
-            self.tasks_received[level_number] = self.game_page
+            tasks_log.log_task(level_number, self.game_page)
         return updates

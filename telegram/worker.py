@@ -41,6 +41,8 @@ class TelegramWorker(TelegramProcessor):
                 self._user_command(message, self.do_help)
             elif command == commands.gap:
                 self._user_command(message, self.do_gap)
+            elif command == commands.codes_statistic:
+                self._user_command(message, self.do_codes_statistic)
             # endregion
 
             # region Admin in chat commands:
@@ -143,10 +145,12 @@ class TelegramWorker(TelegramProcessor):
             if updates is None:
                 self.admin_message(SettingsMessages.CONNECTION_PROBLEM)
             else:
+                game_updates = ""
                 for update in updates:
-                    self.send_message(bot_settings.group_chat_id,
-                                      update,
-                                      parse_mode="HTML")
+                    game_updates += update
                 if last_level_shown != current_level:
                     if bot_settings.tag_field:
-                        self._send_alert("")
+                        game_updates += self.get_alert_captions()
+                self.send_message(bot_settings.group_chat_id,
+                                  game_updates,
+                                  parse_mode="HTML")

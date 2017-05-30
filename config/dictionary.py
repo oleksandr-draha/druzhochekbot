@@ -7,6 +7,7 @@ class Smiles:
     HINTS = unichr(55356) + unichr(57119)
     CORRECT_CODE = unichr(9989)
     WRONG_CODE = unichr(10060)
+    DUPLICATE_CODE = unichr(10062)
     LIMIT = unichr(55357) + unichr(56489)
     ORG_MESSAGE = unichr(55357) + unichr(56596)
     ALERT = unichr(9757) + unichr(65039)
@@ -60,7 +61,7 @@ class BotSystemMessages:
 
 class CommandMessages:
     NO_CODE_FOUND = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c long code или /cc code 1 code2_'
-    DUPLICATE_CODE = u'\r\n{code}: уже вбил *{username}*'
+    DUPLICATE_CODE = u' уже вбил *{username}*'
     CODE_LIMIT = u"""Перебор такого количества кодов запрещён! Текущий лимит: {codelimit}"""
     NO_USER_ID = u"""Нет user id для добавления. Пример:
 /addadmin 123456"""
@@ -217,6 +218,7 @@ rnd: {rnd}
 {taskhtml}: Отправить файл с указанным заданием.
 {tasksall}: Отправить файл со всеми полученными заданиями.
 {codes_history}: Вывести введённые коды с указанного задания. Пример: {codes_history} 12
+{codes_stat}: Вывести статистику по вбиты кодам за игру
 {codes_all}: Отправить файл со всеми введёнными кодами за игру
 {hints}: Повторно вывести список всех подсказок
 {status}: Показать текущий статус бота
@@ -231,6 +233,7 @@ rnd: {rnd}
         hints=commands.hints,
         status=commands.status,
         codes_history=commands.codes_history,
+        codes_stat=commands.codes_statistic,
         help=commands.help)
 
     ADMIN_HELP = u"""
