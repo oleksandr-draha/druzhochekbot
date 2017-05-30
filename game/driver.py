@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+import codecs
 from random import randint
 
 from requests import ConnectionError, session
 import html2text
 
-from config import config
 from config.dictionary import Smiles, GameMessages, CommandMessages
+from config import game_settings, codes_log
 from game.locators import level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
     correct_code_locator, hint_number_start_locator, hint_number_end_locator, \
     hint_text_start_locator, hint_text_end_locator, task_header_locator, another_task_header_locator, \
@@ -20,10 +21,6 @@ from game.locators import level_id_locator, level_number_locator, level_params_e
 class GameDriver:
     level_id = None
     level_number = None
-    login = None
-    password = None
-    game_id = None
-    host = None
     connected = False
     codes_entered = {}
     rnd = "0,%s" % randint(100000000000000, 999999999999999)
@@ -46,12 +43,12 @@ class GameDriver:
 
     def login_user(self):
         try:
-            body = {"Login": self.login,
-                    "Password": self.password,
+            body = {"Login": game_settings.game_login,
+                    "Password": game_settings.game_password,
                     "SelectedNetworkId": 2}
-            return self.session.post(config.quest_url.format(
-                host=self.host,
-                path=config.quest_login_url),
+            return self.session.post(game_settings.quest_url.format(
+                host=game_settings.game_host,
+                path=game_settings.quest_login_url),
                 params=body).text
         except ConnectionError:
             return ''
@@ -148,25 +145,27 @@ class GameDriver:
 
     def get_game_page(self):
         try:
-            # # Use to emulate game page
-            # f = codecs.open("list_codes.htm", encoding='utf-8')
-            # game_page = f.read()
-            # return game_page
+            # Use to emulate game page
+            f = codecs.open("list_codes.htm", encoding='utf-8')
+            game_page = f.read()
+            return game_page
             return self.session.get(
-                config.quest_url.format(host=self.host,
-                                        path=config.quest_game_url.format(game_id=self.game_id))).text
+                game_settings.quest_url.format(
+                    host=game_settings.game_host,
+                    path=game_settings.quest_game_url.format(game_id=game_settings.game_id))).text
         except ConnectionError:
             return ""
 
     def post_game_page(self, body):
         try:
-            # # Use to emulate game page
-            # f = codecs.open("list_codes.htm", encoding='utf-8')
-            # game_page = f.read()
-            # return game_page
+            # Use to emulate game page
+            f = codecs.open("list_codes.htm", encoding='utf-8')
+            game_page = f.read()
+            return game_page
             return self.session.post(
-                config.quest_url.format(host=self.host,
-                                        path=config.quest_game_url.format(game_id=self.game_id)),
+                game_settings.quest_url.format(
+                    host=game_settings.game_host,
+                    path=game_settings.quest_game_url.format(game_id=game_settings.game_id)),
                 params=body).text
         except ConnectionError:
             return ""
@@ -213,32 +212,26 @@ class GameDriver:
             return GameMessages.CODES_BLOCKED
         elif self.closed(r):
             return GameMessages.GAME_FINISHED
+        elif self.banned_as_bot(r):
+            return GameMessages.BANNED
         if self.level_number != self.get_level_params(r)["LevelNumber"]:
             if r.find(incorrect_code_locator) == -1 and \
                     r.find(correct_code_locator) != -1:
                 # Collect code if was not entered already
-                if code.lower() not in self.codes_entered.get(self.level_number, {}).get('__all__', []):
-                    self.codes_entered.setdefault(self.level_number, {}). \
-                        setdefault(username, []).append(u'? ' + code.lower())
-                    self.codes_entered.setdefault(self.level_number, {}). \
-                        setdefault('__all__', []).append(u'? ' + code.lower())
+                codes_log.log_code('? ' + code, self.level_number, username)
             return
         if r.find(incorrect_code_locator) == -1 and \
                 r.find(correct_code_locator) != -1:
             # Save entered codes
-            if code.lower() not in self.codes_entered.get(self.level_number, {}).get('__all__', []):
+            username_found = codes_log.log_code(code, self.level_number, username)
+            if username_found is None:
                 result = u'\r\n{smile}: {code}'.format(smile=Smiles.CORRECT_CODE,
                                                        code=code)
-                self.codes_entered.setdefault(self.level_number, {}). \
-                    setdefault(username, []).append(code.lower())
-                self.codes_entered.setdefault(self.level_number, {}). \
-                    setdefault('__all__', []).append(code.lower())
             else:
-                username_found = None
-                for username_found, codes in self.codes_entered.get(self.level_number, {}).iteritems():
-                    if code in codes:
-                        break
-                result = CommandMessages.DUPLICATE_CODE.format(code=code, username=username_found)
+                result = u'\r\n{smile}: {code} {dublicate}'.format(
+                    smile=Smiles.DUPLICATE_CODE,
+                    code=code,
+                    dublicate=CommandMessages.DUPLICATE_CODE.format(username=username_found))
         elif r.find(incorrect_code_locator) != -1:
             result = u'\r\n{smile}: {code}'.format(
                 code=code,

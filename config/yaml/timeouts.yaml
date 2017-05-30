@@ -1,0 +1,2 @@
+timeouts: {answer_check_interval: 1, max_attempts: 3, message_check_interval: 1, process_check_interval: 1,
+  relogin_interval: 5}

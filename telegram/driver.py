@@ -5,7 +5,7 @@ import time
 
 from requests import ConnectionError, session
 
-from config.config import config
+from config import bot_settings, timeouts
 from config.dictionary import SettingsMessages
 
 
@@ -24,8 +24,8 @@ class TelegramDriver(object):
         """
         try:
             r = self.session.get(
-                config.updates_path.format(key=config.bot_token,
-                                           offset=self.start_offset))
+                bot_settings.updates_path.format(key=bot_settings.bot_token,
+                                                 offset=self.start_offset))
             messages = json.loads(r.content)['result']
             # Use in order to get smile code
             # send /c_+ smile
@@ -47,8 +47,8 @@ class TelegramDriver(object):
         """
         try:
             r = self.session.get(
-                config.users_path.format(key=config.bot_token,
-                                         user_id=user_id))
+                bot_settings.users_path.format(key=bot_settings.bot_token,
+                                               user_id=user_id))
             return json.loads(r.content).get('result', {}).get('username')
         except ConnectionError:
             return {}
@@ -85,7 +85,7 @@ class TelegramDriver(object):
             response.update({"reply_to_message_id": reply_to})
         try:
             self.session.post(
-                config.send_message_path.format(key=config.bot_token),
+                bot_settings.send_message_path.format(key=bot_settings.bot_token),
                 params=response)
         except ConnectionError:
             return
@@ -106,7 +106,7 @@ class TelegramDriver(object):
                     "caption": caption}
         try:
             self.session.post(
-                config.send_document_path.format(key=config.bot_token),
+                bot_settings.send_document_path.format(key=bot_settings.bot_token),
                 params=response,
                 files=files)
         except ConnectionError:
@@ -133,7 +133,7 @@ class TelegramDriver(object):
         :type text: str or unicode
         :rtype: None
         """
-        for admin_id in config.admin_ids:
+        for admin_id in bot_settings.admin_ids:
             self.send_message(admin_id, text)
 
     def check_new_messages(self):
@@ -197,7 +197,7 @@ class TelegramDriver(object):
         while True:
             answer = self.check_answer_from_chat_id(from_id)
             if answer is None:
-                time.sleep(config.answer_check_interval)
+                time.sleep(timeouts.answer_check_interval)
                 continue
             return answer
 
