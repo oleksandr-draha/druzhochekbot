@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from commands import commands
-from bot_settings import bot_settings
+from config import commands
 
 
 class Smiles:
@@ -103,9 +102,6 @@ class SettingsMessages:
     SETTINGS_WERE_NOT_CHANGED = u"Настройки не были изменены."
     CONNECTION_PROBLEM = u"---*Проблемы с авторизацией на сайте!*---"
     CHECK_SETTINGS = u"---*Проверьте настройки!*---"
-    NEED_SAVE = u"""
-Для сохранения измений после перезапуска - сохрани настройки в базу.""" \
-        if not bot_settings.autosave else ''
 
 
 class UserMessages:
@@ -117,16 +113,16 @@ class UserMessages:
     HELLO_NEW_ADMIN = u"""Добро пожаловать в ряды нашей доблестной команды.
 Для начала рекомендую начать с просмотра доступных команд: /help"""
 
-    NEW_ADMIN_WAS_ADDED = u"""Новый админ добавлен: {user_id} : {nickname}.""" + SettingsMessages.NEED_SAVE
-    NEW_FIELD_WAS_ADDED = u"""Новый полевой игрок добавлен: {user_id} : {nickname}.""" + SettingsMessages.NEED_SAVE
-    NEW_KC_WAS_ADDED = u"""Новый штабной игрок добавлен: {user_id} : {nickname}.""" + SettingsMessages.NEED_SAVE
+    NEW_ADMIN_WAS_ADDED = u"""Новый админ добавлен: {user_id} : {nickname}."""
+    NEW_FIELD_WAS_ADDED = u"""Новый полевой игрок добавлен: {user_id} : {nickname}."""
+    NEW_KC_WAS_ADDED = u"""Новый штабной игрок добавлен: {user_id} : {nickname}."""
     DUPLICATE_USER_ID = u"""Такой пользователь уже есть в базе. Добавление прервано."""
     CANNOT_DELETE_ADMIN = u"""Нельзя удалить последнего админа."""
     WRONG_USER_ID = u"""Неверный id пользователя"""
     DELETE_USER_ID = u"""Текущие пользователи:
 {current_ids}
 Введите id, который нужно удалить."""
-    USER_DELETED = u"""Пользователь удалён.""" + SettingsMessages.NEED_SAVE
+    USER_DELETED = u"""Пользователь удалён."""
 
 
 class GameMessages:
@@ -245,7 +241,6 @@ rnd: {rnd}
 
 {info} : Вывести детальную информацию о боте
 {edit} : Изменить текущие настройки бота
-{save} : Перезаписать настройки бота по-умолчанию
 {reset} : Обнулить список полученных заданий/подсказок
 {token}: Изменить токен бота
 {codes_limit}: Изменить максимальное количество кодов для вбития одной пачкой
@@ -297,7 +292,6 @@ rnd: {rnd}
         set_group_chat=commands.set_group_chat,
         token=commands.token,
         edit=commands.edit,
-        save=commands.save,
         reset=commands.reset,
         pause=commands.pause,
         stop=commands.stop,

@@ -1,11 +1,9 @@
 import base64
 
-
-from config import DruzhochekConfig
-from bot_settings import bot_settings
+from base_config import BaseConfig
 
 
-class GameSettingsConfig(DruzhochekConfig):
+class GameSettingsConfig(BaseConfig):
     # region Game settings
 
     @property
@@ -31,8 +29,7 @@ class GameSettingsConfig(DruzhochekConfig):
     @code_limit.setter
     def code_limit(self, value):
         self.config["game"]["code_limit"] = value
-        if bot_settings.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def game_login(self):
@@ -42,8 +39,7 @@ class GameSettingsConfig(DruzhochekConfig):
     @game_login.setter
     def game_login(self, value):
         self.config["game"]["login"] = base64.encodestring(value)
-        if bot_settings.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def game_password(self):
@@ -53,8 +49,7 @@ class GameSettingsConfig(DruzhochekConfig):
     @game_password.setter
     def game_password(self, value):
         self.config["game"]["password"] = base64.encodestring(value)
-        if bot_settings.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def game_host(self):
@@ -63,8 +58,7 @@ class GameSettingsConfig(DruzhochekConfig):
     @game_host.setter
     def game_host(self, value):
         self.config["game"]["host"] = value
-        if bot_settings.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def game_id(self):
@@ -73,8 +67,7 @@ class GameSettingsConfig(DruzhochekConfig):
     @game_id.setter
     def game_id(self, value):
         self.config["game"]["id"] = value
-        if bot_settings.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def show_codes_left(self):
@@ -97,6 +90,3 @@ class GameSettingsConfig(DruzhochekConfig):
         return self.config.get("game", {}).get("show_first_hint_time")
 
         # endregion
-
-
-game_settings = GameSettingsConfig("yaml\\game_settings.yaml")

@@ -1,37 +1,37 @@
-import base64
-
-import msgpack
 from datetime import datetime
 
 from base_config import BaseConfig
 
 
-class BotErrorsConfig(BaseConfig):
-
+class UnknownLog(BaseConfig):
     @property
-    def errors_raw(self):
-        return self.config.get("errors", [])
+    def unknown_raw(self):
+        return self.config.get("unknown", [])
 
-    @errors_raw.setter
-    def errors_raw(self, value):
-        self.config["errors"] = value
+    @unknown_raw.setter
+    def unknown_raw(self, value):
+        self.config["unknown"] = value
         self.save_config()
 
-    def log_error(self, error):
-        errors = self.errors_raw
-        if len(errors) >= 100:
-            errors.pop(0)
-        errors.append([datetime.now(), error])
-        self.errors_raw = errors
+    def log_unknown(self, message):
+        unknowns = self.unknown_raw
+        if len(unknowns) >= 100:
+            unknowns.pop(0)
+        unknowns.append({"timestamp": datetime.now(),
+                         "user_id": message["from_id"],
+                         "username": message["username"],
+                         "message_text": message["text"]})
+        self.unknown_raw = unknowns
 
-    def clean_errors(self):
-        self.errors_raw = []
+    def clean_unknown(self):
+        self.unknown_raw = []
 
-    def repr_errors(self):
-        errors = ""
-        for date_error, error in self.errors_raw:
-            errors += str(date_error) + '\r\n' + error.replace('\n', '\r\n') + '\r\n'
-        return errors
-
-
-errors_log = BotErrorsConfig("yaml\\errors_log.yaml")
+    def repr_unknown(self):
+        unknown_message = ""
+        for unknown in self.unknown_raw:
+            unknown_message += u"{timestamp}\r\n{user_id} : {username}\r\n{message}\r\n\r\n".format(
+                timestamp=unknown["timestamp"],
+                user_id=unknown["user_id"],
+                message=unknown["message_text"],
+                username=unknown["username"])
+        return unknown_message

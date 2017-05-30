@@ -8,6 +8,6 @@ commands: {add_admin: /aa, add_field: /af, add_kc: /ak, alert: /alert, approve: 
   errors: /errors, game: /game, gap: /gap, handbrake_set: /handbrake, help: /help,
   hints: /hints, host: /host, info: /info, login: /login, message: /message, message_admin: /ma,
   message_field: /mf, message_kc: /mk, pass: /pass, pause: /pause, reset: /reset,
-  resume: /resume, save: /save, send_source: /source, set_group_chat: /sgc, status: /status,
+  resume: /resume, send_source: /source, set_group_chat: /sgc, status: /status,
   stop: /stop, tag_field: /tagfield, task: /task, taskhtml: /taskhtml, tasksall: /tasksall,
   token: /token, unknown: /unknown}

@@ -1,11 +1,7 @@
-import base64
+from base_config import BaseConfig
 
 
-from config import DruzhochekConfig
-from bot_settings import bot_settings
-
-
-class TimeoutsConfig(DruzhochekConfig):
+class TimeoutsConfig(BaseConfig):
     # region Timeouts
 
     @property
@@ -33,6 +29,3 @@ class TimeoutsConfig(DruzhochekConfig):
         return self.config.get("timeouts", {}).get("answer_check_interval")
 
     # endregion
-
-
-timeouts = TimeoutsConfig("yaml\\timeouts.yaml")

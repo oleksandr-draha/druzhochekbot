@@ -2,11 +2,10 @@ import base64
 
 import msgpack
 
-from config import DruzhochekConfig
+from base_config import BaseConfig
 
 
-class BotSettingsConfig(DruzhochekConfig):
-    # region Bot settings section
+class BotSettingsConfig(BaseConfig):
 
     @property
     def bot_token(self):
@@ -15,8 +14,7 @@ class BotSettingsConfig(DruzhochekConfig):
     @bot_token.setter
     def bot_token(self, value):
         self.config["bot"]["token"] = value
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def group_chat_id(self):
@@ -25,8 +23,7 @@ class BotSettingsConfig(DruzhochekConfig):
     @group_chat_id.setter
     def group_chat_id(self, value):
         self.config["bot"]["approved_chat"] = value
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def paused(self):
@@ -35,18 +32,7 @@ class BotSettingsConfig(DruzhochekConfig):
     @paused.setter
     def paused(self, value):
         self.config["bot"]["paused"] = value
-        if self.autosave:
-            self.save_config()
-
-    @property
-    def autosave(self):
-        return self.config.get("bot", {}).get("autosave")
-
-    @autosave.setter
-    def autosave(self, value):
-        self.config["bot"]["autosave"] = value
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def tag_field(self):
@@ -55,8 +41,7 @@ class BotSettingsConfig(DruzhochekConfig):
     @tag_field.setter
     def tag_field(self, value):
         self.config["bot"]["tag_field"] = value
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def autohandbrake(self):
@@ -65,8 +50,7 @@ class BotSettingsConfig(DruzhochekConfig):
     @autohandbrake.setter
     def autohandbrake(self, value):
         self.config["bot"]["autohandbrake"] = value
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def updates_path(self):
@@ -114,20 +98,17 @@ class BotSettingsConfig(DruzhochekConfig):
     @admin_passphrase.setter
     def admin_passphrase(self, passphrase):
         self.config["bot"]["admin_passphrase"] = base64.encodestring(passphrase)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     @field_passphrase.setter
     def field_passphrase(self, passphrase):
         self.config["bot"]["field_passphrase"] = base64.encodestring(passphrase)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     @kc_passphrase.setter
     def kc_passphrase(self, passphrase):
         self.config["bot"]["kc_passphrase"] = base64.encodestring(passphrase)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def admin_ids(self):
@@ -141,41 +122,35 @@ class BotSettingsConfig(DruzhochekConfig):
     @admin_ids.setter
     def admin_ids(self, ids):
         self.config["bot"]["obfuscation_id"] = ids
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     def add_admin_id(self, admin_id):
         admin_ids = self.admin_ids + [admin_id]
         encoded = msgpack.dumps(admin_ids)
         self.admin_ids = base64.encodestring(encoded)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     def delete_admin_id(self, admin_id):
         admin_ids = self.admin_ids[:]
         admin_ids.remove(admin_id)
         encoded = msgpack.dumps(admin_ids)
         self.admin_ids = base64.encodestring(encoded)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     def clean_admins(self):
         encoded = msgpack.dumps([])
         self.admin_ids = base64.encodestring(encoded)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     def clean_fields(self):
         encoded = msgpack.dumps([])
         self.field_ids = base64.encodestring(encoded)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     def clean_kcs(self):
         encoded = msgpack.dumps([])
         self.kc_ids = base64.encodestring(encoded)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def field_ids(self):
@@ -189,23 +164,20 @@ class BotSettingsConfig(DruzhochekConfig):
     @field_ids.setter
     def field_ids(self, ids):
         self.config["bot"]["field_ids"] = ids
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     def add_field_id(self, field_id):
         field_ids = self.field_ids + [field_id]
         encoded = msgpack.dumps(field_ids)
         self.field_ids = base64.encodestring(encoded)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     def delete_field_id(self, field_id):
         field_ids = self.field_ids[:]
         field_ids.remove(field_id)
         encoded = msgpack.dumps(field_ids)
         self.field_ids = base64.encodestring(encoded)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     @property
     def kc_ids(self):
@@ -219,23 +191,20 @@ class BotSettingsConfig(DruzhochekConfig):
     @kc_ids.setter
     def kc_ids(self, ids):
         self.config["bot"]["kc_ids"] = ids
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     def add_kc_id(self, kc_id):
         kc_ids = self.kc_ids + [kc_id]
         encoded = msgpack.dumps(kc_ids)
         self.kc_ids = base64.encodestring(encoded)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     def delete_kc_id(self, kc_id):
         kc_ids = self.kc_ids[:]
         kc_ids.remove(kc_id)
         encoded = msgpack.dumps(kc_ids)
         self.kc_ids = base64.encodestring(encoded)
-        if self.autosave:
-            self.save_config()
+        self.save_config()
 
     def is_user(self, from_id):
         return from_id in self.admin_ids + self.field_ids + self.kc_ids
@@ -248,8 +217,3 @@ class BotSettingsConfig(DruzhochekConfig):
 
     def is_kc(self, from_id):
         return from_id in self.kc_ids
-
-        # endregion
-
-
-bot_settings = BotSettingsConfig("yaml\\bot_settings.yaml")

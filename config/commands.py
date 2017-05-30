@@ -1,7 +1,7 @@
-from config import DruzhochekConfig
+from base_config import BaseConfig
 
 
-class CommandsConfig(DruzhochekConfig):
+class CommandsConfig(BaseConfig):
 
     @property
     def code(self):
@@ -50,10 +50,6 @@ class CommandsConfig(DruzhochekConfig):
     @property
     def edit(self):
         return self.config.get("commands", {}).get("edit")
-
-    @property
-    def save(self):
-        return self.config.get("commands", {}).get("save")
 
     @property
     def status(self):
@@ -218,6 +214,3 @@ class CommandsConfig(DruzhochekConfig):
     @property
     def set_group_chat(self):
         return self.config.get("commands", {}).get("set_group_chat")
-
-
-commands = CommandsConfig("yaml\\commands.yaml")
