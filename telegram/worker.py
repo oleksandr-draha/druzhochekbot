@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from config.bot_settings import bot_settings
 from config.commands import commands
-from config.config import config
 from config.dictionary import SettingsMessages
 from telegram.processors import TelegramProcessor
 
@@ -83,8 +82,6 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_info)
             elif command == commands.edit:
                 self._admin_command(message, self.do_edit_settings)
-            elif command == commands.save:
-                self._admin_command(message, self.do_save_settings)
             elif command == commands.add_admin:
                 self._admin_command(message, self.do_add_admin)
             elif command == commands.delete_admin:

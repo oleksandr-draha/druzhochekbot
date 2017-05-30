@@ -6,7 +6,6 @@ import time
 from requests import ConnectionError, session
 
 from config.bot_settings import bot_settings
-from config.config import config
 from config.dictionary import SettingsMessages
 from config.timeouts import timeouts
 

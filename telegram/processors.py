@@ -4,10 +4,11 @@ import json
 import datetime
 
 from config.bot_settings import bot_settings
-from config.config import config
 from config.dictionary import Smiles, CommonMessages, BotSystemMessages, CommandMessages, SettingsMessages, \
     UserMessages, GameMessages, FileMessages, HelpMessages
+from config.errors import errors_log
 from config.game_settings import game_settings
+from config.unknown_log import unknown_log
 from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.abstract_processors import AbstractProcessors
@@ -365,16 +366,16 @@ class TelegramProcessor(AbstractProcessors):
 
     def do_send_errors(self, message):
         from_id = message["from_id"]
-        if len(config.errors):
+        if len(errors_log.errors_raw):
             self.send_file(from_id,
-                           str(config.repr_errors()),
+                           str(errors_log.repr_errors()),
                            'errors.txt')
         else:
             self.answer_message(message,
                                 FileMessages.NO_DATA_TO_DISPLAY)
 
     def do_clean_errors(self, message):
-        config.clean_errors()
+        errors_log.clean_errors()
         self.answer_message(message,
                             BotSystemMessages.ERRORS_CLEARED)
 
@@ -484,13 +485,7 @@ class TelegramProcessor(AbstractProcessors):
 
     def do_send_unknown(self, message):
         from_id = message["from_id"]
-        unknown_message = ""
-        for unknown in self.unknown_users:
-            unknown_message += u"{timestamp}\r\n{user_id} : {username}\r\n{message}\r\n\r\n".format(
-                timestamp=unknown["timestamp"],
-                user_id=unknown["user_id"],
-                message=unknown["message_text"],
-                username=unknown["username"])
+        unknown_message = unknown_log.repr_unknown()
         if len(unknown_message):
             self.send_file(from_id,
                            unknown_message,
@@ -500,7 +495,7 @@ class TelegramProcessor(AbstractProcessors):
                                 FileMessages.NO_DATA_TO_DISPLAY)
 
     def do_clean_unknown(self, message):
-        self.unknown_users = []
+        unknown_log.unknown_raw = []
         self.answer_message(message,
                             BotSystemMessages.UNKNOWN_CLEARED)
 
@@ -562,12 +557,12 @@ class TelegramProcessor(AbstractProcessors):
             admin_passphrase=bot_settings.admin_passphrase,
             field_passphrase=bot_settings.field_passphrase,
             kc_passphrase=bot_settings.kc_passphrase,
-            time_start=config.start_time,
-            bot_errors=len(config.errors),
+            time_start=bot_settings.start_time,
+            bot_errors=len(errors_log.errors_raw),
             token=bot_settings.bot_token,
             rnd=self.game_worker.game_driver.rnd,
             codelimit=game_settings.code_limit,
-            unknown_users=len(self.unknown_users),
+            unknown_users=len(unknown_log.unknown_raw),
             tag_field=str(bot_settings.tag_field),
             autohandbrake=str(bot_settings.autohandbrake))
         self.answer_message(message, info_message, parse_mode="HTML")
@@ -709,7 +704,7 @@ class TelegramProcessor(AbstractProcessors):
             from_id,
             SettingsMessages.GIVE_ME_LOGIN)
         GameDriver.login = self.wait_for_answer(from_id)["text"]
-        config.game_login = GameDriver.login
+        game_settings.game_login = GameDriver.login
         self.send_message(
             from_id,
             SettingsMessages.GIVE_ME_PASSWORD)
@@ -728,26 +723,14 @@ class TelegramProcessor(AbstractProcessors):
 
         self.apply_new_settings(message)
 
-    def do_save_settings(self, message):
-        result = config.save_config()
-        if result:
-            self.answer_message(message, SettingsMessages.SETTINGS_WERE_SAVED)
-        else:
-            self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_SAVED)
-
     def unknown_command(self, message):
         if bot_settings.answer_unknown:
             self.answer_message(message, CommonMessages.UNKNOWN)
 
     def process_unknown_user(self, message):
         from_id = message["from_id"]
-        if from_id not in bot_settings.admin_ids + bot_settings.field_ids + bot_settings.kc_ids:
-            self.unknown_users.append({"timestamp": datetime.datetime.now(),
-                                       "user_id": from_id,
-                                       "username": message["username"],
-                                       "message_text": message["text"]})
-            if len(self.unknown_users) >= 100:
-                self.unknown_users[from_id].pop(0)
+        if not bot_settings.is_user(from_id):
+            unknown_log.log_unknown(message)
             return True
         else:
             return False
