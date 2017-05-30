@@ -145,10 +145,10 @@ class GameDriver:
 
     def get_game_page(self):
         try:
-            # Use to emulate game page
-            f = codecs.open("list_codes.htm", encoding='utf-8')
-            game_page = f.read()
-            return game_page
+            # # Use to emulate game page
+            # f = codecs.open("list_codes.htm", encoding='utf-8')
+            # game_page = f.read()
+            # return game_page
             return self.session.get(
                 game_settings.quest_url.format(
                     host=game_settings.game_host,
@@ -158,10 +158,10 @@ class GameDriver:
 
     def post_game_page(self, body):
         try:
-            # Use to emulate game page
-            f = codecs.open("list_codes.htm", encoding='utf-8')
-            game_page = f.read()
-            return game_page
+                # # Use to emulate game page
+                # f = codecs.open("list_codes.htm", encoding='utf-8')
+                # game_page = f.read()
+                # return game_page
             return self.session.post(
                 game_settings.quest_url.format(
                     host=game_settings.game_host,

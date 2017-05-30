@@ -1,1 +1,6 @@
-codes: {}
+codes:
+  68:
+    __all__: [!!python/unicode 'test1', !!python/unicode 'test2', !!python/unicode 'test3',
+      !!python/unicode 'test4']
+    !!python/unicode 'ilovefalafel': [!!python/unicode 'test1', !!python/unicode 'test2',
+      !!python/unicode 'test3', !!python/unicode 'test4']
