@@ -1,47 +1,3 @@
-bot:
-  admin_passphrase: 'dmVyeXN0cm9uZ2FkbWlucGFzc3dvcmQx
-
-    '
-  answer-forbidden: false
-  answer-unknown: false
-  approved_chat: -1001050462991
-  autohandbrake: true
-  autosave: true
-  commands: {add_admin: /aa, add_field: /af, add_kc: /ak, alert: /alert, approve: /approve,
-    autohandbrake: /autohandbrake, cancel: /cancel, chat_message: /cm, clean_errors: /cleanerrors,
-    clean_memory: /cleanmemory, clean_unknown: /cleanunknown, cleanadmin: /cleanadmin,
-    cleanfield: /cleanfield, cleankc: /cleankc, code: "/c /\u0441", codes: "/cc /\u0441\
-      \u0441 /\u0441c /c\u0441", codes_history: /codes, codes_limit: /codelimit, codesall: /codesall,
-    delete_admin: /da, delete_field: /df, delete_kc: /dk, disapprove: /disapprove,
-    edit: /edit, edit_admin_pass: /eap, edit_field_pass: /efp, edit_kc_pass: /ekp,
-    errors: /errors, game: /game, gap: /gap, handbrake_set: /handbrake, help: /help,
-    hints: /hints, host: /host, info: /info, login: /login, message: /message, message_admin: /ma,
-    message_field: /mf, message_kc: /mk, pass: /pass, pause: /pause, reset: /reset,
-    resume: /resume, save: /save, send_source: /source, set_group_chat: /sgc, status: /status,
-    stop: /stop, tag_field: /tagfield, task: /task, taskhtml: /taskhtml, tasksall: /tasksall,
-    token: /token, unknown: /unknown}
-  field_ids: 'kA==
-
-    '
-  field_passphrase: 'aWxvdmVkcmFnYQ==
-
-    '
-  kc_ids: 'kA==
-
-    '
-  kc_passphrase: 'YnJhaW5zdG9ybXRvZGF5
-
-    '
-  obfuscation_id: 'kc4KJpqv
-
-    '
-  paused: false
-  send-document-path: https://api.telegram.org/bot{key}/sendDocument
-  send-message-path: https://api.telegram.org/bot{key}/sendMessage
-  tag_field: true
-  token: !!python/unicode '289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w'
-  updates-path: https://api.telegram.org/bot{key}/getUpdates?offset={offset}
-  users-path: https://api.telegram.org/bot{key}/getChat?chat_id={user_id}
 game: {code_limit: 200, host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723',
   login: 'ZHJhZ2F0ZW1w
 
@@ -51,5 +7,4 @@ game: {code_limit: 200, host: !!python/unicode 'dn.quest.ua', id: !!python/unico
   quest_login_url: 'login/signin/?return=%2f', quest_url: 'http://m.{host}/{path}',
   show_codes_left: 1 2 3 10 20 50 100, show_first_ap_time: true, show_first_hint_time: true,
   show_time_left_minutes: 1 4 9, show_time_to_hint: false}
-timeouts: {answer_check_interval: 1, max_attempts: 3, message_check_interval: 1, process_check_interval: 1,
-  relogin_interval: 5}
+
