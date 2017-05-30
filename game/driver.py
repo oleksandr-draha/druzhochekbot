@@ -4,9 +4,8 @@ from random import randint
 from requests import ConnectionError, session
 import html2text
 
-from config.config import config
 from config.dictionary import Smiles, GameMessages, CommandMessages
-from config.game_settings import game_settings
+from config import game_settings
 from game.locators import level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
     correct_code_locator, hint_number_start_locator, hint_number_end_locator, \
     hint_text_start_locator, hint_text_end_locator, task_header_locator, another_task_header_locator, \
@@ -21,10 +20,6 @@ from game.locators import level_id_locator, level_number_locator, level_params_e
 class GameDriver:
     level_id = None
     level_number = None
-    login = None
-    password = None
-    game_id = None
-    host = None
     connected = False
     codes_entered = {}
     rnd = "0,%s" % randint(100000000000000, 999999999999999)
@@ -47,11 +42,11 @@ class GameDriver:
 
     def login_user(self):
         try:
-            body = {"Login": self.login,
-                    "Password": self.password,
+            body = {"Login": game_settings.game_login,
+                    "Password": game_settings.game_password,
                     "SelectedNetworkId": 2}
             return self.session.post(game_settings.quest_url.format(
-                host=self.host,
+                host=game_settings.game_host,
                 path=game_settings.quest_login_url),
                 params=body).text
         except ConnectionError:
@@ -154,8 +149,9 @@ class GameDriver:
             # game_page = f.read()
             # return game_page
             return self.session.get(
-                game_settings.quest_url.format(host=self.host,
-                                        path=game_settings.quest_game_url.format(game_id=self.game_id))).text
+                game_settings.quest_url.format(
+                    host=game_settings.game_host,
+                    path=game_settings.quest_game_url.format(game_id=game_settings.game_id))).text
         except ConnectionError:
             return ""
 
@@ -166,8 +162,9 @@ class GameDriver:
             # game_page = f.read()
             # return game_page
             return self.session.post(
-                game_settings.quest_url.format(host=self.host,
-                                        path=game_settings.quest_game_url.format(game_id=self.game_id)),
+                game_settings.quest_url.format(
+                    host=game_settings.game_host,
+                    path=game_settings.quest_game_url.format(game_id=game_settings.game_id)),
                 params=body).text
         except ConnectionError:
             return ""

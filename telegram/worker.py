@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from config.bot_settings import bot_settings
-from config.commands import commands
+from config import bot_settings, commands
 from config.dictionary import SettingsMessages
 from telegram.processors import TelegramProcessor
 

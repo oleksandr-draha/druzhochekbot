@@ -5,9 +5,8 @@ import time
 
 from requests import ConnectionError, session
 
-from config.bot_settings import bot_settings
+from config import bot_settings, timeouts
 from config.dictionary import SettingsMessages
-from config.timeouts import timeouts
 
 
 class TelegramDriver(object):
@@ -26,7 +25,7 @@ class TelegramDriver(object):
         try:
             r = self.session.get(
                 bot_settings.updates_path.format(key=bot_settings.bot_token,
-                                           offset=self.start_offset))
+                                                 offset=self.start_offset))
             messages = json.loads(r.content)['result']
             # Use in order to get smile code
             # send /c_+ smile
@@ -49,7 +48,7 @@ class TelegramDriver(object):
         try:
             r = self.session.get(
                 bot_settings.users_path.format(key=bot_settings.bot_token,
-                                         user_id=user_id))
+                                               user_id=user_id))
             return json.loads(r.content).get('result', {}).get('username')
         except ConnectionError:
             return {}

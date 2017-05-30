@@ -1,15 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
 
-import datetime
-
-from config.bot_settings import bot_settings
+from config import bot_settings, errors_log, game_settings, unknown_log
 from config.dictionary import Smiles, CommonMessages, BotSystemMessages, CommandMessages, SettingsMessages, \
     UserMessages, GameMessages, FileMessages, HelpMessages
-from config.errors import errors_log
-from config.game_settings import game_settings
-from config.unknown_log import unknown_log
-from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.abstract_processors import AbstractProcessors
 

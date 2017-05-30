@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from time import sleep
 
-from config.bot_settings import bot_settings
+from config import bot_settings, game_settings, timeouts
 from config.dictionary import Smiles, GameMessages
-from config.game_settings import game_settings
-from config.timeouts import timeouts
 from game.driver import GameDriver
 
 

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from config.bot_settings import bot_settings
+from config import bot_settings
 from config.dictionary import SettingsMessages, CommonMessages
-from config.game_settings import game_settings
-from game.driver import GameDriver
 from game.worker import GameWorker
 from telegram.driver import TelegramDriver
 
