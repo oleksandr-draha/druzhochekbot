@@ -95,8 +95,7 @@ class TelegramProcessor(AbstractProcessors):
     def _do_approve(self, message):
         chat_id = message["chat_id"]
         self.answer_message(message, CommonMessages.LETS_GO)
-        self.group_chat_id = chat_id
-        bot_settings.group_chat_id = self.group_chat_id
+        bot_settings.group_chat_id = chat_id
         bot_settings.paused = False
 
     def approve_command(self, message):
@@ -135,8 +134,7 @@ class TelegramProcessor(AbstractProcessors):
         if len(message["text"].split()) > 1:
             group_chat_id = message["text"].split()[1]
             if group_chat_id.startswith("-") and group_chat_id[1:].isdigit():
-                self.group_chat_id = int(group_chat_id)
-                bot_settings.group_chat_id = self.group_chat_id
+                bot_settings.group_chat_id = int(group_chat_id)
             else:
                 self.answer_message(message, UserMessages.WRONG_USER_ID)
         else:
@@ -297,21 +295,21 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
 
     def do_chat_message(self, message):
-        if self.group_chat_id is not None:
+        if bot_settings.group_chat_id is not None:
             message_text = self.extract_text(message)
             self.send_message(
-                self.group_chat_id,
+                bot_settings.group_chat_id,
                 message_text)
 
     def _send_alert(self, message_text):
-        if self.group_chat_id is not None:
+        if bot_settings.group_chat_id is not None:
             usernames = self.get_usernames(bot_settings.field_ids)
             alert_captions = ['@%s ' % username
                               for username in usernames.values()
                               if username is not None]
             alert_caption = ''.join(alert_captions) + '\r\n'
             self.send_message(
-                self.group_chat_id,
+                bot_settings.group_chat_id,
                 alert_caption + message_text,
                 parse_mode="HTML")
 
@@ -407,7 +405,6 @@ class TelegramProcessor(AbstractProcessors):
                                        SettingsMessages.GIVE_ME_NEW_LOGIN.format(login=game_settings.game_login))
         if new_login != "NO":
             game_settings.game_login = new_login
-            GameDriver.login = game_settings.game_login
             self.apply_new_settings(message)
         else:
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
@@ -417,7 +414,6 @@ class TelegramProcessor(AbstractProcessors):
                                       SettingsMessages.GIVE_ME_NEW_PASSWORD.format(password=game_settings.game_password))
         if new_pass != "NO":
             game_settings.game_password = new_pass
-            GameDriver.password = game_settings.game_password
             self.apply_new_settings(message)
         else:
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
@@ -427,7 +423,6 @@ class TelegramProcessor(AbstractProcessors):
                                       SettingsMessages.GIVE_ME_NEW_HOST.format(host=game_settings.game_host))
         if new_host != "NO":
             game_settings.game_host = new_host
-            GameDriver.host = game_settings.game_host
             self.apply_new_settings(message)
         else:
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
@@ -438,7 +433,6 @@ class TelegramProcessor(AbstractProcessors):
         if new_game != "NO":
             if new_game.isdigit():
                 game_settings.game_id = int(new_game)
-                GameDriver.game_id = game_settings.game_id
                 self.apply_new_settings(message)
             else:
                 self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
@@ -510,8 +504,7 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
 
     def _do_disapprove(self, message):
-        self.group_chat_id = None
-        bot_settings.group_chat_id = self.group_chat_id
+        bot_settings.group_chat_id = None
         bot_settings.paused = True
         self.answer_message(message, CommonMessages.DISAPPROVE)
 
@@ -520,7 +513,7 @@ class TelegramProcessor(AbstractProcessors):
         chat_id = message["chat_id"]
         if bot_settings.is_admin(from_id):
             if chat_id < 0:
-                if chat_id == self.group_chat_id:
+                if chat_id == bot_settings.group_chat_id:
                     self._do_disapprove(message)
                 else:
                     self.answer_message(message, CommonMessages.NO_GROUP_CHAT_MESSAGES)
@@ -535,7 +528,7 @@ class TelegramProcessor(AbstractProcessors):
             hints_shown += str(i) + ' '
         status_message = HelpMessages.STATUS.format(
             paused=HelpMessages.PAUSED[bot_settings.paused],
-            chat_id=self.group_chat_id,
+            chat_id=bot_settings.group_chat_id,
             game_connection=HelpMessages.GAME_CONNECTION[self.game_worker.game_driver.is_logged()],
             game_level_id=self.game_worker.last_level_shown,
             game_hint_id=hints_shown,
@@ -546,11 +539,11 @@ class TelegramProcessor(AbstractProcessors):
 
     def do_info(self, message):
         info_message = HelpMessages.INFO.format(
-            chat_id=self.group_chat_id,
-            login=self.game_worker.game_driver.login,
-            password=self.game_worker.game_driver.password,
-            host=self.game_worker.game_driver.host,
-            game_id=self.game_worker.game_driver.game_id,
+            chat_id=bot_settings.group_chat_id,
+            login=game_settings.game_login,
+            password=game_settings.game_password,
+            host=game_settings.game_host,
+            game_id=game_settings.game_id,
             admins=json.dumps(self.get_usernames(bot_settings.admin_ids)),
             fields=json.dumps(self.get_usernames(bot_settings.field_ids)),
             kcs=json.dumps(self.get_usernames(bot_settings.kc_ids)),
@@ -590,7 +583,7 @@ class TelegramProcessor(AbstractProcessors):
 
     def do_tasks_all(self, message):
         all_tasks = ""
-        if message["chat_id"] == self.group_chat_id:
+        if message["chat_id"] == bot_settings.group_chat_id:
             from_id = message["chat_id"]
         else:
             from_id = message["from_id"]
@@ -603,7 +596,7 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message, CommandMessages.NO_TASKS_RECEIVED)
 
     def do_task_html(self, message):
-        if message["chat_id"] == self.group_chat_id:
+        if message["chat_id"] == bot_settings.group_chat_id:
             from_id = message["chat_id"]
         else:
             from_id = message["from_id"]
@@ -641,7 +634,7 @@ class TelegramProcessor(AbstractProcessors):
 
     def do_codes_all(self, message):
         all_codes = ""
-        if message["chat_id"] == self.group_chat_id:
+        if message["chat_id"] == bot_settings.group_chat_id:
             from_id = message["chat_id"]
         else:
             from_id = message["from_id"]
@@ -703,23 +696,19 @@ class TelegramProcessor(AbstractProcessors):
         self.send_message(
             from_id,
             SettingsMessages.GIVE_ME_LOGIN)
-        GameDriver.login = self.wait_for_answer(from_id)["text"]
-        game_settings.game_login = GameDriver.login
+        game_settings.game_login = self.wait_for_answer(from_id)["text"]
         self.send_message(
             from_id,
             SettingsMessages.GIVE_ME_PASSWORD)
-        GameDriver.password = self.wait_for_answer(from_id)["text"]
-        game_settings.game_password = GameDriver.password
+        game_settings.game_password = self.wait_for_answer(from_id)["text"]
         self.send_message(
             from_id,
             SettingsMessages.GIVE_ME_HOST)
-        GameDriver.host = self.wait_for_answer(from_id)["text"]
-        game_settings.game_host = GameDriver.host
+        game_settings.game_host = self.wait_for_answer(from_id)["text"]
         self.send_message(
             from_id,
             SettingsMessages.GIVE_ME_GAME)
-        GameDriver.game_id = self.wait_for_answer(from_id)["text"]
-        game_settings.game_id = GameDriver.game_id
+        game_settings.game_id = self.wait_for_answer(from_id)["text"]
 
         self.apply_new_settings(message)
 
@@ -774,11 +763,11 @@ class TelegramProcessor(AbstractProcessors):
     def dublicate_code_to_group_chat(self, message, result):
         from_id = message["from_id"]
         if bot_settings.is_field(from_id) \
-                and self.group_chat_id is not None \
-                and message["chat_id"] != self.group_chat_id \
+                and bot_settings.group_chat_id is not None \
+                and message["chat_id"] != bot_settings.group_chat_id \
                 and result is not None:
             self.send_message(
-                self.group_chat_id,
+                bot_settings.group_chat_id,
                 CommandMessages.FIELD_TRIED_CODE.format(
                     nickname=self.get_username(from_id),
                     codes=result),

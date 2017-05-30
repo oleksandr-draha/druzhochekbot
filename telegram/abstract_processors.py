@@ -8,31 +8,23 @@ from telegram.driver import TelegramDriver
 
 
 class AbstractProcessors(TelegramDriver):
+    stopped = False
+
     def __init__(self):
         super(AbstractProcessors, self).__init__()
-        self.stopped = False
         self.game_worker = None
-        self.group_chat_id = None
         self._load_settings()
 
     def _reset(self):
         self.get_updates()
         bot_settings.paused = True
-        self.stopped = False
         self.game_worker = None
-        self.group_chat_id = None
         self._load_settings()
 
     def _load_settings(self):
-        GameDriver.login = game_settings.game_login
-        GameDriver.password = game_settings.game_password
-        GameDriver.game_id = game_settings.game_id
-        GameDriver.host = game_settings.game_host
-
-        self.group_chat_id = bot_settings.group_chat_id
         self.game_worker = GameWorker()
         if self.game_worker.connected:
-            if self.group_chat_id is None:
+            if bot_settings.group_chat_id is None:
                 self.admin_message(CommonMessages.CONNECTION_OK_MESSAGES)
                 self.admin_message(CommonMessages.PLEASE_APPROVE_MESSAGES)
             return True
@@ -46,7 +38,7 @@ class AbstractProcessors(TelegramDriver):
         chat_id = message["chat_id"]
         if bot_settings.is_admin(from_id):
             if chat_id < 0:
-                if chat_id == self.group_chat_id:
+                if chat_id == bot_settings.group_chat_id:
                     self.answer_message(message, CommonMessages.NOT_FOR_GROUP_CHAT_MESSAGES)
                 else:
                     self.answer_message(message, CommonMessages.NO_GROUP_CHAT_MESSAGES)
@@ -60,7 +52,7 @@ class AbstractProcessors(TelegramDriver):
         chat_id = message["chat_id"]
         if bot_settings.is_admin(from_id):
             if chat_id < 0:
-                if chat_id == self.group_chat_id:
+                if chat_id == bot_settings.group_chat_id:
                     do_function(message)
                 else:
                     self.answer_message(message, CommonMessages.NO_GROUP_CHAT_MESSAGES)
@@ -73,7 +65,7 @@ class AbstractProcessors(TelegramDriver):
         from_id = message["from_id"]
         chat_id = message["chat_id"]
         if chat_id < 0:
-            if chat_id == self.group_chat_id:
+            if chat_id == bot_settings.group_chat_id:
                 do_function(message)
             elif bot_settings.is_admin(from_id):
                 self.answer_message(message, CommonMessages.NO_GROUP_CHAT_MESSAGES)

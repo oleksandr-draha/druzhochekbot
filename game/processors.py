@@ -2,7 +2,6 @@
 from time import sleep
 
 from config.bot_settings import bot_settings
-from config.config import config
 from config.dictionary import Smiles, GameMessages
 from config.game_settings import game_settings
 from config.timeouts import timeouts
