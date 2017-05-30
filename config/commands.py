@@ -214,3 +214,7 @@ class CommandsConfig(BaseConfig):
     @property
     def set_group_chat(self):
         return self.config.get("commands", {}).get("set_group_chat")
+
+    @property
+    def codes_statistic(self):
+        return self.config.get("commands", {}).get("codes_statistic")
