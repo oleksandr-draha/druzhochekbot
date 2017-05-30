@@ -1,7 +1,9 @@
 from config.bot_settings import BotSettingsConfig
+from config.codes import CodesLog
 from config.commands import CommandsConfig
 from config.errors import ErrorsLog
 from config.game_settings import GameSettingsConfig
+from config.tasks import TasksLog
 from config.timeouts import TimeoutsConfig
 from config.unknown_log import UnknownLog
 
@@ -11,3 +13,5 @@ errors_log = ErrorsLog("yaml\\errors_log.yaml")
 game_settings = GameSettingsConfig("yaml\\game_settings.yaml")
 timeouts = TimeoutsConfig("yaml\\timeouts.yaml")
 unknown_log = UnknownLog("yaml\\unknown_log.yaml")
+codes_log = CodesLog("yaml\\codes.yaml")
+tasks_log = TasksLog("yaml\\tasks.yaml")
