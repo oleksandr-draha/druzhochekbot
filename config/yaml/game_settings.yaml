@@ -1,4 +1,5 @@
-game: {code_limit: 200, host: !!python/unicode 'quest.ua', id: 58417, login: 'ZHJ1emhvY2hlaw==
+game: {code_limit: 200, host: !!python/unicode 'quest.ua', id: !!python/unicode '58417',
+  login: 'ZHJ1emhvY2hlaw==
 
     ', password: 'WW84OWthVDc=
 

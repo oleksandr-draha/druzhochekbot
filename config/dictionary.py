@@ -34,9 +34,9 @@ class CommonMessages:
     DO_RESUME = u"И снова здравствуйте!"
     LETS_GO = u"Воо-оо-оойтии-ии-и в игруу-уу-уу"
     DISAPPROVE = u"Если ты им не доверяешь - значит и я."
-    CONNECTION_OK_MESSAGES = u"---*Авторизация на сайте успешна!*---"
-    PLEASE_APPROVE_MESSAGES = u"---*Для дальнейшей работы выполни команду* /approve *в игровом чате*---"
-    ACCESS_VIOLATION_MESSAGES = u"*Данная операция запрещена для вас, уважаемый.*"
+    CONNECTION_OK_MESSAGES = u"<b>---Авторизация на сайте успешна!---</b>"
+    PLEASE_APPROVE_MESSAGES = u"<b>---Для дальнейшей работы выполни команду /approve в игровом чате---</b>"
+    ACCESS_VIOLATION_MESSAGES = u"<b>Данная операция запрещена для вас, уважаемый.</b>"
     NO_GROUP_CHAT_MESSAGES = u"Я не доверяю этой группе людей."
     NOT_FOR_GROUP_CHAT_MESSAGES = [u"Такое лучше писать в личку."]
 
