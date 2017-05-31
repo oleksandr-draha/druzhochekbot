@@ -64,7 +64,7 @@ class TelegramProcessor(AbstractProcessors):
             if len(message["text"].split()) > 1:
                 if len(message["text"].split()) <= game_settings.code_limit + 1:
                     result = self.check_codes(message)
-                    self.answer_message(message, result)
+                    self.answer_message(message, result, parse_mode="html")
                     self.dublicate_code_to_group_chat(message, result)
                 else:
                     self.answer_message(
@@ -79,7 +79,7 @@ class TelegramProcessor(AbstractProcessors):
         if not bot_settings.paused:
             if len(message["text"].split()) > 1:
                 result = self.check_code(message)
-                self.answer_message(message, result)
+                self.answer_message(message, result, parse_mode="html")
                 self.dublicate_code_to_group_chat(message, result)
             else:
                 self.answer_message(message, CommandMessages.NO_CODE_FOUND)
@@ -587,7 +587,10 @@ class TelegramProcessor(AbstractProcessors):
             from_id = message["from_id"]
         for level_number, task in tasks_log.tasks_raw.iteritems():
             task_text = self.game_worker.game_driver.get_task(task)
-            all_tasks += u"{level_number}:\r\n\r\n{task}\r\n".format(level_number=level_number, task=task_text)
+            all_tasks += u"{level_number}:" \
+                         u"\r\n-------------------------------------" \
+                         u"\r\n{task}\r\n-------------------------------------" \
+                         u"\r\n".format(level_number=level_number, task=task_text)
         if len(all_tasks):
             self.send_file(from_id, all_tasks, "all_tasks.txt")
         else:
@@ -640,8 +643,9 @@ class TelegramProcessor(AbstractProcessors):
                 smile=Smiles.HINTS,
                 hint_number=hint_id,
                 hint=self.game_worker.all_hints[hint_id]))
-        for hint in hints:
-            self.answer_message(message, hint, parse_mode="HTML")
+        if len(hints):
+            for hint in hints:
+                self.answer_message(message, hint, parse_mode="HTML")
         else:
             self.answer_message(message, GameMessages.NO_HINTS, parse_mode="HTML")
 
@@ -763,12 +767,18 @@ class TelegramProcessor(AbstractProcessors):
                 and bot_settings.group_chat_id is not None \
                 and message["chat_id"] != bot_settings.group_chat_id \
                 and result is not None:
-            self.send_message(
-                bot_settings.group_chat_id,
-                CommandMessages.FIELD_TRIED_CODE.format(
-                    nickname=self.get_username(from_id),
-                    codes=result),
-                parse_mode="HTML")
+            if result not in [GameMessages.CODES_BLOCKED,
+                              GameMessages.GAME_FINISHED,
+                              GameMessages.GAME_NOT_PAYED,
+                              GameMessages.GAME_NOT_STARTED,
+                              GameMessages.BANNED,
+                              GameMessages.HANDBRAKE]:
+                self.send_message(
+                    bot_settings.group_chat_id,
+                    CommandMessages.FIELD_TRIED_CODE.format(
+                        nickname=self.get_username(from_id),
+                        codes=result),
+                    parse_mode="HTML")
 
     def process_code_simple_message(self, message):
         from_id = message["from_id"]

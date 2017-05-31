@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-import codecs
 from random import randint
 
 from requests import ConnectionError, session
 import html2text
 
 from config.dictionary import Smiles, GameMessages, CommandMessages
-from config import game_settings, codes_log
+from config import game_settings, codes_log, timeouts
 from game.locators import level_id_locator, level_number_locator, level_params_end_locator, incorrect_code_locator, \
     correct_code_locator, hint_number_start_locator, hint_number_end_locator, \
     hint_text_start_locator, hint_text_end_locator, task_header_locator, another_task_header_locator, \
     task_start_locator, task_end_locator, audio_start_locator, audio_end_locator, iframe_start_locator, \
     iframe_end_locator, source_start_locator, source_end_locator, ap_locator, ap_end_locator, hint_locator, \
-    hint_end_locator, codes_left_locator, codes_left_end_locator, message_start_locator, message_end_locator, \
+    hint_end_locator, codes_left_locator, codes_left_end_locator, \
     finish_start_locator, finish_end_locator, answer_text_start_locator, answer_text_end_locator, limit_start_locator, \
     limit_end_locator, org_message_locator, org_message_end_locator, not_entered_code_locator, code_name_locator_start, \
     code_name_locator_end, GameState
@@ -61,17 +60,25 @@ class GameDriver:
     def game_active(self, text=None):
         if text is None:
             text = self.get_game_page()
-        return text.find(GameState.logged_locator) != -1 or self.codes_blocked(text)
+        active = text.find(GameState.logged_locator) != -1 or self.codes_blocked(text)
+        if active:
+            if timeouts.process_check_interval != timeouts.active_game_interval:
+                timeouts.process_check_interval = timeouts.active_game_interval
+        return active
 
     def game_inactive(self, text=None):
         if text is None:
             text = self.get_game_page()
-        return (self.is_finished(text) or
-                self.not_started(text) or
-                self.about_to_start() or
-                self.not_payed(text) or
-                self.closed(text) or
-                self.banned_as_bot(text))
+        inactive = (self.is_finished(text) or
+                    self.not_started(text) or
+                    self.about_to_start() or
+                    self.not_payed(text) or
+                    self.closed(text) or
+                    self.banned_as_bot(text))
+        if inactive:
+            if timeouts.process_check_interval != timeouts.inactive_game_interval:
+                timeouts.process_check_interval = timeouts.inactive_game_interval
+        return inactive
 
     def info_message(self, text=None):
         if text is None:
@@ -146,7 +153,7 @@ class GameDriver:
     def get_game_page(self):
         try:
             # # Use to emulate game page
-            # f = codecs.open("list_codes.htm", encoding='utf-8')
+            # f = codecs.open("mock.htm", encoding='utf-8')
             # game_page = f.read()
             # return game_page
             return self.session.get(
@@ -158,10 +165,10 @@ class GameDriver:
 
     def post_game_page(self, body):
         try:
-                # # Use to emulate game page
-                # f = codecs.open("list_codes.htm", encoding='utf-8')
-                # game_page = f.read()
-                # return game_page
+            # # Use to emulate game page
+            # f = codecs.open("mock.htm", encoding='utf-8')
+            # game_page = f.read()
+            # return game_page
             return self.session.post(
                 game_settings.quest_url.format(
                     host=game_settings.game_host,
@@ -355,12 +362,17 @@ class GameDriver:
             codes_left_end = codes_left_start + text[codes_left_start:].find(codes_left_end_locator)
             return int(html2text.html2text(text[codes_left_start: codes_left_end]))
 
+    def get_not_payed_message(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        return GameState.not_payed
+
     def get_not_started_message(self, text=None):
         if text is None:
             text = self.get_game_page()
-        if text.find(message_start_locator) != -1:
-            message_start = text.find(message_start_locator)
-            message_end = text[message_start:].find(message_end_locator)
+        if text.find(GameState.message_start_locator) != -1:
+            message_start = text.find(GameState.message_start_locator)
+            message_end = text[message_start:].find(GameState.message_end_locator)
             return text[message_start:message_start + message_end]
 
     def get_about_to_start_message(self, text=None):

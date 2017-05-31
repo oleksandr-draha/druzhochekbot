@@ -65,9 +65,6 @@ hint_end_locator = u'</span>'
 codes_left_locator = u'осталось закрыть'
 codes_left_end_locator = u')</span>'
 
-message_start_locator = u'Игра начнется в'
-message_end_locator = u'<span'
-
 finish_start_locator = u'<div class="t_center">'
 finish_end_locator = u'</div>'
 

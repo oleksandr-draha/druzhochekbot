@@ -64,7 +64,7 @@ class GameProcessor:
         if self.game_driver.not_payed(self.game_page):
             if not self.not_payed_shown:
                 self.not_payed_shown = True
-                updates.append(self.game_driver.not_payed(self.game_page))
+                updates.append(self.game_driver.get_not_payed_message(self.game_page))
         return updates
 
     def process_game_not_started(self):

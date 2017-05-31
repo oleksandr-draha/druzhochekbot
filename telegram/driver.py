@@ -134,7 +134,7 @@ class TelegramDriver(object):
         :rtype: None
         """
         for admin_id in bot_settings.admin_ids:
-            self.send_message(admin_id, text)
+            self.send_message(admin_id, text, parse_mode="html")
 
     def check_new_messages(self):
         """
