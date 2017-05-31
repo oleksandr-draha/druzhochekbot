@@ -1,3 +1,5 @@
+from os import path
+
 from config.bot_settings import BotSettingsConfig
 from config.codes import CodesLog
 from config.commands import CommandsConfig
@@ -7,11 +9,11 @@ from config.tasks import TasksLog
 from config.timeouts import TimeoutsConfig
 from config.unknown_log import UnknownLog
 
-bot_settings = BotSettingsConfig("yaml\\bot_settings.yaml")
-commands = CommandsConfig("yaml\\commands.yaml")
-errors_log = ErrorsLog("yaml\\errors_log.yaml")
-game_settings = GameSettingsConfig("yaml\\game_settings.yaml")
-timeouts = TimeoutsConfig("yaml\\timeouts.yaml")
-unknown_log = UnknownLog("yaml\\unknown_log.yaml")
-codes_log = CodesLog("yaml\\codes.yaml")
-tasks_log = TasksLog("yaml\\tasks.yaml")
+bot_settings = BotSettingsConfig(path.join("yaml", "bot_settings.yaml"))
+commands = CommandsConfig(path.join("yaml", "commands.yaml"))
+errors_log = ErrorsLog(path.join("yaml", "errors_log.yaml"))
+game_settings = GameSettingsConfig(path.join("yaml", "game_settings.yaml"))
+timeouts = TimeoutsConfig(path.join("yaml", "timeouts.yaml"))
+unknown_log = UnknownLog(path.join("yaml", "unknown_log.yaml"))
+codes_log = CodesLog(path.join("yaml", "codes.yaml"))
+tasks_log = TasksLog(path.join("yaml", "tasks.yaml"))
