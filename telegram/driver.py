@@ -3,7 +3,7 @@ import json
 from random import choice
 import time
 
-from requests import ConnectionError, session
+from requests import ConnectionError, session, ReadTimeout
 
 from config import bot_settings, timeouts
 from config.dictionary import SettingsMessages
@@ -34,7 +34,7 @@ class TelegramDriver(object):
                 self.start_offset = messages[-1]['update_id'] + 1
             # ord(messages[0]["message"]["text"][4])
             return messages
-        except ConnectionError:
+        except (ConnectionError, ReadTimeout):
             return {}
 
     def get_username(self, user_id):
