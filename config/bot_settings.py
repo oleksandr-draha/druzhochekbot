@@ -44,6 +44,15 @@ class BotSettingsConfig(BaseConfig):
         self.save_config()
 
     @property
+    def log_activity(self):
+        return self.config.get("bot", {}).get("log_activity")
+
+    @log_activity.setter
+    def log_activity(self, value):
+        self.config["bot"]["log_activity"] = value
+        self.save_config()
+
+    @property
     def autohandbrake(self):
         return self.config.get("bot", {}).get("autohandbrake")
 

@@ -93,6 +93,8 @@ class SettingsMessages:
     GIVE_ME_NEW_GAME = u"Текущий номер игры: *{game}*\r\nВведи новый:"
     TAG_FIELD = u"""Отмечать ли полевых игроков при получении нового задания?
 *YES* - да, *NO* - нет, *CANCEL* - отменить"""
+    LOG_ACTIVITY = u"""Логгировать ли моменты активности?
+*YES* - да, *NO* - нет, *CANCEL* - отменить"""
     AUTOHANDBRAKE = u"""Блокировать ли ввод кодов при получении задания с ограничением на ввод?
 *ON* - да, *OFF* - нет, *CANCEL* - отменить"""
     HANDBRAKE = u"""Снять блокировку на ввод кодов или оставить?
@@ -192,6 +194,7 @@ rnd: {rnd}
 Лимит на вбитие кодов: {codelimit}
 Отмечать поле при новом задании: {tag_field}
 Автоматическая блокировка вбития кодов: {autohandbrake}
+Логгирование активности: {log_activity}
 -------------------------------
 Инвайт-код для админов: {admin_passphrase}
 Инвайт-код для поля: {field_passphrase}
@@ -286,6 +289,7 @@ rnd: {rnd}
 {clean_memory}: Очистить лог заданий и введённых кодов
 {clean_errors}: Очистить лог ошибок
 {clean_unknown}: Очистить лог запросов от неизвестных
+{log_activity}: Редактирование логгирование активности бота
 
 *Пользовательские функции:*
 {regular}
@@ -333,4 +337,5 @@ rnd: {rnd}
         clean_unknown=commands.clean_unknown,
         tag_field=commands.tag_field_,
         clean_memory=commands.clean_memory,
+        log_activity=commands.log_activity,
         regular=REGULAR_HELP)

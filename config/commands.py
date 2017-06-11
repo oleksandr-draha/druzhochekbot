@@ -218,3 +218,7 @@ class CommandsConfig(BaseConfig):
     @property
     def codes_statistic(self):
         return self.config.get("commands", {}).get("codes_statistic")
+
+    @property
+    def log_activity(self):
+        return self.config.get("commands", {}).get("activity")

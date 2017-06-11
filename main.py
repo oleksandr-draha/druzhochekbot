@@ -3,7 +3,7 @@ from traceback import format_exc
 
 from datetime import timedelta, datetime
 
-from config import errors_log, timeouts
+from config import errors_log, timeouts, activity_log, bot_settings
 from telegram.worker import TelegramWorker
 
 bot = TelegramWorker()
@@ -13,6 +13,8 @@ next_run = current_time
 
 
 while not bot.stopped:
+    if bot_settings.log_activity:
+        activity_log.log_activity()
     try:
         bot.process_messages()
         if next_run < datetime.now():

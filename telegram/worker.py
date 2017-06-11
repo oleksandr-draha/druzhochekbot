@@ -133,6 +133,8 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_clean_memory)
             elif command == commands.tag_field_:
                 self._admin_command(message, self.do_set_tag_field)
+            elif command == commands.log_activity:
+                self._admin_command(message, self.do_set_log_activity)
             else:
                 self.unknown_command(message)
             # endregion

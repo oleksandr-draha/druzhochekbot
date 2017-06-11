@@ -10,4 +10,4 @@ commands: {add_admin: /aa, add_field: /af, add_kc: /ak, alert: /alert, approve: 
   message_field: /mf, message_kc: /mk, pass: /pass, pause: /pause, reset: /reset,
   resume: /resume, send_source: /source, set_group_chat: /sgc, status: /status, codes_statistic: /codestat,
   stop: /stop, tag_field: /tagfield, task: /task, taskhtml: /taskhtml, tasksall: /tasksall,
-  token: /token, unknown: /unknown}
+  token: /token, unknown: /unknown, activity: /activity}

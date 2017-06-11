@@ -5,6 +5,7 @@ from config.codes import CodesLog
 from config.commands import CommandsConfig
 from config.errors import ErrorsLog
 from config.game_settings import GameSettingsConfig
+from config.last_activity import ActivityLog
 from config.tasks import TasksLog
 from config.timeouts import TimeoutsConfig
 from config.unknown_log import UnknownLog
@@ -17,3 +18,4 @@ timeouts = TimeoutsConfig(path.join("yaml", "timeouts.yaml"))
 unknown_log = UnknownLog(path.join("yaml", "unknown_log.yaml"))
 codes_log = CodesLog(path.join("yaml", "codes.yaml"))
 tasks_log = TasksLog(path.join("yaml", "tasks.yaml"))
+activity_log = ActivityLog(path.join("yaml", "activity.yaml"))
