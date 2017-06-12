@@ -130,6 +130,7 @@ class UserMessages:
 
 class GameMessages:
     GAME_NOT_PAYED = u"\r\nВаша команда не сделала взнос на игру."
+    GAME_NOT_APPROVED = u"\r\nВаша команда не принята в игру."
     GAME_NOT_STARTED = u"\r\nИгра ещё не началась."
     BANNED = u"\r\nБот забанен со стороны игры. Залогиньтесь под ним в системе."
     GAME_FINISHED = u"\r\nИгра окончена."

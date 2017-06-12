@@ -65,6 +65,7 @@ class GameDriver:
                     self.not_started(text) or
                     self.about_to_start() or
                     self.not_payed(text) or
+                    self.not_approved(text) or
                     self.closed(text) or
                     self.banned_as_bot(text))
         if inactive:
@@ -84,6 +85,16 @@ class GameDriver:
             start = text.find(GameState.info_message_start)
             end = text[start:].find(GameState.info_message_end)
             return text[start:start + end].find(GameState.not_payed) != -1
+        else:
+            return False
+
+    def not_approved(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        if self.info_message(text):
+            start = text.find(GameState.info_message_start)
+            end = text[start:].find(GameState.info_message_end)
+            return text[start:start + end].find(GameState.not_approved) != -1
         else:
             return False
 
@@ -203,6 +214,8 @@ class GameDriver:
         result = ''
         if self.not_payed(r):
             return GameMessages.GAME_NOT_PAYED
+        if self.not_approved(r):
+            return GameMessages.GAME_NOT_APPROVED
         if self.not_started(r):
             return GameMessages.GAME_NOT_STARTED
         elif self.is_finished(r):
@@ -358,6 +371,11 @@ class GameDriver:
         if text is None:
             text = self.get_game_page()
         return GameState.not_payed
+
+    def get_not_approved_message(self, text=None):
+        if text is None:
+            text = self.get_game_page()
+        return GameState.not_approved
 
     def get_not_started_message(self, text=None):
         if text is None:

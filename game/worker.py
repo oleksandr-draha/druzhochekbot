@@ -39,6 +39,8 @@ class GameWorker(GameProcessor):
         updates += self.process_game_finished()
         # If game not payed
         updates += self.process_game_not_payed()
+        # If game not approved
+        updates += self.process_game_not_approved()
         # If bot was banned
         updates += self.process_banned_as_bot()
         # If game is started and not finished - should start process tasks

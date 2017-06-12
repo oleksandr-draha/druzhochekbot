@@ -11,6 +11,7 @@ class GameState(object):
     game_closed_text = u'Игра уже закончилась'
 
     not_payed = u"""Ваша команда не сделала взнос на эту игру"""
+    not_approved = u"""Администратор игры всё ещё не допустил вас к игре, вы не можете принимать в ней участие."""
 
     finished = u'<font size="+2"><span id="animate">Поздравляем!!!</span></font>'
 

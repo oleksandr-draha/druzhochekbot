@@ -22,6 +22,7 @@ class GameProcessor:
     closed_shown = False
     banned_as_bot_shown = False
     not_payed_shown = False
+    not_approved_shown = False
     codes_limit_shown = False
     _request_task_text = False
     last_org_message_shown = None
@@ -65,6 +66,14 @@ class GameProcessor:
             if not self.not_payed_shown:
                 self.not_payed_shown = True
                 updates.append(self.game_driver.get_not_payed_message(self.game_page))
+        return updates
+
+    def process_game_not_approved(self):
+        updates = []
+        if self.game_driver.not_approved(self.game_page):
+            if not self.not_approved_shown:
+                self.not_approved_shown = True
+                updates.append(self.game_driver.get_not_approved_message(self.game_page))
         return updates
 
     def process_game_not_started(self):

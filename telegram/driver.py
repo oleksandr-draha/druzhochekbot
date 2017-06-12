@@ -3,7 +3,7 @@ import json
 from random import choice
 import time
 
-from requests import ConnectionError, session, ReadTimeout
+from requests import ConnectionError, ReadTimeout, session
 
 from config import bot_settings, timeouts
 from config.dictionary import SettingsMessages

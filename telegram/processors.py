@@ -23,6 +23,7 @@ class TelegramProcessor(AbstractProcessors):
                 if result in [GameMessages.CODES_BLOCKED,
                               GameMessages.GAME_FINISHED,
                               GameMessages.GAME_NOT_PAYED,
+                              GameMessages.GAME_NOT_APPROVED,
                               GameMessages.GAME_NOT_STARTED,
                               GameMessages.BANNED,
                               GameMessages.HANDBRAKE]:
@@ -783,6 +784,7 @@ class TelegramProcessor(AbstractProcessors):
             if result not in [GameMessages.CODES_BLOCKED,
                               GameMessages.GAME_FINISHED,
                               GameMessages.GAME_NOT_PAYED,
+                              GameMessages.GAME_NOT_APPROVED,
                               GameMessages.GAME_NOT_STARTED,
                               GameMessages.BANNED,
                               GameMessages.HANDBRAKE]:

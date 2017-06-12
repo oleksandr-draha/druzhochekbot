@@ -1,4 +1,4 @@
-requests
+requests==2.17.3
 pyyaml
 html2text
 msgpack-python==0.4.7
