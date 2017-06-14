@@ -86,7 +86,7 @@ class GameProcessor:
 
     def process_game_about_to_start(self):
         updates = []
-        if self.game_driver.about_to_start(self.game_page):
+        if self.game_driver.about_to_start(self.game_page) and not self.game_driver.not_started(self.game_page):
             if not self.about_to_start_shown:
                 self.about_to_start_shown = True
                 updates.append(self.game_driver.get_about_to_start_message(self.game_page))
