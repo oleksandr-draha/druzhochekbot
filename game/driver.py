@@ -141,10 +141,8 @@ class GameDriver:
     def is_finished(self, text=None):
         if text is None:
             text = self.get_game_page()
-        if self.info_message(text):
-            start = text.find(GameState.info_message_start)
-            end = text[start:].find(GameState.info_message_end)
-            return text[start:start + end].find(GameState.finished) != -1
+        if self.get_finish_message(text) is not None:
+            return True
         else:
             return False
 
