@@ -16,8 +16,8 @@ while not bot.stopped:
     if bot_settings.log_activity:
         activity_log.log_activity()
     try:
-        bot.process_messages()
         if next_run < datetime.now():
+            bot.process_messages()
             bot.process_game_updates()
             next_run = datetime.now() + timedelta(seconds=timeouts.process_check_interval)
     except Exception, e:
