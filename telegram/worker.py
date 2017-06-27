@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from config import bot_settings, commands
 from config.dictionary import SettingsMessages
+from telegram.codes import CodesQueue
 from telegram.processors import TelegramProcessor
 
 
@@ -156,3 +157,18 @@ class TelegramWorker(TelegramProcessor):
                 self.send_message(bot_settings.group_chat_id,
                                   game_updates,
                                   parse_mode="HTML")
+
+    def process_codes_queue(self):
+        next_code = CodesQueue.get_next_code()
+        if next_code is not None:
+            bunch_id, code, username, finished = next_code
+            result = self.game_worker.game_driver.try_code(code, username)
+            # add finishing bunch if game was stopped
+            CodesQueue.add_code_result(bunch_id, result)
+            if finished:
+                processed = CodesQueue.processed.pop(bunch_id)
+                results = "".join(processed["results"])
+                self.answer_message(processed["message"],
+                                    results,
+                                    parse_mode="html")
+                self.duplicate_code_to_group_chat(processed["message"], results)

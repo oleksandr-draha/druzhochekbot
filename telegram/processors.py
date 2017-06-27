@@ -6,6 +6,7 @@ from config.dictionary import Smiles, CommonMessages, BotSystemMessages, Command
     UserMessages, GameMessages, FileMessages, HelpMessages
 from game.worker import GameWorker
 from telegram.abstract_processors import AbstractProcessors
+from telegram.codes import CodesQueue
 
 
 class TelegramProcessor(AbstractProcessors):
@@ -63,14 +64,10 @@ class TelegramProcessor(AbstractProcessors):
     def do_codes(self, message):
         if not bot_settings.paused:
             if len(message["text"].split()) > 1:
-                if len(message["text"].split()) <= game_settings.code_limit + 1:
-                    result = self.check_codes(message)
-                    self.answer_message(message, result, parse_mode="html")
-                    self.dublicate_code_to_group_chat(message, result)
-                else:
-                    self.answer_message(
-                        message,
-                        CommandMessages.CODE_LIMIT.format(codelimit=game_settings.code_limit))
+                CodesQueue.add_code_bunch(message, split=True)
+                # result = self.check_codes(message)
+                # self.answer_message(message, result, parse_mode="html")
+                # self.duplicate_code_to_group_chat(message, result)
             else:
                 self.answer_message(message, CommandMessages.NO_CODE_FOUND)
         else:
@@ -79,9 +76,10 @@ class TelegramProcessor(AbstractProcessors):
     def do_code(self, message):
         if not bot_settings.paused:
             if len(message["text"].split()) > 1:
-                result = self.check_code(message)
-                self.answer_message(message, result, parse_mode="html")
-                self.dublicate_code_to_group_chat(message, result)
+                CodesQueue.add_code_bunch(message)
+                # result = self.check_code(message)
+                # self.answer_message(message, result, parse_mode="html")
+                # self.duplicate_code_to_group_chat(message, result)
             else:
                 self.answer_message(message, CommandMessages.NO_CODE_FOUND)
         else:
@@ -775,7 +773,7 @@ class TelegramProcessor(AbstractProcessors):
         else:
             return False
 
-    def dublicate_code_to_group_chat(self, message, result):
+    def duplicate_code_to_group_chat(self, message, result):
         from_id = message["from_id"]
         if bot_settings.is_field(from_id) \
                 and bot_settings.group_chat_id is not None \
@@ -800,15 +798,17 @@ class TelegramProcessor(AbstractProcessors):
         if from_id in bot_settings.field_ids:
             if not message['text'].startswith('/'):
                 if not bot_settings.paused:
-                    result = self.check_code(message)
-                    self.answer_message(message, result)
-                    self.dublicate_code_to_group_chat(message, result)
+                    CodesQueue.add_code_bunch(message)
+                    # result = self.check_code(message)
+                    # self.answer_message(message, result)
+                    # self.duplicate_code_to_group_chat(message, result)
                 else:
                     self.answer_message(message, CommonMessages.PAUSED)
         elif from_id in bot_settings.kc_ids:
             if not message['text'].startswith('/'):
                 if not bot_settings.paused:
-                    result = self.check_code(message)
-                    self.answer_message(message, result)
+                    CodesQueue.add_code_bunch(message)
+                    # result = self.check_code(message)
+                    # self.answer_message(message, result)
                 else:
                     self.answer_message(message, CommonMessages.PAUSED)
