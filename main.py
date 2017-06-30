@@ -9,7 +9,8 @@ from telegram.worker import TelegramWorker
 bot = TelegramWorker()
 
 current_time = datetime.now()
-next_run = current_time
+game_update_next_run = current_time
+code_enter_next_run = current_time
 
 
 while not bot.stopped:
@@ -17,10 +18,13 @@ while not bot.stopped:
         activity_log.log_activity()
     try:
         bot.process_messages()
-        if next_run < datetime.now():
-            bot.process_game_updates()
-            bot.process_codes_queue()
-            next_run = datetime.now() + timedelta(seconds=timeouts.process_check_interval)
+        game_page = None
+        if code_enter_next_run < datetime.now():
+            game_page = bot.process_codes_queue()
+            code_enter_next_run = datetime.now() + timedelta(seconds=timeouts.code_enter_interval)
+        if game_update_next_run < datetime.now():
+            bot.process_game_updates(game_page=game_page)
+            game_update_next_run = datetime.now() + timedelta(seconds=timeouts.game_update_check_interval)
     except Exception, e:
         bot.admin_message(format_exc())
         errors_log.log_error(format_exc())

@@ -4,6 +4,7 @@ from time import sleep
 from config import bot_settings, game_settings, timeouts, tasks_log
 from config.dictionary import Smiles, GameMessages
 from game.driver import GameDriver
+from telegram.codes import CodesQueue
 
 
 class GameProcessor:
@@ -48,6 +49,7 @@ class GameProcessor:
         self.closed_shown = False
         self.banned_as_bot_shown = False
         self.codes_limit_shown = False
+        CodesQueue.reset()
 
     def process_user_was_not_logged(self):
         attempt = 0

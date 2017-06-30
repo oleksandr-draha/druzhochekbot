@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from config import bot_settings, commands
-from config.dictionary import SettingsMessages
+from config.dictionary import SettingsMessages, GameMessages
 from telegram.codes import CodesQueue
 from telegram.processors import TelegramProcessor
 
@@ -138,12 +138,12 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_set_log_activity)
             else:
                 self.unknown_command(message)
-            # endregion
+                # endregion
 
-    def process_game_updates(self):
+    def process_game_updates(self, game_page=None):
         if not bot_settings.paused and bot_settings.group_chat_id is not None:
             last_level_shown = self.game_worker.last_level_shown
-            updates = self.game_worker.check_updates()
+            updates = self.game_worker.check_updates(game_page=game_page)
             current_level = self.game_worker.last_level_shown
             if updates is None:
                 self.admin_message(SettingsMessages.CONNECTION_PROBLEM)
@@ -162,13 +162,22 @@ class TelegramWorker(TelegramProcessor):
         next_code = CodesQueue.get_next_code()
         if next_code is not None:
             bunch_id, code, username, finished = next_code
-            result = self.game_worker.game_driver.try_code(code, username)
-            # add finishing bunch if game was stopped
+            result, game_page = self.game_worker.game_driver.try_code(code, username)
             CodesQueue.add_code_result(bunch_id, result)
-            if finished:
+            if result in [GameMessages.CODES_BLOCKED,
+                          GameMessages.GAME_FINISHED,
+                          GameMessages.GAME_NOT_PAYED,
+                          GameMessages.GAME_NOT_APPROVED,
+                          GameMessages.GAME_NOT_STARTED,
+                          GameMessages.BANNED,
+                          GameMessages.HANDBRAKE]:
+                CodesQueue.finalize_bunch(bunch_id)
+                finished = True
+            if finished and result is not None:
                 processed = CodesQueue.processed.pop(bunch_id)
                 results = "".join(processed["results"])
                 self.answer_message(processed["message"],
                                     results,
                                     parse_mode="html")
                 self.duplicate_code_to_group_chat(processed["message"], results)
+            return game_page

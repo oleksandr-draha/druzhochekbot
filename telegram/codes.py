@@ -52,3 +52,13 @@ class CodesQueue():
     @staticmethod
     def add_code_result(bunch_id, result):
         CodesQueue.processed[bunch_id]["results"].append(result)
+
+    @staticmethod
+    def finalize_bunch(bunch_id):
+        if bunch_id in CodesQueue.pending:
+            CodesQueue.pending.pop(bunch_id)
+
+    @staticmethod
+    def reset():
+        CodesQueue.processed = {}
+        CodesQueue.pending = {}

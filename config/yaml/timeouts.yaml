@@ -1,2 +1,2 @@
-timeouts: {active_game_interval: 1, answer_check_interval: 1, inactive_game_interval: 5,
-  max_attempts: 3, process_check_interval: 1, relogin_interval: 5}
+timeouts: {active_game_interval: 1, answer_check_interval: 1, code_enter_interval: 0.1,
+  game_update_check_interval: 1, inactive_game_interval: 5, max_attempts: 3, relogin_interval: 5}

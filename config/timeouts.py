@@ -15,12 +15,16 @@ class TimeoutsConfig(BaseConfig):
         return self.config.get("timeouts", {}).get("inactive_game_interval")
 
     @property
-    def process_check_interval(self):
-        return self.config.get("timeouts", {}).get("process_check_interval")
+    def code_enter_interval(self):
+        return self.config.get("timeouts", {}).get("code_enter_interval")
 
-    @process_check_interval.setter
-    def process_check_interval(self, value):
-        self.config["timeouts"]["process_check_interval"] = value
+    @property
+    def game_update_check_interval(self):
+        return self.config.get("timeouts", {}).get("game_update_check_interval")
+
+    @game_update_check_interval.setter
+    def game_update_check_interval(self, value):
+        self.config["timeouts"]["game_update_check_interval"] = value
         self.save_config()
 
     @property

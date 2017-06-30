@@ -54,8 +54,8 @@ class GameDriver:
             text = self.get_game_page()
         active = text.find(GameState.logged_locator) != -1 or self.codes_blocked(text)
         if active:
-            if timeouts.process_check_interval != timeouts.active_game_interval:
-                timeouts.process_check_interval = timeouts.active_game_interval
+            if timeouts.game_update_check_interval != timeouts.active_game_interval:
+                timeouts.game_update_check_interval = timeouts.active_game_interval
         return active
 
     def game_inactive(self, text=None):
@@ -69,8 +69,8 @@ class GameDriver:
                     self.closed(text) or
                     self.banned_as_bot(text))
         if inactive:
-            if timeouts.process_check_interval != timeouts.inactive_game_interval:
-                timeouts.process_check_interval = timeouts.inactive_game_interval
+            if timeouts.game_update_check_interval != timeouts.inactive_game_interval:
+                timeouts.game_update_check_interval = timeouts.inactive_game_interval
         return inactive
 
     def info_message(self, text=None):
@@ -211,25 +211,25 @@ class GameDriver:
         r = self.post_game_page(body=body)
         result = ''
         if self.not_payed(r):
-            return GameMessages.GAME_NOT_PAYED
+            return GameMessages.GAME_NOT_PAYED, r
         if self.not_approved(r):
-            return GameMessages.GAME_NOT_APPROVED
+            return GameMessages.GAME_NOT_APPROVED, r
         if self.not_started(r):
-            return GameMessages.GAME_NOT_STARTED
+            return GameMessages.GAME_NOT_STARTED, r
         elif self.is_finished(r):
-            return GameMessages.GAME_FINISHED
+            return GameMessages.GAME_FINISHED, r
         elif self.codes_blocked(r):
-            return GameMessages.CODES_BLOCKED
+            return GameMessages.CODES_BLOCKED, r
         elif self.closed(r):
-            return GameMessages.GAME_FINISHED
+            return GameMessages.GAME_FINISHED, r
         elif self.banned_as_bot(r):
-            return GameMessages.BANNED
+            return GameMessages.BANNED, r
         if self.level_number != self.get_level_params(r)["LevelNumber"]:
             if r.find(InGame.incorrect_code_locator) == -1 and \
                     r.find(InGame.correct_code_locator) != -1:
                 # Collect code if was not entered already
                 codes_log.log_code('? ' + code, self.level_number, username)
-            return
+            return None, r
         if r.find(InGame.incorrect_code_locator) == -1 and \
                 r.find(InGame.correct_code_locator) != -1:
             # Save entered codes
@@ -246,7 +246,7 @@ class GameDriver:
             result = u'\r\n{smile}: {code}'.format(
                 code=code,
                 smile=Smiles.WRONG_CODE)
-        return result
+        return result, r
 
     def get_all_hints(self, text=None):
 

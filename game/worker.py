@@ -21,9 +21,10 @@ class GameWorker(GameProcessor):
                 replaced_updates.append(update)
         return replaced_updates
 
-    def check_updates(self):
+    def check_updates(self, game_page=None):
         updates = []
-        self.game_page = self.game_driver.get_game_page()
+        if game_page is None:
+            self.game_page = self.game_driver.get_game_page()
 
         # Check that user is logged in
         if self.process_user_was_not_logged():
