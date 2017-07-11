@@ -35,6 +35,15 @@ class BotSettingsConfig(BaseConfig):
         self.save_config()
 
     @property
+    def connection_problems(self):
+        return self.config.get("bot", {}).get("connection_problems")
+
+    @connection_problems.setter
+    def connection_problems(self, value):
+        self.config["bot"]["connection_problems"] = value
+        self.save_config()
+
+    @property
     def tag_field(self):
         return self.config.get("bot", {}).get("tag_field")
 

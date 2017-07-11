@@ -104,6 +104,7 @@ class SettingsMessages:
     SETTINGS_WERE_NOT_SAVED = u"Проблема при записи настроек. Проверьте права доступа."
     SETTINGS_WERE_NOT_CHANGED = u"Настройки не были изменены."
     CONNECTION_PROBLEM = u"---*Проблемы с авторизацией на сайте!*---"
+    CONNECTION_RESTORED = u"---*Доступ восстановлен!*---"
     CHECK_SETTINGS = u"---*Проверьте настройки!*---"
 
 

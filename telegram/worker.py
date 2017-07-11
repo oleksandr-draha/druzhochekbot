@@ -146,8 +146,13 @@ class TelegramWorker(TelegramProcessor):
             updates = self.game_worker.check_updates(game_page=game_page)
             current_level = self.game_worker.last_level_shown
             if updates is None:
-                self.admin_message(SettingsMessages.CONNECTION_PROBLEM)
+                if not bot_settings.connection_problems:
+                    self.admin_message(SettingsMessages.CONNECTION_PROBLEM)
+                    bot_settings.connection_problems = True
             else:
+                if bot_settings.connection_problems:
+                    self.admin_message(SettingsMessages.CONNECTION_RESTORED)
+                    bot_settings.connection_problems = False
                 game_updates = ""
                 for update in updates:
                     game_updates += update
