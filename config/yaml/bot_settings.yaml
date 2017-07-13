@@ -1,7 +1,7 @@
 bot: {admin_passphrase: 'dmVyeXN0cm9uZ2FkbWlucGFzc3dvcmQx
 
     ', answer-forbidden: false, answer-unknown: false, approved_chat: -1001050462991,
-  autohandbrake: true, connection_problems: true, field_ids: 'kc4KJpqv
+  autohandbrake: true, connection_problems: false, field_ids: 'kc4KJpqv
 
     ', field_passphrase: 'aXZlcnlsb3ZlZHJhZ2E=
 
