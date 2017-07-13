@@ -63,7 +63,7 @@ class GameDriver:
             text = self.get_game_page()
         inactive = (self.is_finished(text) or
                     self.not_started(text) or
-                    self.about_to_start() or
+                    self.about_to_start(text) or
                     self.not_payed(text) or
                     self.not_approved(text) or
                     self.closed(text) or
