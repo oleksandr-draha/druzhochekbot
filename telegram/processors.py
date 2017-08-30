@@ -448,6 +448,18 @@ class TelegramProcessor(AbstractProcessors):
             return
         self.answer_message(message, SettingsMessages.SETTINGS_WERE_CHANGED)
 
+    def do_set_send_task_to_private(self, message):
+        send_task_to_private = self.get_new_value(message,
+                                                  SettingsMessages.SEND_TASK_TO_PRIVATE_FIELD)
+        if send_task_to_private == "NO":
+            bot_settings.send_task_to_private = False
+        elif send_task_to_private == "YES":
+            bot_settings.send_task_to_private = True
+        else:
+            self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
+            return
+        self.answer_message(message, SettingsMessages.SETTINGS_WERE_CHANGED)
+
     def do_set_log_activity(self, message):
         tag_field = self.get_new_value(message,
                                        SettingsMessages.LOG_ACTIVITY)
@@ -566,6 +578,7 @@ class TelegramProcessor(AbstractProcessors):
             codelimit=game_settings.code_limit,
             unknown_users=len(unknown_log.unknown_raw),
             tag_field=str(bot_settings.tag_field),
+            send_task_to_private=str(bot_settings.send_task_to_private),
             autohandbrake=str(bot_settings.autohandbrake),
             log_activity=str(bot_settings.log_activity))
         self.answer_message(message, info_message, parse_mode="HTML")

@@ -134,6 +134,8 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_clean_memory)
             elif command == commands.tag_field_:
                 self._admin_command(message, self.do_set_tag_field)
+            elif command == commands.send_task_to_private:
+                self._admin_command(message, self.do_set_send_task_to_private)
             elif command == commands.log_activity:
                 self._admin_command(message, self.do_set_log_activity)
             else:
@@ -157,6 +159,11 @@ class TelegramWorker(TelegramProcessor):
                 for update in updates:
                     game_updates += update
                 if last_level_shown != current_level:
+                    if bot_settings.send_task_to_private:
+                        for field_id in bot_settings.field_ids:
+                            self.send_message(field_id,
+                                              game_updates,
+                                              parse_mode="HTML")
                     if bot_settings.tag_field:
                         game_updates += self.get_alert_captions()
                 self.send_message(bot_settings.group_chat_id,

@@ -53,6 +53,15 @@ class BotSettingsConfig(BaseConfig):
         self.save_config()
 
     @property
+    def send_task_to_private(self):
+        return self.config.get("bot", {}).get("send_task_to_private")
+
+    @send_task_to_private.setter
+    def send_task_to_private(self, value):
+        self.config["bot"]["send_task_to_private"] = value
+        self.save_config()
+
+    @property
     def log_activity(self):
         return self.config.get("bot", {}).get("log_activity")
 

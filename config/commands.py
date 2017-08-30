@@ -204,6 +204,10 @@ class CommandsConfig(BaseConfig):
         return self.config.get("commands", {}).get("tag_field")
 
     @property
+    def send_task_to_private(self):
+        return self.config.get("commands", {}).get("send_task_to_private")
+
+    @property
     def autohandbrake_(self):
         return self.config.get("commands", {}).get("autohandbrake")
 

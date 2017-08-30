@@ -93,6 +93,8 @@ class SettingsMessages:
     GIVE_ME_NEW_GAME = u"Текущий номер игры: *{game}*\r\nВведи новый:"
     TAG_FIELD = u"""Отмечать ли полевых игроков при получении нового задания?
 *YES* - да, *NO* - нет, *CANCEL* - отменить"""
+    SEND_TASK_TO_PRIVATE_FIELD = u"""Отсылать ли в личку полю новые задания и подсказки?
+*YES* - да, *NO* - нет, *CANCEL* - отменить"""
     LOG_ACTIVITY = u"""Логгировать ли моменты активности?
 *YES* - да, *NO* - нет, *CANCEL* - отменить"""
     AUTOHANDBRAKE = u"""Блокировать ли ввод кодов при получении задания с ограничением на ввод?
@@ -195,6 +197,7 @@ class HelpMessages:
 rnd: {rnd}
 Лимит на вбитие кодов: {codelimit}
 Отмечать поле при новом задании: {tag_field}
+Отсылать обновления в личку: {send_task_to_private}
 Автоматическая блокировка вбития кодов: {autohandbrake}
 Логгирование активности: {log_activity}
 -------------------------------
@@ -284,6 +287,7 @@ rnd: {rnd}
 {message_field}: Сделать рассылку в личку всему полю
 {message_kc}: Сделать рассылку в личку всему КЦ
 {tag_field}: Редактировать оповещение игроков при получении нового задания
+{send_task_to_private}: Редактировать оповещение игроков в личку при получении нового задания
 
 {source}: Отправить текущую страницу
 {errors}: Отправить лог ошибок
@@ -338,6 +342,7 @@ rnd: {rnd}
         clean_errors=commands.clean_errors_,
         clean_unknown=commands.clean_unknown,
         tag_field=commands.tag_field_,
+        send_task_to_private=commands.send_task_to_private,
         clean_memory=commands.clean_memory,
         log_activity=commands.log_activity,
         regular=REGULAR_HELP)
