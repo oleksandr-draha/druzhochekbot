@@ -1,4 +1,5 @@
 requests==2.17.3
-pyyaml
-html2text
+PyYAML==3.12
+html2text==2016.9.19
 msgpack-python==0.4.7
+pyodbc==4.0.17

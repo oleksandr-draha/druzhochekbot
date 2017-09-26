@@ -226,3 +226,19 @@ class CommandsConfig(BaseConfig):
     @property
     def log_activity(self):
         return self.config.get("commands", {}).get("activity")
+
+    @property
+    def anagram_streets(self):
+        return self.config.get("commands", {}).get("anagram_streets")
+
+    @property
+    def anagram_words_ru(self):
+        return self.config.get("commands", {}).get("anagram_words_ru")
+
+    @property
+    def anagram_words_en(self):
+        return self.config.get("commands", {}).get("anagram_words_en")
+
+    @property
+    def anagram_streets_short(self):
+        return self.config.get("commands", {}).get("anagram_streets_short")

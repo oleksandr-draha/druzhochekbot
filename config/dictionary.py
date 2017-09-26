@@ -59,6 +59,11 @@ class BotSystemMessages:
     BOT_WAS_RESET = u"Состояние бота было сброшено на начальное."
 
 
+class UtilsMessages:
+    ENTER_LETTERS = u"""Введите буквы для анаграммирования"""
+    NO_ANAGRAMS_FOUND = u"""Анаграм не найдено"""
+
+
 class CommandMessages:
     NO_CODE_FOUND = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c long code или /cc code 1 code2_'
     DUPLICATE_CODE = u' уже вбил <b>{username}</b>/'

@@ -3,10 +3,11 @@ import json
 
 from config import bot_settings, errors_log, game_settings, unknown_log, codes_log, tasks_log
 from config.dictionary import Smiles, CommonMessages, BotSystemMessages, CommandMessages, SettingsMessages, \
-    UserMessages, GameMessages, FileMessages, HelpMessages
+    UserMessages, GameMessages, FileMessages, HelpMessages, UtilsMessages
 from game.worker import GameWorker
 from telegram.abstract_processors import AbstractProcessors
 from telegram.codes import CodesQueue
+from utils.db_worker import DBDriver
 
 
 class TelegramProcessor(AbstractProcessors):
@@ -471,6 +472,47 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message, SettingsMessages.SETTINGS_WERE_NOT_CHANGED)
             return
         self.answer_message(message, SettingsMessages.SETTINGS_WERE_CHANGED)
+
+    def _do_anagram(self, message, db_name):
+        letters = message["text"].split()[1:]
+        db = DBDriver(db_name)
+        if len(letters) == 3:
+            letters, length, strict = letters
+            strict = strict.lower() in ["y", u"д", u"да", "+"]
+        elif len(letters) == 2:
+            letters, length_or_strict = letters
+            if length_or_strict.lower() in ["y", "n", u"д", u"н", u"да", u"нет", "+", "-"]:
+                length = None
+                strict = length_or_strict.lower() in ["y", u"д", u"да", "+"]
+            else:
+                length = length_or_strict
+                strict = False
+        else:
+            letters = letters[0]
+            length = None
+            strict = False
+        if strict:
+            result = db.do_anagram_strict_order(letters, length)
+        else:
+            result = db.do_anagram(letters, length)
+        if len(result):
+            found = "\r\n".join(result)
+            self.answer_message(message, found)
+        else:
+            self.answer_message(message, UtilsMessages.NO_ANAGRAMS_FOUND)
+        db.cursor.close()
+
+    def do_anagram_streets(self, message):
+        self._do_anagram(message, "./db/kiev_streetst.mdb")
+
+    def do_anagram_streets_short(self, message):
+        self._do_anagram(message, "./db/kiev_streets_short.mdb")
+
+    def do_anagram_words_en(self, message):
+        self._do_anagram(message, "./db/eng.mdb")
+
+    def do_anagram_words_ru(self, message):
+        self._do_anagram(message, "./db/rus.mdb")
 
     def do_set_autohandbrake(self, message):
         autohandbrake = self.get_new_value(message,
