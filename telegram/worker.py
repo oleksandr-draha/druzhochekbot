@@ -44,14 +44,6 @@ class TelegramWorker(TelegramProcessor):
                 self._user_command(message, self.do_gap)
             elif command == commands.codes_statistic:
                 self._user_command(message, self.do_codes_statistic)
-            elif command == commands.anagram_streets:
-                self._user_command(message, self.do_anagram_streets)
-            elif command == commands.anagram_streets_short:
-                self._user_command(message, self.do_anagram_streets_short)
-            elif command == commands.anagram_words_en:
-                self._user_command(message, self.do_anagram_words_en)
-            elif command == commands.anagram_words_ru:
-                self._user_command(message, self.do_anagram_words_ru)
             # endregion
 
             # region Admin in chat commands:
