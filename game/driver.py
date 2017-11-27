@@ -203,7 +203,7 @@ class GameDriver:
 
     def try_code(self, code="", username=None):
         if self.handbrake or self.auto_handbrake:
-            return GameMessages.HANDBRAKE
+            return GameMessages.HANDBRAKE, None
         body = {"rnd": self.rnd,
                 "LevelId": self.level_id,
                 "LevelNumber": self.level_number,
