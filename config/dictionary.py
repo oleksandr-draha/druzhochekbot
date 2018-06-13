@@ -44,15 +44,16 @@ class CommonMessages:
 class BotSystemMessages:
     NEW_TOKEN = u"""Текущий токен: *{token}*\r\n Введи новый токен или *NO* для отмены операции"""
     TOKEN_CHANGED = u"""Токен был изменен"""
-    CODE_LIMIT = u"""Введи новое ограничение на перебор кодов или *NO* для отмены операции"""
-    CODE_LIMIT_CHANGED = u"""Ограничение на перебор кодов было изменено"""
+    CODE_INTERVAL = u"""Введи новый интервал между кодами *NO* для отмены операции"""
+    CODE_INTERVAL_CHANGED = u"""Интервал между кодами был изменён"""
     TOKEN_CANCELLED = u"""Изменение токена отменено"""
     OPERATION_CANCELLED = u"""Операция отменена"""
-    CODE_LIMIT_CANCELLED = u"""Ограничение на перебор кодов не было изменено"""
+    CODE_INTERVAL_CANCELLED = u"""Интервал между кодами не был изменён"""
     CONFIRM_DELETEION = u"""Эту операцию нельзя отменить. Для подтверждения напиши *"YES"* """
     ADMIN_CLEARED = u"""Все админы были удалены."""
     FIELD_CLEARED = u"""Все полевые игроки были удалены."""
     KC_CLEARED = u"""Все штабные игроки были удалены."""
+    CODES_QUEUE_CLEARED = u"""Очередь кодов очищена."""
     ERRORS_CLEARED = u"""Лог ошибок очищен."""
     UNKNOWN_CLEARED = u"""Лог неопознанных пользователей очищен."""
     MEMORY_CLEARED = u"""Лог заданий и введённых кодов удалён."""
@@ -62,7 +63,6 @@ class BotSystemMessages:
 class CommandMessages:
     NO_CODE_FOUND = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c long code или /cc code 1 code2_'
     DUPLICATE_CODE = u' уже вбил <b>{username}</b>/'
-    CODE_LIMIT = u"""Перебор такого количества кодов запрещён! Текущий лимит: {codelimit}"""
     NO_USER_ID = u"""Нет user id для добавления. Пример:
 /addadmin 123456"""
     NO_MESSAGE = u"""Нет user id для сообщения. Пример:
@@ -181,8 +181,8 @@ class HelpMessages:
     STATUS = u"""
 Статус дружочка: {paused}
 Блокировка кодов: {handbrake}
-Максимум кодов за раз: {codes_limit}
 Активная группа: {chat_id}
+Имя группы: {chat_group_name}
 Соединение к игровому серверу: {game_connection}
 Текущий номер задания: {game_level_id}
 Показанные подсказки: {game_hint_id}"""
@@ -195,7 +195,7 @@ class HelpMessages:
 Активная группа: {chat_id}
 Токен: {token}
 rnd: {rnd}
-Лимит на вбитие кодов: {codelimit}
+Интервал между кодами, с: {codes_interval}
 Отмечать поле при новом задании: {tag_field}
 Отсылать обновления в личку: {send_task_to_private}
 Автоматическая блокировка вбития кодов: {autohandbrake}
@@ -254,7 +254,7 @@ rnd: {rnd}
 {edit} : Изменить текущие настройки бота
 {reset} : Обнулить список полученных заданий/подсказок
 {token}: Изменить токен бота
-{codes_limit}: Изменить максимальное количество кодов для вбития одной пачкой
+{codes_interval}: Изменить интервал между кодами
 {autohandbrake}: Автоматически блокировать ввод кодов при ограничении на ввод
 {handbrake}: Заблокировать/снять с блокировки ввод кодов вручную
 {login}: Изменить логин в игре
@@ -296,6 +296,9 @@ rnd: {rnd}
 {clean_errors}: Очистить лог ошибок
 {clean_unknown}: Очистить лог запросов от неизвестных
 {log_activity}: Редактирование логгирование активности бота
+{show_codes_queue}: Показать очередь кодов
+{stop_codes_queue}: Вбить последние коды в очереди и очистить очередь
+{clean_codes_queue}: Очистить очередь кодов
 
 *Пользовательские функции:*
 {regular}
@@ -332,7 +335,7 @@ rnd: {rnd}
         source=commands.send_source,
         errors=commands.send_errors,
         unknown=commands.send_unknown,
-        codes_limit=commands.codes,
+        codes_interval=commands.codes_interval,
         autohandbrake=commands.autohandbrake_,
         handbrake=commands.handbrake_set,
         login=commands.login,
@@ -345,4 +348,7 @@ rnd: {rnd}
         send_task_to_private=commands.send_task_to_private,
         clean_memory=commands.clean_memory,
         log_activity=commands.log_activity,
+        show_codes_queue=commands.show_codes_queue,
+        stop_codes_queue=commands.stop_codes_queue,
+        clean_codes_queue=commands.clean_codes_queue,
         regular=REGULAR_HELP)

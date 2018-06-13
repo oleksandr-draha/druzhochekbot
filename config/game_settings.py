@@ -23,15 +23,6 @@ class GameSettingsConfig(BaseConfig):
         return self.config.get("game", {}).get("quest_url")
 
     @property
-    def code_limit(self):
-        return self.config.get("game", {}).get("code_limit")
-
-    @code_limit.setter
-    def code_limit(self, value):
-        self.config["game"]["code_limit"] = value
-        self.save_config()
-
-    @property
     def game_login(self):
         login = self.config.get("game", {}).get("login")
         return base64.decodestring(login) if login is not None else None

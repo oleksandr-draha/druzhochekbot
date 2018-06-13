@@ -1,4 +1,4 @@
-game: {code_limit: 200, host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723',
+game: {host: !!python/unicode 'dn.quest.ua', id: !!python/unicode '23723',
   login: 'ZHJhZ2F0ZW1w
 
     ', password: 'WW84OWthVDc=

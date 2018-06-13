@@ -17,6 +17,15 @@ class BotSettingsConfig(BaseConfig):
         self.save_config()
 
     @property
+    def group_chat_name(self):
+        return self.config.get("bot", {}).get("group_chat_name")
+
+    @group_chat_name.setter
+    def group_chat_name(self, value):
+        self.config["bot"]["group_chat_name"] = value
+        self.save_config()
+
+    @property
     def group_chat_id(self):
         return self.config.get("bot", {}).get("approved_chat")
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from config import bot_settings, errors_log, game_settings, unknown_log, codes_log, tasks_log
+from config import bot_settings, errors_log, game_settings, unknown_log, codes_log, tasks_log, timeouts
 from config.dictionary import Smiles, CommonMessages, BotSystemMessages, CommandMessages, SettingsMessages, \
     UserMessages, GameMessages, FileMessages, HelpMessages
 from game.worker import GameWorker
@@ -87,8 +87,10 @@ class TelegramProcessor(AbstractProcessors):
 
     def _do_approve(self, message):
         chat_id = message["chat_id"]
+        title = message["title"]
         self.answer_message(message, CommonMessages.LETS_GO)
         bot_settings.group_chat_id = chat_id
+        bot_settings.group_chat_name = title
         bot_settings.paused = False
 
     def approve_command(self, message):
@@ -359,6 +361,16 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message,
                                 FileMessages.NO_DATA_TO_DISPLAY)
 
+    def do_show_codes_queue(self, message):
+        from_id = message["from_id"]
+        if CodesQueue.pending:
+            self.send_file(from_id,
+                           json.dumps(CodesQueue.codes_queue_repr()),
+                           'codes.txt')
+        else:
+            self.answer_message(message,
+                                FileMessages.NO_DATA_TO_DISPLAY)
+
     def do_send_errors(self, message):
         from_id = message["from_id"]
         if len(errors_log.errors_raw):
@@ -386,16 +398,16 @@ class TelegramProcessor(AbstractProcessors):
         else:
             self.answer_message(message, BotSystemMessages.TOKEN_CANCELLED)
 
-    def do_codes_limit(self, message):
-        codes_limit = self.get_new_value(message, BotSystemMessages.CODE_LIMIT)
-        if codes_limit != "NO":
-            if codes_limit.isdigit():
-                game_settings.code_limit = int(codes_limit)
-                self.answer_message(message, BotSystemMessages.CODE_LIMIT_CHANGED)
+    def do_codes_interval(self, message):
+        codes_interval = self.get_new_value(message, BotSystemMessages.CODE_INTERVAL)
+        if codes_interval != "NO":
+            if codes_interval.isdigit():
+                timeouts.codes_interval = int(codes_interval)
+                self.answer_message(message, BotSystemMessages.CODE_INTERVAL_CHANGED)
             else:
-                self.answer_message(message, BotSystemMessages.CODE_LIMIT_CANCELLED)
+                self.answer_message(message, BotSystemMessages.CODE_INTERVAL_CANCELLED)
         else:
-            self.answer_message(message, BotSystemMessages.CODE_LIMIT_CANCELLED)
+            self.answer_message(message, BotSystemMessages.CODE_INTERVAL_CANCELLED)
 
     def do_change_login(self, message):
         new_login = self.get_new_value(message,
@@ -472,6 +484,24 @@ class TelegramProcessor(AbstractProcessors):
             return
         self.answer_message(message, SettingsMessages.SETTINGS_WERE_CHANGED)
 
+    def do_clean_codes_queue(self, message):
+        self.answer_message(message, BotSystemMessages.CONFIRM_DELETEION)
+        answer = self.wait_for_answer(message["from_id"])
+        if answer["text"] == "YES":
+            CodesQueue.reset()
+            self.answer_message(message, BotSystemMessages.CODES_QUEUE_CLEARED)
+        else:
+            self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
+
+    def do_stop_codes_queue(self, message):
+        self.answer_message(message, BotSystemMessages.CONFIRM_DELETEION)
+        answer = self.wait_for_answer(message["from_id"])
+        if answer["text"] == "YES":
+            CodesQueue.soft_reset()
+            self.answer_message(message, BotSystemMessages.CODES_QUEUE_CLEARED)
+        else:
+            self.answer_message(message, BotSystemMessages.OPERATION_CANCELLED)
+
     def do_set_autohandbrake(self, message):
         autohandbrake = self.get_new_value(message,
                                            SettingsMessages.AUTOHANDBRAKE)
@@ -526,6 +556,7 @@ class TelegramProcessor(AbstractProcessors):
 
     def _do_disapprove(self, message):
         bot_settings.group_chat_id = None
+        bot_settings.group_chat_name = None
         bot_settings.paused = True
         self.answer_message(message, CommonMessages.DISAPPROVE)
 
@@ -550,11 +581,12 @@ class TelegramProcessor(AbstractProcessors):
         status_message = HelpMessages.STATUS.format(
             paused=HelpMessages.PAUSED[bot_settings.paused],
             chat_id=bot_settings.group_chat_id,
+            chat_group_name=bot_settings.group_chat_name,
             game_connection=HelpMessages.GAME_CONNECTION[self.game_worker.game_driver.is_logged()],
             game_level_id=self.game_worker.last_level_shown,
             game_hint_id=hints_shown,
             handbrake=str(self.game_worker.game_driver.handbrake or self.game_worker.game_driver.auto_handbrake),
-            codes_limit=game_settings.code_limit
+            codes_interval=timeouts.codes_interval
         )
         self.answer_message(message, status_message)
 
@@ -575,7 +607,7 @@ class TelegramProcessor(AbstractProcessors):
             bot_errors=len(errors_log.errors_raw),
             token=bot_settings.bot_token,
             rnd=self.game_worker.game_driver.rnd,
-            codelimit=game_settings.code_limit,
+            codes_interval=timeouts.codes_interval,
             unknown_users=len(unknown_log.unknown_raw),
             tag_field=str(bot_settings.tag_field),
             send_task_to_private=str(bot_settings.send_task_to_private),

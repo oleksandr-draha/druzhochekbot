@@ -180,8 +180,8 @@ class CommandsConfig(BaseConfig):
         return self.config.get("commands", {}).get("unknown")
 
     @property
-    def codes(self):
-        return self.config.get("commands", {}).get("codes_limit")
+    def codes_interval(self):
+        return self.config.get("commands", {}).get("codes_interval")
 
     @property
     def login(self):
@@ -226,3 +226,15 @@ class CommandsConfig(BaseConfig):
     @property
     def log_activity(self):
         return self.config.get("commands", {}).get("activity")
+
+    @property
+    def show_codes_queue(self):
+        return self.config.get("commands", {}).get("show_codes_queue")
+
+    @property
+    def clean_codes_queue(self):
+        return self.config.get("commands", {}).get("clean_codes_queue")
+
+    @property
+    def stop_codes_queue(self):
+        return self.config.get("commands", {}).get("stop_codes_queue")

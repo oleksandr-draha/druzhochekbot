@@ -1,3 +1,4 @@
+from pprint import pformat
 from uuid import uuid4
 
 from telegram.driver import TelegramDriver
@@ -62,3 +63,17 @@ class CodesQueue():
     def reset():
         CodesQueue.processed = {}
         CodesQueue.pending = {}
+
+    @staticmethod
+    def soft_reset():
+        for bunch_id in CodesQueue.pending:
+            codes_left = CodesQueue.pending[bunch_id]["codes"]
+            if len(codes_left):
+                CodesQueue.pending[bunch_id]["codes"] = [codes_left[-1]]
+
+    @staticmethod
+    def codes_queue_repr():
+        result = {}
+        for bunch_id, codes in CodesQueue.pending.iteritems():
+            result.setdefault(codes.get("username"), {}).update({bunch_id: codes.get("codes")})
+        return pformat(result)

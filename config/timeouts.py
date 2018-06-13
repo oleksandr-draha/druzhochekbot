@@ -15,8 +15,13 @@ class TimeoutsConfig(BaseConfig):
         return self.config.get("timeouts", {}).get("inactive_game_interval")
 
     @property
-    def code_enter_interval(self):
-        return self.config.get("timeouts", {}).get("code_enter_interval")
+    def codes_interval(self):
+        return self.config.get("timeouts", {}).get("codes_interval")
+
+    @codes_interval.setter
+    def codes_interval(self, value):
+        self.config["timeouts"]["codes_interval"] = value
+        self.save_config()
 
     @property
     def game_update_check_interval(self):

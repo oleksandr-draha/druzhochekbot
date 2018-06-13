@@ -1,17 +1,17 @@
-bot: {admin_passphrase: 'dmVyeXN0cm9uZ2FkbWlucGFzc3dvcmQx
+bot: {admin_passphrase: 'bm9wYXNkd29yZGZvcm9sZG1lbg==
 
     ', answer-forbidden: false, answer-unknown: false, approved_chat: -1001050462991,
-  autohandbrake: true, connection_problems: false, field_ids: 'kc4KJpqv
+  autohandbrake: false, connection_problems: false, field_ids: 'kc4KJpqv
 
-    ', field_passphrase: 'aXZlcnlsb3ZlZHJhZ2E=
+    ', field_passphrase: 'RnJpZGF5TmlnaHQ=
 
-    ', kc_ids: 'kA==
+    ', group_chat_name: "\u0422\u0435\u0441\u0442", kc_ids: 'kA==
 
-    ', kc_passphrase: 'YnJhaW5zdG9ybXRvZGF5
+    ', kc_passphrase: 'Z29nb2dzZ28=
 
     ', log_activity: true, obfuscation_id: 'kc4KJpqv
 
     ', paused: false, send-document-path: 'https://api.telegram.org/bot{key}/sendDocument',
-  send-message-path: 'https://api.telegram.org/bot{key}/sendMessage', tag_field: true, send_task_to_private: true,
-  token: !!python/unicode '289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w', updates-path: 'https://api.telegram.org/bot{key}/getUpdates?offset={offset}',
-  users-path: 'https://api.telegram.org/bot{key}/getChat?chat_id={user_id}'}
+  send-message-path: 'https://api.telegram.org/bot{key}/sendMessage', send_task_to_private: true,
+  tag_field: true, token: !!python/unicode '289812382:AAHK3XbAMWNZUxyCqqNL9TV2DVaZqhR1M_w',
+  updates-path: 'https://api.telegram.org/bot{key}/getUpdates?offset={offset}', users-path: 'https://api.telegram.org/bot{key}/getChat?chat_id={user_id}'}

@@ -73,8 +73,8 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_in_group_chat_command(message, self.do_set_autohandbrake)
             elif command == commands.handbrake_set:
                 self._admin_in_group_chat_command(message, self.do_set_handbrake)
-            elif command == commands.codes:
-                self._admin_in_group_chat_command(message, self.do_codes_limit)
+            elif command == commands.codes_interval:
+                self._admin_in_group_chat_command(message, self.do_codes_interval)
             # endregion
 
             # region Admin commands:
@@ -138,6 +138,12 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_set_send_task_to_private)
             elif command == commands.log_activity:
                 self._admin_command(message, self.do_set_log_activity)
+            elif command == commands.show_codes_queue:
+                self._admin_command(message, self.do_show_codes_queue)
+            elif command == commands.clean_codes_queue:
+                self._admin_command(message, self.do_clean_codes_queue)
+            elif command == commands.stop_codes_queue:
+                self._admin_command(message, self.do_stop_codes_queue)
             else:
                 self.unknown_command(message)
                 # endregion
