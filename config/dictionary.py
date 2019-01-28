@@ -62,6 +62,8 @@ class BotSystemMessages:
 
 class CommandMessages:
     NO_CODE_FOUND = u'_Нет кодов для вбития. Попробуй ещё раз. Формат: /c long code или /cc code 1 code2_'
+    CODE_RESULT= u'Перебрано {codes_length} кодов за {time_spent} секунд\r\n'
+    CODE_STATISTICS= u'{nickname}: {codes_length} из {total_length} за {time_spent} секунд\r\n'
     DUPLICATE_CODE = u' уже вбил <b>{username}</b>/'
     NO_USER_ID = u"""Нет user id для добавления. Пример:
 /addadmin 123456"""

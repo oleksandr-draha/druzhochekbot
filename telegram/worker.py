@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from config import bot_settings, commands
-from config.dictionary import SettingsMessages, GameMessages
+from config.dictionary import SettingsMessages, GameMessages, CommandMessages
 from telegram.codes import CodesQueue
 from telegram.processors import TelegramProcessor
 
@@ -140,6 +142,8 @@ class TelegramWorker(TelegramProcessor):
                 self._admin_command(message, self.do_set_log_activity)
             elif command == commands.show_codes_queue:
                 self._admin_command(message, self.do_show_codes_queue)
+            elif command == commands.show_codes_queue_statistic:
+                self._admin_command(message, self.do_show_codes_queue_statistic)
             elif command == commands.clean_codes_queue:
                 self._admin_command(message, self.do_clean_codes_queue)
             elif command == commands.stop_codes_queue:
@@ -192,10 +196,20 @@ class TelegramWorker(TelegramProcessor):
                 CodesQueue.finalize_bunch(bunch_id)
                 finished = True
             if finished and result is not None:
+                added = CodesQueue.pending.get(bunch_id).get("added")
+                time_spent = datetime.now() - added
                 processed = CodesQueue.processed.pop(bunch_id)
-                results = "".join(processed["results"])
-                self.answer_message(processed["message"],
-                                    results,
-                                    parse_mode="html")
+                if len(processed["results"]) < 10:
+                    results = "".join(processed["results"])
+                    self.answer_message(processed["message"],
+                                        results,
+                                        parse_mode="html")
+                else:
+                    results = CommandMessages.CODE_RESULT.format(
+                        codes_length=processed["original_length"],
+                        time_spent=time_spent.seconds) + "".join(processed["results"])
+                    self.answer_message(processed["message"],
+                                        results,
+                                        parse_mode="html")
                 self.duplicate_code_to_group_chat(processed["message"], results)
             return game_page

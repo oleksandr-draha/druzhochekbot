@@ -21,6 +21,8 @@ while not bot.stopped:
         game_page = None
         if code_enter_next_run < datetime.now():
             game_page = bot.process_codes_queue()
+            game_page = bot.process_codes_queue()
+            game_page = bot.process_codes_queue()
             code_enter_next_run = datetime.now() + timedelta(seconds=timeouts.codes_interval)
         if game_update_next_run < datetime.now():
             bot.process_game_updates(game_page=game_page)

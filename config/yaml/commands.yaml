@@ -11,4 +11,4 @@ commands: {add_admin: /aa, add_field: /af, add_kc: /ak, alert: /alert, approve: 
   resume: /resume, send_source: /source, set_group_chat: /sgc, status: /status, codes_statistic: /codestat,
   stop: /stop, tag_field: /tagfield, task: /task, taskhtml: /taskhtml, tasksall: /tasksall,
   token: /token, unknown: /unknown, activity: /activity, send_task_to_private: /sendtask, show_codes_queue: /showcodesqueue,
-  clean_codes_queue: /cleancodesqueue, stop_codes_queue: /stopcodesqueue}
+  clean_codes_queue: /cleancodesqueue, stop_codes_queue: /stopcodesqueue, show_codes_queue_statistic: /scqs}

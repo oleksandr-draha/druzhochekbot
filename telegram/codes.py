@@ -1,6 +1,9 @@
 from pprint import pformat
 from uuid import uuid4
 
+from datetime import datetime
+
+from config.dictionary import CommandMessages
 from telegram.driver import TelegramDriver
 
 
@@ -16,7 +19,7 @@ class CodesQueue():
     processed = {}
 
     @staticmethod
-    def add_code_bunch(message, split=False):
+    def add_code_bunch(message, split=True):
         command = TelegramDriver.extract_command(message)
         username = message["username"]
         codes = message["text"].replace(command, '').rstrip().lstrip()
@@ -30,7 +33,9 @@ class CodesQueue():
         CodesQueue.pending.setdefault(uuid,
                                       {"username": username,
                                        "codes": codes,
-                                       "message": message})
+                                       "message": message,
+                                       "added": datetime.now(),
+                                       "original_length": len(codes)})
 
     @staticmethod
     def get_next_code():
@@ -77,3 +82,15 @@ class CodesQueue():
         for bunch_id, codes in CodesQueue.pending.iteritems():
             result.setdefault(codes.get("username"), {}).update({bunch_id: codes.get("codes")})
         return pformat(result)
+
+    @staticmethod
+    def codes_queue_statistic_repr():
+        result = ""
+        for bunch_id, codes in CodesQueue.pending.iteritems():
+            time_spent = datetime.now() - codes.get("added")
+            result += CommandMessages.CODE_STATISTICS.format(
+                nickname=codes.get("username"),
+                codes_length=codes.get("original_length") - len(codes.get("codes")),
+                total_length=codes.get("original_length"),
+                time_spent=time_spent.seconds)
+        return result

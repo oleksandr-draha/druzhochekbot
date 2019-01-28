@@ -232,6 +232,10 @@ class CommandsConfig(BaseConfig):
         return self.config.get("commands", {}).get("show_codes_queue")
 
     @property
+    def show_codes_queue_statistic(self):
+        return self.config.get("commands", {}).get("show_codes_queue_statistic")
+
+    @property
     def clean_codes_queue(self):
         return self.config.get("commands", {}).get("clean_codes_queue")
 

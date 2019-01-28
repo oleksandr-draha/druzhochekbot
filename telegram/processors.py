@@ -371,6 +371,14 @@ class TelegramProcessor(AbstractProcessors):
             self.answer_message(message,
                                 FileMessages.NO_DATA_TO_DISPLAY)
 
+    def do_show_codes_queue_statistic(self, message):
+        if CodesQueue.pending:
+            self.answer_message(message,
+                                CodesQueue.codes_queue_statistic_repr())
+        else:
+            self.answer_message(message,
+                                FileMessages.NO_DATA_TO_DISPLAY)
+
     def do_send_errors(self, message):
         from_id = message["from_id"]
         if len(errors_log.errors_raw):
