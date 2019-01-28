@@ -112,6 +112,22 @@ class TelegramDriver(object):
         except ConnectionError:
             return
 
+    def get_file(self, file_id):
+        """
+        Get a file info (used to receive photos, sent in group chat)
+        :param file_id: original file_id
+        :rtype: file
+        """
+        try:
+            r = self.session.get(
+                bot_settings.get_file_path.format(key=bot_settings.bot_token, file_id=file_id))
+            file_path = json.loads(r.content).get("result", {}).get("file_path")
+            if file_path is not None:
+                download_link = bot_settings.download_file_path.format(key=bot_settings.bot_token, file_id=file_path)
+                return download_link
+        except ConnectionError:
+            return
+
     def answer_message(self, message, text, parse_mode="Markdown"):
         """
         Send message as an answer to the specified message
@@ -144,10 +160,11 @@ class TelegramDriver(object):
         """
         messages = []
         for message in self.get_updates():
-            if message.get('message', {}).get('text') is not None:
+            if message.get('message', {}).get('text') is not None or message.get('message', {}).get('photo') is not None:
                 messages.append(
                     {'id': message.get('message', {}).get('message_id'),
                      'text': message.get('message', {}).get('text'),
+                     'photo': message.get('message', {}).get('photo'),
                      'from_id': message.get('message', {}).get('from', {}).get('id'),
                      'username': message.get('message', {}).get('from', {}).get('username'),
                      'chat_id': message.get('message', {}).get('chat', {}).get('id'),

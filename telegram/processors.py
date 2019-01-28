@@ -782,6 +782,15 @@ class TelegramProcessor(AbstractProcessors):
         else:
             return False
 
+    def process_photo_in_group_chat(self, message):
+        if message.get("photo") is not None:
+            download_link = self.get_file(message["photo"][-1]["file_id"])
+            photo_image = self.session.get(download_link)
+            # TODO: get photo, upload to image host
+            return True
+        else:
+            return False
+
     def process_new_user(self, message):
         passphrase = message["text"]
         from_id = message["from_id"]
@@ -840,7 +849,8 @@ class TelegramProcessor(AbstractProcessors):
 
     def process_code_simple_message(self, message):
         from_id = message["from_id"]
-        if from_id in bot_settings.field_ids:
+        chat_id = message["chat_id"]
+        if from_id in bot_settings.field_ids and chat_id == from_id:
             if not message['text'].startswith('/'):
                 if not bot_settings.paused:
                     CodesQueue.add_code_bunch(message)

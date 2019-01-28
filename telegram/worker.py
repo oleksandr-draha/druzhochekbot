@@ -12,6 +12,8 @@ class TelegramWorker(TelegramProcessor):
             # 1. Adding new user by invite code
             # 2. Ignore message if it was received from non-authorized iser
             # 3. Try to enter code from field user
+            if self.process_photo_in_group_chat(message):
+                continue
             if self.process_new_user(message):
                 continue
             if self.process_unknown_user(message):

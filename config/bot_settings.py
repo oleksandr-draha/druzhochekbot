@@ -105,6 +105,14 @@ class BotSettingsConfig(BaseConfig):
         return self.config.get("bot", {}).get("send-message-path")
 
     @property
+    def get_file_path(self):
+        return self.config.get("bot", {}).get("get-file-path")
+
+    @property
+    def download_file_path(self):
+        return self.config.get("bot", {}).get("download-file-path")
+
+    @property
     def answer_unknown(self):
         return self.config.get("bot", {}).get("answer-unknown")
 
