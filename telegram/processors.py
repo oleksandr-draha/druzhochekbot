@@ -10,38 +10,6 @@ from telegram.codes import CodesQueue
 
 
 class TelegramProcessor(AbstractProcessors):
-    def check_codes(self, message):
-        command = self.extract_command(message)
-        username = message["username"]
-        codes = message["text"].replace(command, '').rstrip().lstrip().split()
-        codes = [code.lower() for code in codes]
-        codes = list(set(codes))
-        results = ""
-        if len(codes):
-            results = ''
-            for code in codes:
-                result = self.game_worker.game_driver.try_code(code, username)
-                if result in [GameMessages.CODES_BLOCKED,
-                              GameMessages.GAME_FINISHED,
-                              GameMessages.GAME_NOT_PAYED,
-                              GameMessages.GAME_NOT_APPROVED,
-                              GameMessages.GAME_NOT_STARTED,
-                              GameMessages.BANNED,
-                              GameMessages.HANDBRAKE]:
-                    return result
-                if result is None:
-                    return
-                results += result
-        return results
-
-    def check_code(self, message):
-        command = self.extract_command(message)
-        username = message["username"]
-        code = message["text"].replace(command, '').rstrip().lstrip().lower()
-        results = ""
-        if len(code):
-            results = self.game_worker.game_driver.try_code(code, username)
-        return results
 
     def do_stop(self, message):
         self.answer_message(message, CommonMessages.BYE)

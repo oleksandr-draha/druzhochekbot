@@ -53,7 +53,7 @@ class CodesQueue():
                     finished = True
                 else:
                     finished = False
-                return bunch_id, next_code, username, finished
+                return bunch_id, next_code, username, finished, next_bunch
 
     @staticmethod
     def add_code_result(bunch_id, result):

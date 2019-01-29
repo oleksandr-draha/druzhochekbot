@@ -224,6 +224,8 @@ class GameDriver:
             return GameMessages.GAME_FINISHED, r
         elif self.banned_as_bot(r):
             return GameMessages.BANNED, r
+        elif not self.is_logged(r):
+            return GameMessages.NOT_LOGGED, r
         if self.level_number != self.get_level_params(r)["LevelNumber"]:
             if r.find(InGame.incorrect_code_locator) == -1 and \
                     r.find(InGame.correct_code_locator) != -1:
@@ -394,9 +396,7 @@ class GameDriver:
         return GameState.game_closed_text
 
     def get_banned_as_bot_message(self, text=None):
-        if text is None:
-            text = self.get_game_page()
-        return GameState.game_banned_as_bot_text
+        return GameMessages.BANNED
 
     def get_finish_message(self, text=None):
         if text is None:

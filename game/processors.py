@@ -57,7 +57,7 @@ class GameProcessor:
             self.game_driver.login_user()
             self.game_page = self.game_driver.get_game_page()
             attempt += 1
-            if attempt >= timeouts.max_game_attempts:
+            if attempt > timeouts.max_game_attempts:
                 return True
             sleep(timeouts.relogin_interval)
         return False

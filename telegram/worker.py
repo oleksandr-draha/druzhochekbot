@@ -181,35 +181,39 @@ class TelegramWorker(TelegramProcessor):
                                   parse_mode="HTML")
 
     def process_codes_queue(self):
-        next_code = CodesQueue.get_next_code()
-        if next_code is not None:
-            bunch_id, code, username, finished = next_code
-            result, game_page = self.game_worker.game_driver.try_code(code, username)
-            CodesQueue.add_code_result(bunch_id, result)
-            if result in [GameMessages.CODES_BLOCKED,
-                          GameMessages.GAME_FINISHED,
-                          GameMessages.GAME_NOT_PAYED,
-                          GameMessages.GAME_NOT_APPROVED,
-                          GameMessages.GAME_NOT_STARTED,
-                          GameMessages.BANNED,
-                          GameMessages.HANDBRAKE]:
-                CodesQueue.finalize_bunch(bunch_id)
-                finished = True
-            if finished and result is not None:
-                added = CodesQueue.pending.get(bunch_id).get("added")
-                time_spent = datetime.now() - added
-                processed = CodesQueue.processed.pop(bunch_id)
-                if len(processed["results"]) < 10:
-                    results = "".join(processed["results"])
-                    self.answer_message(processed["message"],
-                                        results,
-                                        parse_mode="html")
+        if not bot_settings.paused and bot_settings.group_chat_id is not None:
+            next_code = CodesQueue.get_next_code()
+            if next_code is not None:
+                bunch_id, code, username, finished, original_bunch = next_code
+                result, game_page = self.game_worker.game_driver.try_code(code, username)
+                if result in [GameMessages.CODES_BLOCKED,
+                              GameMessages.GAME_FINISHED,
+                              GameMessages.GAME_NOT_PAYED,
+                              GameMessages.GAME_NOT_APPROVED,
+                              GameMessages.GAME_NOT_STARTED,
+                              GameMessages.HANDBRAKE]:
+                    CodesQueue.finalize_bunch(bunch_id)
+                    finished = True
+                elif result in [GameMessages.BANNED, GameMessages.NOT_LOGGED]:
+                    CodesQueue.pending.setdefault(bunch_id, original_bunch)
+                    CodesQueue.pending[bunch_id]["codes"].append(code)
                 else:
-                    results = CommandMessages.CODE_RESULT.format(
-                        codes_length=processed["original_length"],
-                        time_spent=time_spent.seconds) + "".join(processed["results"])
-                    self.answer_message(processed["message"],
-                                        results,
-                                        parse_mode="html")
-                self.duplicate_code_to_group_chat(processed["message"], results)
-            return game_page
+                    CodesQueue.add_code_result(bunch_id, result)
+                if finished and result is not None:
+                    added = CodesQueue.pending.get(bunch_id).get("added")
+                    time_spent = datetime.now() - added
+                    processed = CodesQueue.processed.pop(bunch_id)
+                    if len(processed["results"]) < 10:
+                        results = "".join(processed["results"])
+                        self.answer_message(processed["message"],
+                                            results,
+                                            parse_mode="html")
+                    else:
+                        results = CommandMessages.CODE_RESULT.format(
+                            codes_length=processed["original_length"],
+                            time_spent=time_spent.seconds) + "".join(processed["results"])
+                        self.answer_message(processed["message"],
+                                            results,
+                                            parse_mode="html")
+                    self.duplicate_code_to_group_chat(processed["message"], results)
+                return game_page

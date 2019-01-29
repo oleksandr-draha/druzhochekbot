@@ -25,6 +25,8 @@ class GameWorker(GameProcessor):
         updates = []
         if game_page is None:
             self.game_page = self.game_driver.get_game_page()
+        else:
+            self.game_page = game_page
 
         # Check that user is logged in
         if self.process_user_was_not_logged():
